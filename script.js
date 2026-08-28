@@ -121,6 +121,7 @@ function openAuth(mode) {
     authMode = mode;
     $("authTitle").textContent = mode === "login" ? "تسجيل الدخول" : "إنشاء حساب";
     $("authNameGroup").classList.toggle("hidden", mode === "login");
+    $("forgotPassword").classList.toggle("hidden", mode !== "login");
     $("authPassword").autocomplete = mode === "login" ? "current-password" : "new-password";
     $("authSubmit").textContent = mode === "login" ? "تسجيل الدخول" : "إنشاء حساب";
     $("authSwitch").textContent = mode === "login" ? "ليس لديك حساب؟ إنشاء حساب" : "لديك حساب؟ تسجيل الدخول";
@@ -195,6 +196,27 @@ $("passwordToggle").addEventListener("click", () => {
     password.type = isVisible ? "password" : "text";
     $("passwordToggle").textContent = isVisible ? "◉" : "○";
     $("passwordToggle").setAttribute("aria-label", isVisible ? "إظهار كلمة السر" : "إخفاء كلمة السر");
+});
+
+$("forgotPassword").addEventListener("click", async () => {
+    if (!auth) {
+        $("authMessage").textContent = "إعدادات Firebase غير مكتملة.";
+        return;
+    }
+
+    const email = $("authEmail").value.trim();
+    if (!email) {
+        $("authMessage").textContent = "اكتب بريدك الإلكتروني أولًا.";
+        $("authEmail").focus();
+        return;
+    }
+
+    try {
+        await auth.sendPasswordResetEmail(email);
+        $("authMessage").textContent = "تم إرسال رابط تغيير كلمة السر إلى بريدك الإلكتروني.";
+    } catch (error) {
+        $("authMessage").textContent = authErrorMessage(error);
+    }
 });
 
 $("googleLoginButton").addEventListener("click", async () => {

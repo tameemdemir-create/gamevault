@@ -1144,6 +1144,16 @@ footer strong {
     font-size: 18px;
 }
 
+.forgot-password {
+    justify-self: start;
+    border: 0;
+    background: transparent;
+    color: #43a8ff;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0;
+}
+
 .auth-message {
     min-height: 20px;
     color: #ff8d8d;
