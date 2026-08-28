@@ -1054,23 +1054,3 @@ footer strong {
         gap: 12px;
     }
 }
-
-.data-transfer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 18px 0 22px;
-    padding: 12px;
-    border: 1px solid #25364d;
-    border-radius: 12px;
-    background: #071322;
-}
-
-.data-transfer .btn-new {
-    margin: 0;
-}
-
-.data-transfer small {
-    flex-basis: 100%;
-}

@@ -1202,69 +1202,6 @@ function openAdmin() {
 
 }
 
-function exportAccounts() {
-
-    const file = new Blob(
-        [JSON.stringify(accounts, null, 2)],
-        { type: "application/json" }
-    );
-    const url = URL.createObjectURL(file);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = "pubg-market-products.json";
-    link.click();
-    URL.revokeObjectURL(url);
-
-}
-
-function importAccounts(file) {
-
-    if (!file) {
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = event => {
-        try {
-            const importedAccounts = JSON.parse(event.target.result);
-
-            if (!Array.isArray(importedAccounts)) {
-                throw new Error("Invalid data");
-            }
-
-            accounts = importedAccounts.map(account => ({
-                ...account,
-                type: account.type || "حساب",
-                quantity: account.quantity || "",
-                images: Array.isArray(account.images) ? account.images : []
-            }));
-
-            saveAccounts();
-            renderAccounts();
-            renderAdmin();
-            alert("تم استيراد المنتجات والصور بنجاح.");
-        } catch {
-            alert("ملف النسخة الاحتياطية غير صالح.");
-        }
-    };
-
-    reader.readAsText(file);
-
-}
-
-$("exportDataButton").addEventListener("click", exportAccounts);
-
-$("importDataButton").addEventListener("click", () => {
-    $("importDataFile").click();
-});
-
-$("importDataFile").addEventListener("change", function() {
-    importAccounts(this.files[0]);
-    this.value = "";
-});
-
 
 /* ==================================================
    الصور
