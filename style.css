@@ -919,10 +919,6 @@ body {
 }
 
 .payment {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
     padding: 12px;
     background: #06111e;
     border: 1px solid #1b2a3e;
@@ -943,11 +939,6 @@ body {
     border-color: #53df91;
     background: rgba(83, 223, 145, 0.1);
     color: #53df91;
-    box-shadow: 0 0 12px rgba(83, 223, 145, 0.15);
-}
-
-.pay-icon {
-    font-size: 16px;
 }
 
 .submit-buy-btn {
@@ -1067,10 +1058,6 @@ footer strong {
     }
 
     .accounts-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .payment-methods {
         grid-template-columns: 1fr;
     }
 

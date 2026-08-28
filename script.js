@@ -41,7 +41,7 @@ if (firebaseReady) {
 }
 
 let currentAccount = null;
-let selectedPayment = "بطاقة بنكية";
+let selectedPayment = "تحويل بنكي";
 let selectedImages = [];
 
 let accounts = [];
@@ -213,23 +213,14 @@ $("googleLoginButton").addEventListener("click", async () => {
     googleButton.textContent = "جاري فتح تسجيل الدخول...";
 
     try {
-        const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-        updateAuthUI(result.user);
-        closeModal("authModal");
+        await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
     } catch (error) {
-        if (error.code === "auth/popup-blocked") {
-            try {
-                await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
-                return;
-            } catch (redirectError) {
-                error = redirectError;
-            }
-        }
-
         $("authMessage").textContent = authErrorMessage(error);
-    } finally {
         googleButton.disabled = false;
-        googleButton.innerHTML = '<span class="google-icon">G</span> المتابعة باستخدام Google';
+    } finally {
+        if (!auth.currentUser) {
+            googleButton.innerHTML = '<span class="google-icon">G</span> المتابعة باستخدام Google';
+        }
     }
 });
 
@@ -1800,44 +1791,16 @@ function resetForm() {
 
 
 /* ==================================================
-   طرق الدفع
-================================================== */
-
-document
-    .querySelectorAll(".payment")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                document
-                    .querySelectorAll(
-                        ".payment"
-                    )
-                    .forEach(
-                        b =>
-                            b.classList
-                                .remove("active")
-                    );
-
-
-                this.classList
-                    .add("active");
-
-
-                selectedPayment =
-                    this.dataset.payment;
-
-            }
-        );
-
-    });
-
-
-/* ==================================================
    إرسال الطلب إلى WhatsApp
 ================================================== */
+
+document.querySelectorAll(".payment").forEach(button => {
+    button.addEventListener("click", function() {
+        document.querySelectorAll(".payment").forEach(item => item.classList.remove("active"));
+        this.classList.add("active");
+        selectedPayment = this.dataset.payment;
+    });
+});
 
 $("buyForm")
     .addEventListener(
@@ -1915,7 +1878,7 @@ $("buyForm")
                 buyerPhone +
                 "\n" +
 
-                "الدفع: " +
+                "طريقة الدفع: " +
                 selectedPayment;
 
 
