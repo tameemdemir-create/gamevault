@@ -176,14 +176,15 @@ $("googleLoginButton").addEventListener("click", async () => {
         return;
     }
 
+    const googleButton = $("googleLoginButton");
+    googleButton.disabled = true;
+    googleButton.textContent = "جاري فتح تسجيل الدخول...";
+
     try {
-        await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-        closeModal("authModal");
+        await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
     } catch (error) {
-        if (error.code === "auth/popup-blocked" || error.code === "auth/popup-closed-by-user") {
-            await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
-            return;
-        }
+        googleButton.disabled = false;
+        googleButton.innerHTML = '<span class="google-icon">G</span> المتابعة باستخدام Google';
         $("authMessage").textContent = authErrorMessage(error);
     }
 });
