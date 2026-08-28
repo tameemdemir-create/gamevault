@@ -176,6 +176,11 @@ $("googleLoginButton").addEventListener("click", async () => {
         return;
     }
 
+    if (window.top !== window.self) {
+        $("authMessage").textContent = "افتح الرابط في Chrome أو Edge خارج معاينة VS Code.";
+        return;
+    }
+
     const googleButton = $("googleLoginButton");
     googleButton.disabled = true;
     googleButton.textContent = "جاري فتح تسجيل الدخول...";
