@@ -139,7 +139,9 @@ function authErrorMessage(error) {
         "auth/operation-not-allowed": "يجب تفعيل طريقة الدخول من Firebase.",
         "auth/unauthorized-domain": `النطاق غير مصرح به. أضف ${window.location.hostname} إلى Authorized domains في Firebase.`,
         "auth/invalid-api-key": "مفتاح Firebase غير صحيح.",
-        "auth/network-request-failed": "تعذر الاتصال بالإنترنت، حاول مرة أخرى."
+        "auth/network-request-failed": "تعذر الاتصال بالإنترنت، حاول مرة أخرى.",
+        "auth/account-exists-with-different-credential": "هذا البريد مسجل بطريقة دخول أخرى. استخدم البريد وكلمة السر.",
+        "auth/credential-already-in-use": "حساب Google مستخدم من قبل."
     };
     return messages[error.code] || `حدث خطأ (${error.code || "غير معروف"}).`;
 }
@@ -211,11 +213,23 @@ $("googleLoginButton").addEventListener("click", async () => {
     googleButton.textContent = "جاري فتح تسجيل الدخول...";
 
     try {
-        await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+        const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        updateAuthUI(result.user);
+        closeModal("authModal");
     } catch (error) {
+        if (error.code === "auth/popup-blocked") {
+            try {
+                await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+                return;
+            } catch (redirectError) {
+                error = redirectError;
+            }
+        }
+
+        $("authMessage").textContent = authErrorMessage(error);
+    } finally {
         googleButton.disabled = false;
         googleButton.innerHTML = '<span class="google-icon">G</span> المتابعة باستخدام Google';
-        $("authMessage").textContent = authErrorMessage(error);
     }
 });
 
