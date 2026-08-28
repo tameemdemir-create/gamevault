@@ -31,9 +31,13 @@ let authMode = "login";
 let remoteAccounts = null;
 
 if (firebaseReady) {
-    firebase.initializeApp(FIREBASE_CONFIG);
-    remoteAccounts = firebase.database().ref("products");
-    auth = firebase.auth();
+    try {
+        firebase.initializeApp(FIREBASE_CONFIG);
+        remoteAccounts = firebase.database().ref("products");
+        auth = firebase.auth();
+    } catch (error) {
+        console.error("Firebase initialization failed", error);
+    }
 }
 
 let currentAccount = null;
@@ -132,7 +136,10 @@ function authErrorMessage(error) {
         "auth/user-not-found": "لا يوجد حساب بهذا البريد.",
         "auth/wrong-password": "البريد أو كلمة السر غير صحيحة.",
         "auth/popup-closed-by-user": "تم إغلاق نافذة Google.",
-        "auth/operation-not-allowed": "يجب تفعيل طريقة الدخول من Firebase."
+        "auth/operation-not-allowed": "يجب تفعيل طريقة الدخول من Firebase.",
+        "auth/unauthorized-domain": `النطاق غير مصرح به. أضف ${window.location.hostname} إلى Authorized domains في Firebase.`,
+        "auth/invalid-api-key": "مفتاح Firebase غير صحيح.",
+        "auth/network-request-failed": "تعذر الاتصال بالإنترنت، حاول مرة أخرى."
     };
     return messages[error.code] || `حدث خطأ (${error.code || "غير معروف"}).`;
 }
@@ -156,7 +163,11 @@ if (auth) {
 
 $("loginButton").addEventListener("click", () => openAuth("login"));
 $("registerButton").addEventListener("click", () => openAuth("register"));
-$("logoutButton").addEventListener("click", () => auth.signOut());
+$("logoutButton").addEventListener("click", () => {
+    if (auth) {
+        auth.signOut();
+    }
+});
 
 $("authSwitch").addEventListener("click", () => {
     openAuth(authMode === "login" ? "register" : "login");
