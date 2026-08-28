@@ -153,6 +153,7 @@ function updateAuthUI(user) {
     $("userGreeting").classList.toggle("hidden", !user);
     if (user) {
         $("userGreeting").textContent = `مرحبًا ${user.displayName || user.email}`;
+        closeModal("authModal");
     }
 }
 
