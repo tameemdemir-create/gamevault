@@ -155,10 +155,24 @@ function updateAuthUI(user) {
 }
 
 if (auth) {
-    auth.onAuthStateChanged(updateAuthUI);
-    auth.getRedirectResult().catch(error => {
-        $("authMessage").textContent = authErrorMessage(error);
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(error => {
+        console.error("Firebase persistence failed", error);
     });
+    auth.onAuthStateChanged(updateAuthUI);
+    auth.getRedirectResult()
+        .then(result => {
+            if (result.user) {
+                closeModal("authModal");
+                updateAuthUI(result.user);
+            }
+        })
+        .catch(error => {
+            openModal("authModal");
+            $("authMessage").textContent = authErrorMessage(error);
+            const googleButton = $("googleLoginButton");
+            googleButton.disabled = false;
+            googleButton.innerHTML = '<span class="google-icon">G</span> المتابعة باستخدام Google';
+        });
 }
 
 $("loginButton").addEventListener("click", () => openAuth("login"));
