@@ -137,7 +137,7 @@ function authErrorMessage(error) {
         "auth/wrong-password": "البريد أو كلمة السر غير صحيحة.",
         "auth/popup-closed-by-user": "تم إغلاق نافذة Google.",
         "auth/operation-not-allowed": "يجب تفعيل طريقة الدخول من Firebase.",
-        "auth/unauthorized-domain": `النطاق غير مصرح به. أضف ${window.location.hostname} إلى Authorized domains في Firebase.`,
+        "auth/unauthorized-domain": "تعذر تسجيل الدخول من هذا الرابط.",
         "auth/invalid-api-key": "مفتاح Firebase غير صحيح.",
         "auth/network-request-failed": "تعذر الاتصال بالإنترنت، حاول مرة أخرى.",
         "auth/account-exists-with-different-credential": "هذا البريد مسجل بطريقة دخول أخرى. استخدم البريد وكلمة السر.",
@@ -153,7 +153,6 @@ function updateAuthUI(user) {
     $("userGreeting").classList.toggle("hidden", !user);
     if (user) {
         $("userGreeting").textContent = `مرحبًا ${user.displayName || user.email}`;
-        closeModal("authModal");
     }
 }
 
