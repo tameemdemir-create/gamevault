@@ -9,13 +9,14 @@ const STORAGE_KEY = "PUBG_MARKET_ACCOUNTS";
 const WHATSAPP_NUMBER = "9620792077942";
 
 const FIREBASE_CONFIG = {
-    apiKey: "ضع_apiKey_هنا",
-    authDomain: "ضع_authDomain_هنا",
-    databaseURL: "ضع_databaseURL_هنا",
-    projectId: "ضع_projectId_هنا",
-    storageBucket: "ضع_storageBucket_هنا",
-    messagingSenderId: "ضع_messagingSenderId_هنا",
-    appId: "ضع_appId_هنا"
+    apiKey: "AIzaSyCqftmFq09lF9MsU19Q9QKhxR6RIu6X0WM",
+    authDomain: "gamevault-5458b.firebaseapp.com",
+    databaseURL: "https://gamevault-5458b-default-rtdb.firebaseio.com",
+    projectId: "gamevault-5458b",
+    storageBucket: "gamevault-5458b.firebasestorage.app",
+    messagingSenderId: "886740058119",
+    appId: "1:886740058119:web:51de63a7d6950c7e7a6aa2",
+    measurementId: "G-CN11W2BWK7"
 };
 
 const firebaseReady =
