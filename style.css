@@ -1,0 +1,1076 @@
+/* ================= الإعدادات العامة ================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Tahoma, Arial, sans-serif;
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(60, 170, 255, 0.15),
+            transparent 35%
+        ),
+        #050b14;
+    color: white;
+    min-height: 100vh;
+}
+
+
+/* ================= الهيدر ================= */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    padding: 15px 5%;
+    background: rgba(5, 11, 20, 0.92);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid #1b2a3e;
+}
+
+
+/* ================= اللوجو ================= */
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo strong {
+    display: block;
+    font-size: 18px;
+    color: #55df91;
+}
+
+.logo small {
+    display: block;
+    color: #8493a8;
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.logo-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background:
+        linear-gradient(
+            135deg,
+            #43a8ff,
+            #53df91
+        );
+    color: #03120b;
+    font-weight: bold;
+    font-size: 22px;
+}
+
+
+/* ================= البحث ================= */
+
+.search-box {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 13px;
+    border-radius: 12px;
+    border: 1px solid #1b2a3e;
+    background: #081323;
+    color: white;
+    outline: none;
+}
+
+.search-box input:focus {
+    border-color: #43a8ff;
+}
+
+.search-box button {
+    border: 0;
+    padding: 0 20px;
+    border-radius: 12px;
+    background: #43a8ff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+/* ================= الدول ================= */
+
+.countries {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.filter {
+    border: 0;
+    background: transparent;
+    color: #94a3b8;
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.filter:hover,
+.filter.active {
+    background: #172538;
+    color: white;
+}
+
+
+/* ================= الواجهة الرئيسيّة ================= */
+
+.hero {
+    min-height: 460px;
+    display: flex;
+    align-items: center;
+    padding: 70px 5%;
+    border-bottom: 1px solid #172538;
+    background:
+        radial-gradient(
+            circle at 80% 50%,
+            rgba(83, 223, 145, 0.12),
+            transparent 30%
+        );
+}
+
+.hero-content {
+    max-width: 750px;
+}
+
+.badge {
+    color: #53df91;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.hero h1 {
+    font-size: clamp(45px, 6vw, 75px);
+    line-height: 1.1;
+    margin: 20px 0;
+}
+
+.hero h1 span {
+    color: #53df91;
+    display: block;
+}
+
+.hero p {
+    color: #94a3b8;
+    line-height: 2;
+    font-size: 18px;
+    max-width: 650px;
+}
+
+
+/* ================= الأزرار العامة ================= */
+
+.main-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 0;
+    border-radius: 12px;
+    padding: 13px 22px;
+    margin-top: 20px;
+    background:
+        linear-gradient(
+            135deg,
+            #53df91,
+            #28bb73
+        );
+    color: #03120b;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.main-button:hover {
+    transform: translateY(-2px);
+}
+
+.secondary-button {
+    border: 1px solid #25364d;
+    background: transparent;
+    color: white;
+    border-radius: 12px;
+    padding: 13px 22px;
+    cursor: pointer;
+}
+
+
+/* ================= الحاوية والشبكة ================= */
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 60px auto;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 20px;
+}
+
+.section-title span {
+    color: #53df91;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.section-title h2 {
+    font-size: 32px;
+    margin-top: 7px;
+}
+
+.section-title p {
+    color: #8493a8;
+}
+
+
+/* ================= فلترة المنتجات ================= */
+
+.product-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.product-filter {
+    border: 1px solid #25364d;
+    background: #071322;
+    color: #94a3b8;
+    padding: 11px 17px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.product-filter:hover,
+.product-filter.active {
+    border-color: #53df91;
+    color: #53df91;
+    background: #10251f;
+}
+
+
+/* ================= بطاقات المنتجات ================= */
+
+.accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.account-card {
+    background:
+        linear-gradient(
+            180deg,
+            #101f34,
+            #0b1626
+        );
+    border: 1px solid #1b2a3e;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: .25s;
+}
+
+.account-card:hover {
+    transform: translateY(-5px);
+    border-color: #53df91;
+}
+
+.account-image {
+    height: 230px;
+    background: #07111f;
+    position: relative;
+}
+
+.account-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+    .image-slider-controls {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 4px 6px;
+        border: 1px solid rgba(255, 255, 255, .14);
+        border-radius: 10px;
+        background: rgba(3, 10, 18, .82);
+        backdrop-filter: blur(6px);
+        direction: ltr;
+    }
+    .image-slider-controls button {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 7px;
+        background: #172538;
+        color: white;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+    }
+    .image-slider-controls button:hover {
+        background: #53df91;
+        color: #03120b;
+    }
+    .image-slider-controls span {
+        min-width: 42px;
+        color: #d8e2ef;
+        font-size: 11px;
+        text-align: center;
+        direction: ltr;
+    }
+
+        .details-slider-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: -58px;
+            padding: 0 12px 12px;
+            position: relative;
+            direction: ltr;
+        }
+
+        .details-slider-controls button {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 50%;
+            background: rgba(3, 10, 18, .84);
+            color: white;
+            font-size: 25px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .details-slider-controls button:hover {
+            background: #53df91;
+            color: #03120b;
+        }
+
+        .details-slider-controls span {
+            min-width: 52px;
+            padding: 7px 10px;
+            border-radius: 8px;
+            background: rgba(3, 10, 18, .84);
+            color: #d8e2ef;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .details-main-image {
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .details-image-changing {
+            animation: detailsImageChange .2s ease;
+        }
+
+        @keyframes detailsImageChange {
+            from {
+                opacity: .45;
+                transform: scale(.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+.image-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, .92);
+    backdrop-filter: blur(8px);
+}
+
+.image-viewer-frame {
+    position: relative;
+    width: min(1000px, 100%);
+    height: min(800px, 90vh);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-viewer-frame img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .55);
+}
+
+.viewer-close,
+.viewer-arrow {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(15, 31, 52, .9);
+    color: white;
+    cursor: pointer;
+}
+
+.viewer-close {
+    top: 0;
+    left: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    font-size: 25px;
+}
+
+.viewer-arrow {
+    top: 50%;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 32px;
+    line-height: 1;
+    transform: translateY(-50%);
+    z-index: 2;
+}
+
+.viewer-previous {
+    right: -62px;
+}
+
+.viewer-next {
+    left: -62px;
+}
+
+.viewer-close:hover,
+.viewer-arrow:hover {
+    background: #53df91;
+    border-color: #53df91;
+    color: #03120b;
+}
+
+.image-viewer-controls {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(3, 10, 18, .82);
+    color: #d8e2ef;
+    direction: ltr;
+    transform: translateX(-50%);
+}
+
+.image-viewer-controls span {
+    min-width: 48px;
+    font-size: 13px;
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+    .viewer-previous {
+        right: 6px;
+    }
+
+    .viewer-next {
+        left: 6px;
+    }
+}
+
+.no-image {
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: #65758c;
+    font-size: 13px;
+}
+
+.product-type {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    padding: 7px 10px;
+    border-radius: 9px;
+    background: rgba(0, 0, 0, .75);
+    font-size: 12px;
+    font-weight: bold;
+    color: #53df91;
+}
+
+.country-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 7px 10px;
+    border-radius: 9px;
+    background: rgba(0, 0, 0, .7);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.account-body {
+    padding: 18px;
+}
+
+.account-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.account-top h3 {
+    font-size: 19px;
+}
+
+.price {
+    color: #53df91;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.quantity {
+    display: inline-block;
+    margin-top: 8px;
+    color: #43a8ff;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.account-description {
+    color: #8493a8;
+    line-height: 1.8;
+    margin: 12px 0;
+    min-height: 55px;
+}
+
+.card-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.card-buttons button {
+    padding: 11px;
+    border-radius: 10px;
+    border: 1px solid #25364d;
+    background: #071321;
+    color: white;
+    cursor: pointer;
+}
+
+.card-buttons .buy {
+    background: #53df91;
+    color: #03120b;
+    border: 0;
+    font-weight: bold;
+}
+
+
+/* ================= لوحة التحكم والنوافذ المنبثقة ================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.modal-content {
+    width: min(600px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #0b1829;
+    border: 1px solid #1c2d42;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content.admin {
+    width: min(850px, 95%);
+}
+
+.close {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 10px;
+    background: #162438;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close:hover {
+    background: #25364d;
+}
+
+
+/* ================= شبكة لوحة التحكم (توزيع الحقول) ================= */
+
+.modal-content.admin form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    margin-top: 15px;
+}
+
+.modal-content.admin label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: bold;
+    font-size: 13px;
+    color: #cbd5e1;
+    grid-column: auto;
+}
+
+.modal-content.admin input[type="text"],
+.modal-content.admin input[type="number"],
+.modal-content.admin select,
+.modal-content.admin textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid #1b2a3e;
+    background: #06111e;
+    color: #ffffff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal-content.admin input:focus,
+.modal-content.admin select:focus,
+.modal-content.admin textarea:focus {
+    border-color: #53df91;
+    box-shadow: 0 0 0 3px rgba(83, 223, 145, 0.15);
+}
+
+.modal-content.admin textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.file-input-wrapper {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file-input-wrapper input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    background: #06111e;
+    border: 1px dashed #25364d;
+    border-radius: 10px;
+    color: #94a3b8;
+}
+
+.image-preview {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #1b2a3e;
+}
+
+
+/* ================= أزرار التحكم ================= */
+
+.admin-form-actions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #1b2a3e;
+}
+
+.admin-form-actions button {
+    width: 100%;
+    height: 46px;
+    border-radius: 11px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-form-actions .btn-save {
+    background: linear-gradient(135deg, #53df91, #28bb73);
+    color: #03120b;
+    border: none;
+}
+
+.admin-form-actions .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(83, 223, 145, 0.3);
+}
+
+.admin-form-actions .btn-new {
+    background: #102136;
+    border: 1px solid #25364d;
+    color: #ffffff;
+}
+
+.admin-form-actions .btn-new:hover {
+    background: #162c47;
+    border-color: #43a8ff;
+}
+
+
+/* ================= تحسينات نافذة طلب الشراء ================= */
+
+.buy-modal-card {
+    background: linear-gradient(180deg, #0e1a2b 0%, #071220 100%);
+    border: 1px solid #1e324d;
+    box-shadow: 0 0 30px rgba(83, 223, 145, 0.15);
+    padding: 32px;
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.modal-badge {
+    background: rgba(83, 223, 145, 0.1);
+    color: #53df91;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(83, 223, 145, 0.3);
+    letter-spacing: 1px;
+}
+
+.modal-header h2 {
+    font-size: 26px;
+    color: #ffffff;
+    margin-top: 8px;
+}
+
+.buy-info-box {
+    background: rgba(6, 17, 30, 0.7);
+    border: 1px dashed #25364d;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 24px;
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.buy-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #94a3b8;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #1b2a3e;
+    background: #050d18;
+    color: #ffffff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+.input-group input:focus {
+    border-color: #53df91;
+    box-shadow: 0 0 10px rgba(83, 223, 145, 0.2);
+    background: #081424;
+}
+
+.payment-section {
+    margin-top: 8px;
+}
+
+.payment-section h3 {
+    font-size: 14px;
+    color: #cbd5e1;
+    margin-bottom: 10px;
+}
+
+.payment-methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.payment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: #06111e;
+    border: 1px solid #1b2a3e;
+    color: #94a3b8;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payment:hover {
+    border-color: #43a8ff;
+    color: #ffffff;
+}
+
+.payment.active {
+    border-color: #53df91;
+    background: rgba(83, 223, 145, 0.1);
+    color: #53df91;
+    box-shadow: 0 0 12px rgba(83, 223, 145, 0.15);
+}
+
+.pay-icon {
+    font-size: 16px;
+}
+
+.submit-buy-btn {
+    margin-top: 10px;
+    height: 48px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(83, 223, 145, 0.25);
+}
+
+.submit-buy-btn:hover {
+    box-shadow: 0 6px 25px rgba(83, 223, 145, 0.4);
+}
+
+.full {
+    width: 100%;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #1b2a3e;
+    margin: 30px 0;
+}
+
+.admin-account {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #1b2a3e;
+}
+
+.admin-account p {
+    color: #8493a8;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 7px;
+}
+
+.admin-actions button {
+    padding: 8px 12px;
+    border-radius: 9px;
+    border: 1px solid #25364d;
+    background: #071322;
+    color: white;
+    cursor: pointer;
+}
+
+.admin-actions .delete {
+    color: #ff6478;
+}
+
+
+/* ================= الفوتر ================= */
+
+footer {
+    border-top: 1px solid #1b2a3e;
+    padding: 35px 5%;
+    color: #8493a8;
+}
+
+footer strong {
+    color: white;
+}
+
+.empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: #8493a8;
+}
+
+.empty h3 {
+    color: white;
+    margin-bottom: 8px;
+}
+
+
+/* ================= التجاوب مع الجوال والتابلت ================= */
+
+@media (max-width: 1050px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .countries {
+        justify-content: center;
+    }
+
+    .accounts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+    .modal-content.admin form {
+        grid-template-columns: 1fr;
+    }
+
+    .file-input-wrapper {
+        grid-column: 1;
+    }
+
+    .admin-form-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .accounts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-methods {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+    }
+
+    .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .admin-account {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+.data-transfer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 18px 0 22px;
+    padding: 12px;
+    border: 1px solid #25364d;
+    border-radius: 12px;
+    background: #071322;
+}
+
+.data-transfer .btn-new {
+    margin: 0;
+}
+
+.data-transfer small {
+    flex-basis: 100%;
+}

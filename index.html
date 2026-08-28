@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Vault</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+
+<body>
+
+    <!-- ================= الهيدر ================= -->
+
+    <header class="header">
+
+        <div class="logo">
+            <span class="logo-icon">P</span>
+            <div>
+                <strong>PUBG Market</strong>
+                <small>متجر ببجي</small>
+            </div>
+        </div>
+
+        <!-- الدول -->
+
+        <nav class="countries">
+
+            <button class="filter active" data-country="all">
+                الكل
+            </button>
+
+            <button class="filter" data-country="قطر">
+                🇶🇦 قطر
+            </button>
+
+            <button class="filter" data-country="الأردن">
+                🇯🇴 الأردن
+            </button>
+
+            <button class="filter" data-country="تركيا">
+                🇹🇷 تركيا
+            </button>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ================= الواجهة ================= -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="badge">
+                PUBG MARKET
+            </span>
+
+            <h1>
+                كل ما تحتاجه
+                <span>لببجي</span>
+            </h1>
+
+            <p>
+                حسابات ببجي، شدات UC ورويال باس.
+                اختر المنتج المناسب لك وتواصل معنا مباشرة عبر WhatsApp.
+            </p>
+
+            <div class="hero-actions" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 20px;">
+                <a href="#products" class="main-button" style="margin-top: 0;">
+                    تصفح المتجر
+                </a>
+
+                <!-- البحث -->
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="ابحث عن حساب أو شدات أو رويال باس...">
+                    <button id="searchButton">
+                        بحث
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= المنتجات ================= -->
+
+    <main class="container" id="products">
+
+        <div class="section-title">
+
+            <div>
+                <span>
+                    المتجر
+                </span>
+                <h2>
+                    منتجات PUBG
+                </h2>
+            </div>
+
+            <p id="accountCount">
+                0 منتج
+            </p>
+
+        </div>
+
+
+        <!-- أنواع المنتجات -->
+
+        <div class="product-filters">
+
+            <button class="product-filter active" data-type="all">
+                الكل
+            </button>
+
+            <button class="product-filter" data-type="حساب">
+                حسابات
+            </button>
+
+            <button class="product-filter" data-type="UC">
+                شدات UC
+            </button>
+
+            <button class="product-filter" data-type="Royale Pass">
+                Royale Pass
+            </button>
+
+        </div>
+
+
+        <div id="accountsContainer" class="accounts-grid">
+        </div>
+
+
+        <div id="emptyMessage" class="empty hidden">
+            <h3>
+                لا توجد منتجات
+            </h3>
+            <p>
+                لم يتم العثور على منتجات مطابقة للبحث.
+            </p>
+        </div>
+
+    </main>
+
+
+    <!-- ================= نافذة التفاصيل ================= -->
+
+    <div id="detailsModal" class="modal hidden">
+
+        <div class="modal-content">
+
+            <button class="close" onclick="closeModal('detailsModal')">
+                ×
+            </button>
+
+            <div id="detailsContent"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= نافذة الشراء ================= -->
+
+    <div id="buyModal" class="modal hidden">
+
+        <div class="modal-content buy-modal-card">
+
+            <button class="close" onclick="closeModal('buyModal')">
+                ×
+            </button>
+
+            <div class="modal-header">
+                <span class="modal-badge">تأكيد الطلب</span>
+                <h2>طلب شراء</h2>
+            </div>
+
+            <div id="buyInfo" class="buy-info-box"></div>
+
+            <form id="buyForm" class="buy-form">
+
+                <div class="input-group">
+                    <label for="buyerName">الاسم الكامل</label>
+                    <input id="buyerName" type="text" required placeholder="اكتب اسمك الكامل">
+                </div>
+
+                <div class="input-group">
+                    <label for="buyerEmail">البريد الإلكتروني</label>
+                    <input id="buyerEmail" type="email" required placeholder="example@email.com">
+                </div>
+
+                <div class="input-group">
+                    <label for="buyerPhone">رقم الهاتف (واتساب)</label>
+                    <input id="buyerPhone" type="tel" required placeholder="+90...">
+                </div>
+
+                <div class="payment-section">
+                    <h3>طريقة الدفع</h3>
+
+                    <div class="payment-methods">
+
+                        <button type="button" class="payment active" data-payment="تحويل بنكي">
+                            <span>تحويل بنكي</span>
+                        </button>
+
+                        <button type="button" class="payment" data-payment="محفظة إلكترونية">
+                            <span>محفظة إلكترونية</span>
+                        </button>
+
+                    </div>
+                </div>
+
+                <button type="submit" class="main-button full submit-buy-btn">
+                    <span>متابعة عبر WhatsApp</span>
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= لوحة التحكم ================= -->
+
+    <div id="adminModal" class="modal hidden">
+
+        <div class="modal-content admin">
+
+            <button class="close" onclick="closeModal('adminModal')">
+                ×
+            </button>
+
+            <h2>
+                لوحة التحكم
+            </h2>
+
+            <p class="muted">
+                إضافة وتعديل وحذف حسابات وUC وRoyale Pass.
+            </p>
+
+            <div class="data-transfer">
+                <button type="button" class="btn-new" id="exportDataButton">تصدير المنتجات والصور</button>
+                <button type="button" class="btn-new" id="importDataButton">استيراد نسخة من جهاز آخر</button>
+                <input id="importDataFile" type="file" accept="application/json" hidden>
+                <small class="muted">استخدم التصدير على اللابتوب ثم الاستيراد على الجهاز الآخر لنقل المنتجات والصور.</small>
+            </div>
+
+
+            <form id="accountForm">
+
+                <input type="hidden" id="editId">
+
+                <!-- ===== العمود الأيمن (4 حقول) ===== -->
+
+                <!-- 1. نوع المنتج -->
+                <label>
+                    نوع المنتج
+                    <select id="accountType">
+                        <option value="حساب">حساب PUBG</option>
+                        <option value="UC">شدات PUBG UC</option>
+                        <option value="Royale Pass">Royale Pass</option>
+                    </select>
+                </label>
+
+                <!-- ===== العمود الأيسر (3 حقول + اختيار الصور بجانب صور المنتج) ===== -->
+
+                <!-- 5. العملة -->
+                <label>
+                    العملة
+                    <select id="accountCurrency">
+                        <option value="QAR">ريال قطري QAR</option>
+                        <option value="JOD">دينار أردني JOD</option>
+                        <option value="TRY">ليرة تركية TRY</option>
+                    </select>
+                </label>
+
+                <!-- 2. اسم المنتج -->
+                <label>
+                    اسم المنتج
+                    <input id="accountName" type="text" required placeholder="مثال: حساب لفل 70 / 660 UC / Royale Pass">
+                </label>
+
+                <!-- 6. الكمية / المستوى -->
+                <label>
+                    الكمية / المستوى
+                    <input id="accountQuantity" type="text" placeholder="مثال: 660 UC أو لفل 70">
+                </label>
+
+                <!-- 3. الدولة -->
+                <label>
+                    الدولة
+                    <select id="accountCountry">
+                        <option value="قطر">🇶🇦 قطر</option>
+                        <option value="الأردن">🇯🇴 الأردن</option>
+                        <option value="تركيا">🇹🇷 تركيا</option>
+                    </select>
+                </label>
+
+                <!-- 7. وصف المنتج -->
+                <label>
+                    وصف المنتج
+                    <textarea id="accountDescription" rows="3" placeholder="اكتب تفاصيل المنتج هنا..."></textarea>
+                </label>
+
+                <!-- 4. السعر -->
+                <label>
+                    السعر
+                    <input id="accountPrice" type="number" required min="0" placeholder="100">
+                </label>
+
+                <!-- 8. صور المنتج (التسمية وزر اختيارات الصور بجانب بعض بفضل الـ CSS) -->
+                <label>
+                    صور المنتج
+                    <small class="muted" style="font-weight: normal; font-size: 11px; display: block;">تستطيع اختيار حتى 10 صور.</small>
+                </label>
+
+                <div class="file-input-wrapper">
+                    <input id="accountImages" type="file" accept="image/*" multiple>
+                </div>
+
+                <!-- معاينة الصور والأزرار وتأخذ العرض الكامل -->
+                <div id="imagePreview" class="image-preview"></div>
+
+                <div class="admin-form-actions">
+                    <button type="submit" class="btn-save">حفظ المنتج</button>
+                    <button type="button" class="btn-new" onclick="resetForm()">منتج جديد</button>
+                </div>
+
+            </form>
+
+
+            <hr>
+
+
+            <h3>
+                المنتجات الموجودة
+            </h3>
+
+            <div id="adminAccounts"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= الفوتر ================= -->
+
+    <footer>
+
+        <strong>
+            PUBG Market
+        </strong>
+
+        <p>
+            حسابات PUBG • UC • Royale Pass
+            — قطر • الأردن • تركيا
+        </p>
+
+    </footer>
+
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
