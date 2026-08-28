@@ -40,6 +40,38 @@ body {
     border-bottom: 1px solid #1b2a3e;
 }
 
+.auth-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-button {
+    padding: 9px 13px;
+    border: 1px solid #25364d;
+    border-radius: 9px;
+    background: transparent;
+    color: #d8e2ef;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.auth-button.primary {
+    border-color: #53df91;
+    background: #53df91;
+    color: #03120b;
+    font-weight: bold;
+}
+
+.user-greeting {
+    color: #53df91;
+    font-size: 13px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 
 /* ================= اللوجو ================= */
 
@@ -1008,6 +1040,10 @@ footer strong {
         align-items: stretch;
     }
 
+    .auth-actions {
+        justify-content: center;
+    }
+
     .countries {
         justify-content: center;
     }
@@ -1053,4 +1089,86 @@ footer strong {
         align-items: flex-start;
         gap: 12px;
     }
+}
+
+.auth-modal {
+    width: min(430px, 100%);
+}
+
+.google-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #25364d;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #17202a;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.google-icon {
+    color: #4285f4;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0;
+    color: #8493a8;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: #25364d;
+}
+
+.auth-form {
+    display: grid;
+    gap: 14px;
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-left: 44px;
+}
+
+.password-toggle {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: #8493a8;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.auth-message {
+    min-height: 20px;
+    color: #ff8d8d;
+    font-size: 13px;
+    text-align: center;
+}
+
+.auth-switch {
+    width: 100%;
+    margin-top: 16px;
+    border: 0;
+    background: transparent;
+    color: #43a8ff;
+    cursor: pointer;
 }

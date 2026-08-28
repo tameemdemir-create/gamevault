@@ -25,11 +25,15 @@ const firebaseReady =
     && FIREBASE_CONFIG.databaseURL
     && !FIREBASE_CONFIG.databaseURL.startsWith("ضع_");
 
+let auth = null;
+let authMode = "login";
+
 let remoteAccounts = null;
 
 if (firebaseReady) {
     firebase.initializeApp(FIREBASE_CONFIG);
     remoteAccounts = firebase.database().ref("products");
+    auth = firebase.auth();
 }
 
 let currentAccount = null;
@@ -108,6 +112,110 @@ function openModal(id) {
 function closeModal(id) {
     $(id).classList.add("hidden");
 }
+
+function openAuth(mode) {
+    authMode = mode;
+    $("authTitle").textContent = mode === "login" ? "تسجيل الدخول" : "إنشاء حساب";
+    $("authNameGroup").classList.toggle("hidden", mode === "login");
+    $("authPassword").autocomplete = mode === "login" ? "current-password" : "new-password";
+    $("authSubmit").textContent = mode === "login" ? "تسجيل الدخول" : "إنشاء حساب";
+    $("authSwitch").textContent = mode === "login" ? "ليس لديك حساب؟ إنشاء حساب" : "لديك حساب؟ تسجيل الدخول";
+    $("authMessage").textContent = "";
+    openModal("authModal");
+}
+
+function authErrorMessage(error) {
+    const messages = {
+        "auth/email-already-in-use": "هذا البريد مستخدم من قبل.",
+        "auth/invalid-email": "البريد الإلكتروني غير صالح.",
+        "auth/weak-password": "كلمة السر يجب أن تكون 6 أحرف على الأقل.",
+        "auth/user-not-found": "لا يوجد حساب بهذا البريد.",
+        "auth/wrong-password": "البريد أو كلمة السر غير صحيحة.",
+        "auth/popup-closed-by-user": "تم إغلاق نافذة Google.",
+        "auth/operation-not-allowed": "يجب تفعيل طريقة الدخول من Firebase."
+    };
+    return messages[error.code] || `حدث خطأ (${error.code || "غير معروف"}).`;
+}
+
+function updateAuthUI(user) {
+    $("loginButton").classList.toggle("hidden", Boolean(user));
+    $("registerButton").classList.toggle("hidden", Boolean(user));
+    $("logoutButton").classList.toggle("hidden", !user);
+    $("userGreeting").classList.toggle("hidden", !user);
+    if (user) {
+        $("userGreeting").textContent = `مرحبًا ${user.displayName || user.email}`;
+    }
+}
+
+if (auth) {
+    auth.onAuthStateChanged(updateAuthUI);
+    auth.getRedirectResult().catch(error => {
+        $("authMessage").textContent = authErrorMessage(error);
+    });
+}
+
+$("loginButton").addEventListener("click", () => openAuth("login"));
+$("registerButton").addEventListener("click", () => openAuth("register"));
+$("logoutButton").addEventListener("click", () => auth.signOut());
+
+$("authSwitch").addEventListener("click", () => {
+    openAuth(authMode === "login" ? "register" : "login");
+});
+
+$("passwordToggle").addEventListener("click", () => {
+    const password = $("authPassword");
+    const isVisible = password.type === "text";
+    password.type = isVisible ? "password" : "text";
+    $("passwordToggle").textContent = isVisible ? "◉" : "○";
+    $("passwordToggle").setAttribute("aria-label", isVisible ? "إظهار كلمة السر" : "إخفاء كلمة السر");
+});
+
+$("googleLoginButton").addEventListener("click", async () => {
+    if (!auth) {
+        $("authMessage").textContent = "إعدادات Firebase غير مكتملة.";
+        return;
+    }
+
+    try {
+        await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        closeModal("authModal");
+    } catch (error) {
+        if (error.code === "auth/popup-blocked" || error.code === "auth/popup-closed-by-user") {
+            await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+            return;
+        }
+        $("authMessage").textContent = authErrorMessage(error);
+    }
+});
+
+$("authForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!auth) {
+        $("authMessage").textContent = "إعدادات Firebase غير مكتملة.";
+        return;
+    }
+
+    const email = $("authEmail").value.trim();
+    const password = $("authPassword").value;
+    const name = $("authName").value.trim();
+
+    try {
+        if (authMode === "register") {
+            const result = await auth.createUserWithEmailAndPassword(email, password);
+            if (name) {
+                await result.user.updateProfile({ displayName: name });
+            }
+        } else {
+            await auth.signInWithEmailAndPassword(email, password);
+        }
+
+        event.target.reset();
+        closeModal("authModal");
+    } catch (error) {
+        $("authMessage").textContent = authErrorMessage(error);
+    }
+});
 
 function formatPrice(price, currency) {
     return Number(price).toLocaleString("ar-EG") + " " + currency;

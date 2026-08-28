@@ -45,6 +45,13 @@
 
         </nav>
 
+        <div class="auth-actions">
+            <button type="button" class="auth-button" id="loginButton">تسجيل الدخول</button>
+            <button type="button" class="auth-button primary" id="registerButton">إنشاء حساب</button>
+            <button type="button" class="auth-button hidden" id="logoutButton">تسجيل الخروج</button>
+            <span id="userGreeting" class="user-greeting hidden"></span>
+        </div>
+
     </header>
 
 
@@ -159,6 +166,53 @@
             </button>
 
             <div id="detailsContent"></div>
+
+        </div>
+
+    </div>
+
+    <div id="authModal" class="modal hidden">
+
+        <div class="modal-content auth-modal">
+
+            <button class="close" type="button" onclick="closeModal('authModal')">×</button>
+
+            <div class="modal-header">
+                <span class="modal-badge">PUBG MARKET</span>
+                <h2 id="authTitle">تسجيل الدخول</h2>
+            </div>
+
+            <button type="button" class="google-button" id="googleLoginButton">
+                <span class="google-icon">G</span>
+                المتابعة باستخدام Google
+            </button>
+
+            <div class="auth-divider"><span>أو</span></div>
+
+            <form id="authForm" class="auth-form">
+                <div class="input-group hidden" id="authNameGroup">
+                    <label for="authName">الاسم</label>
+                    <input id="authName" type="text" autocomplete="name" placeholder="اكتب اسمك">
+                </div>
+
+                <div class="input-group">
+                    <label for="authEmail">البريد الإلكتروني</label>
+                    <input id="authEmail" type="email" required autocomplete="email" placeholder="example@email.com">
+                </div>
+
+                <div class="input-group">
+                    <label for="authPassword">كلمة السر</label>
+                    <div class="password-field">
+                        <input id="authPassword" type="password" required minlength="6" autocomplete="current-password" placeholder="6 أحرف على الأقل">
+                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="إظهار كلمة السر">◉</button>
+                    </div>
+                </div>
+
+                <p id="authMessage" class="auth-message"></p>
+                <button type="submit" class="main-button full" id="authSubmit">تسجيل الدخول</button>
+            </form>
+
+            <button type="button" class="auth-switch" id="authSwitch">ليس لديك حساب؟ إنشاء حساب</button>
 
         </div>
 
@@ -360,6 +414,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="script.js"></script>
 
 </body>
