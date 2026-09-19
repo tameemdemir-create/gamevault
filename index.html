@@ -19,36 +19,25 @@
             <span class="logo-icon">P</span>
             <div>
                 <strong>PUBG Market</strong>
-                <small>متجر ببجي</small>
+                <small data-i18n="storeSubtitle">متجر ببجي</small>
             </div>
         </div>
 
-        <!-- الدول -->
-
         <nav class="countries">
-
-            <button class="filter active" data-country="all">
-                الكل
-            </button>
-
-            <button class="filter" data-country="قطر">
-                🇶🇦 قطر
-            </button>
-
-            <button class="filter" data-country="الأردن">
-                🇯🇴 الأردن
-            </button>
-
-            <button class="filter" data-country="تركيا">
-                🇹🇷 تركيا
-            </button>
-
+            <label class="country-selector" for="countryFilter">
+                <span data-i18n="countryFilter">الدولة</span>
+                <select id="countryFilter" class="filter">
+                    <option value="all" data-i18n="allCountries">كل الدول</option>
+                </select>
+            </label>
         </nav>
 
         <div class="auth-actions">
-            <button type="button" class="auth-button" id="loginButton">تسجيل الدخول</button>
-            <button type="button" class="auth-button primary" id="registerButton">إنشاء حساب</button>
-            <button type="button" class="auth-button hidden" id="logoutButton">تسجيل الخروج</button>
+            <button type="button" class="auth-button language-button" id="languageToggle">English</button>
+            <button type="button" class="auth-button" id="loginButton" data-i18n="login">تسجيل الدخول</button>
+            <button type="button" class="auth-button primary" id="registerButton" data-i18n="register">إنشاء حساب</button>
+            <button type="button" class="auth-button hidden" id="logoutButton" data-i18n="logout">تسجيل الخروج</button>
+            <img id="userAvatar" class="user-avatar hidden" alt="">
             <span id="userGreeting" class="user-greeting hidden"></span>
         </div>
 
@@ -61,29 +50,28 @@
 
         <div class="hero-content">
 
-            <span class="badge">
+            <span class="badge" data-i18n="badge">
                 PUBG MARKET
             </span>
 
             <h1>
-                كل ما تحتاجه
-                <span>لببجي</span>
+                <span data-i18n="heroTitle">كل ما تحتاجه</span>
+                <span data-i18n="heroTitleAccent">لببجي</span>
             </h1>
 
             <p>
-                حسابات ببجي، شدات UC ورويال باس.
-                اختر المنتج المناسب لك وتواصل معنا مباشرة عبر WhatsApp.
+                <span data-i18n="heroDescription">حسابات ببجي، شدات UC ورويال باس.</span>
             </p>
 
             <div class="hero-actions" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 20px;">
                 <a href="#products" class="main-button" style="margin-top: 0;">
-                    تصفح المتجر
+                    <span data-i18n="browseStore">تصفح المتجر</span>
                 </a>
 
                 <!-- البحث -->
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="ابحث عن حساب أو شدات أو رويال باس...">
-                    <button id="searchButton">
+                    <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder" placeholder="ابحث عن حساب أو شدات أو رويال باس...">
+                    <button id="searchButton" data-i18n="search">
                         بحث
                     </button>
                 </div>
@@ -102,15 +90,15 @@
 
             <div>
                 <span>
-                    المتجر
+                    <span data-i18n="store">المتجر</span>
                 </span>
                 <h2>
-                    منتجات PUBG
+                    <span data-i18n="products">منتجات PUBG</span>
                 </h2>
             </div>
 
             <p id="accountCount">
-                0 منتج
+                <span data-i18n="productCount" data-count="0">0 منتج</span>
             </p>
 
         </div>
@@ -121,19 +109,19 @@
         <div class="product-filters">
 
             <button class="product-filter active" data-type="all">
-                الكل
+                <span data-i18n="all">الكل</span>
             </button>
 
             <button class="product-filter" data-type="حساب">
-                حسابات
+                <span data-i18n="accounts">حسابات</span>
             </button>
 
             <button class="product-filter" data-type="UC">
-                شدات UC
+                <span data-i18n="uc">شدات UC</span>
             </button>
 
             <button class="product-filter" data-type="Royale Pass">
-                Royale Pass
+                <span data-i18n="royalePass">Royale Pass</span>
             </button>
 
         </div>
@@ -145,10 +133,10 @@
 
         <div id="emptyMessage" class="empty hidden">
             <h3>
-                لا توجد منتجات
+                <span data-i18n="noProducts">لا توجد منتجات</span>
             </h3>
             <p>
-                لم يتم العثور على منتجات مطابقة للبحث.
+                <span data-i18n="noProductsDescription">لم يتم العثور على منتجات مطابقة للبحث.</span>
             </p>
         </div>
 
@@ -175,43 +163,54 @@
 
         <div class="modal-content auth-modal">
 
-            <button class="close" type="button" onclick="closeModal('authModal')">×</button>
+                <button class="close" type="button" onclick="closeModal('authModal')">×</button>
 
             <div class="modal-header">
                 <span class="modal-badge">PUBG MARKET</span>
-                <h2 id="authTitle">تسجيل الدخول</h2>
+                <h2 id="authTitle" data-i18n="login">تسجيل الدخول</h2>
             </div>
 
-            <button type="button" class="google-button" id="googleLoginButton">
+                <button type="button" class="google-button" id="googleLoginButton">
                 <span class="google-icon">G</span>
-                المتابعة باستخدام Google
+                <span data-i18n="continueGoogle">المتابعة باستخدام Google</span>
             </button>
 
-            <div class="auth-divider"><span>أو</span></div>
+            <div class="auth-divider"><span data-i18n="or">أو</span></div>
 
             <form id="authForm" class="auth-form">
                 <div class="input-group hidden" id="authNameGroup">
-                    <label for="authName">الاسم</label>
-                    <input id="authName" type="text" autocomplete="name" placeholder="اكتب اسمك">
+                    <label for="authName" data-i18n="authName">الاسم</label>
+                    <input id="authName" type="text" autocomplete="name" data-i18n-placeholder="namePlaceholder" placeholder="اكتب اسمك">
+                </div>
+
+                <div class="input-group hidden" id="authPhotoGroup">
+                    <label for="authPhoto" data-i18n="profilePhoto">الصورة الشخصية</label>
+                    <input id="authPhoto" type="file" accept="image/*">
+                    <img id="authPhotoPreview" class="auth-photo-preview hidden" alt="">
                 </div>
 
                 <div class="input-group">
-                    <label for="authEmail">البريد الإلكتروني</label>
+                    <label for="authEmail" data-i18n="email">البريد الإلكتروني</label>
                     <input id="authEmail" type="email" required autocomplete="email" placeholder="example@email.com">
                 </div>
 
                 <div class="input-group">
-                    <label for="authPassword">كلمة السر</label>
+                    <label for="authPassword" data-i18n="password">كلمة السر</label>
                     <div class="password-field">
-                        <input id="authPassword" type="password" required minlength="6" autocomplete="current-password" placeholder="6 أحرف على الأقل">
+                        <input id="authPassword" type="password" required minlength="6" autocomplete="current-password" data-i18n-placeholder="passwordPlaceholder" placeholder="6 أحرف على الأقل">
                         <button type="button" class="password-toggle" id="passwordToggle" aria-label="إظهار كلمة السر">◉</button>
                     </div>
                 </div>
 
-                <button type="button" class="forgot-password" id="forgotPassword">نسيت كلمة السر؟</button>
+                <div class="input-group hidden" id="authPasswordConfirmGroup">
+                    <label for="authPasswordConfirm" data-i18n="confirmPassword">تأكيد كلمة السر</label>
+                    <input id="authPasswordConfirm" type="password" minlength="6" autocomplete="new-password" data-i18n-placeholder="confirmPasswordPlaceholder" placeholder="أعد كتابة كلمة السر">
+                </div>
+
+                <button type="button" class="forgot-password" id="forgotPassword" data-i18n="forgotPassword">نسيت كلمة السر؟</button>
 
                 <p id="authMessage" class="auth-message"></p>
-                <button type="submit" class="main-button full" id="authSubmit">تسجيل الدخول</button>
+                <button type="submit" class="main-button full" id="authSubmit" data-i18n="login">تسجيل الدخول</button>
             </form>
 
             <button type="button" class="auth-switch" id="authSwitch">ليس لديك حساب؟ إنشاء حساب</button>
@@ -232,44 +231,60 @@
             </button>
 
             <div class="modal-header">
-                <span class="modal-badge">تأكيد الطلب</span>
-                <h2>طلب شراء</h2>
+                <span class="modal-badge" data-i18n="orderConfirmation">تأكيد الطلب</span>
+                <h2 data-i18n="purchaseOrder">طلب شراء</h2>
             </div>
 
             <div id="buyInfo" class="buy-info-box"></div>
 
-            <form id="buyForm" class="buy-form">
+            <form id="buyForm" class="paytr-form">
 
-                <div class="input-group">
-                    <label for="buyerName">الاسم الكامل</label>
-                    <input id="buyerName" type="text" required placeholder="اكتب اسمك الكامل">
-                </div>
+                <div class="paytr-shell">
+                    <div class="paytr-panel brand-panel">
+                        <div class="paytr-brand" data-i18n="bankCard">بطاقة بنكية</div>
+                        <p class="paytr-tag" data-i18n="securePayment">دفع آمن</p>
+                        <div class="paytr-trust">
+                            <span data-i18n="securityConfirmed">🔒 تأكيد الحماية</span>
+                            <span data-i18n="fastProcessing">⚡ معالجة سريعة</span>
+                            <span data-i18n="trusted">✅ موثوق</span>
+                        </div>
+                    </div>
 
-                <div class="input-group">
-                    <label for="buyerEmail">البريد الإلكتروني</label>
-                    <input id="buyerEmail" type="email" required placeholder="example@email.com">
-                </div>
+                    <div class="paytr-panel form-panel">
+                        <div class="input-group">
+                            <label for="buyerEmail" data-i18n="email">البريد الإلكتروني</label>
+                            <input id="buyerEmail" type="email" required placeholder="example@email.com" autocomplete="email">
+                        </div>
 
-                <div class="input-group">
-                    <label for="buyerPhone">رقم الهاتف (واتساب)</label>
-                    <input id="buyerPhone" type="tel" required placeholder="+90...">
-                </div>
+                        <div class="input-group">
+                            <label for="cardNumber" data-i18n="cardNumber">رقم البطاقة</label>
+                            <input id="cardNumber" type="text" required inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="cc-number">
+                        </div>
 
-                <div class="payment-section">
-                    <h3>طريقة الدفع</h3>
-                    <div class="payment-methods">
-                        <button type="button" class="payment active" data-payment="تحويل بنكي">
-                            تحويل بنكي
-                        </button>
-                        <button type="button" class="payment" data-payment="محفظة إلكترونية">
-                            محفظة إلكترونية
-                        </button>
+                        <div class="paytr-row">
+                            <div class="input-group">
+                                <label for="cardExpiry" data-i18n="expiryDate">تاريخ الانتهاء</label>
+                                <input id="cardExpiry" type="text" required maxlength="5" placeholder="MM/YY" autocomplete="cc-exp">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="cardCvv" data-i18n="cvv">الرمز الثلاثي</label>
+                                <input id="cardCvv" type="password" required maxlength="4" placeholder="CVV" inputmode="numeric" autocomplete="cc-csc">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="cardName" data-i18n="cardholderName">اسم حامل البطاقة</label>
+                            <input id="cardName" type="text" required data-i18n-placeholder="cardholderPlaceholder" placeholder="اسم صاحب البطاقة" autocomplete="cc-name">
+                        </div>
                     </div>
                 </div>
 
                 <button type="submit" class="main-button full submit-buy-btn">
-                    <span>متابعة عبر WhatsApp</span>
+                    <span data-i18n="payNow">دفع الآن</span>
                 </button>
+
+                <p class="paytr-note" data-i18n="paymentNote">سيتم إرسال تفاصيل حساب PUBG إلى بريدك الإلكتروني المسجل في الطلب.</p>
 
             </form>
 
@@ -289,11 +304,11 @@
             </button>
 
             <h2>
-                لوحة التحكم
+                <span data-i18n="adminPanel">لوحة التحكم</span>
             </h2>
 
             <p class="muted">
-                إضافة وتعديل وحذف حسابات وUC وRoyale Pass.
+                <span data-i18n="adminDescription">إضافة وتعديل وحذف حسابات وUC وRoyale Pass.</span>
             </p>
 
 
@@ -301,14 +316,34 @@
 
                 <input type="hidden" id="editId">
 
+                <div class="admin-settings-section">
+                    <h3 data-i18n="pubgCredentials">بيانات حساب PUBG</h3>
+
+                    <div class="settings-grid">
+                        <label>
+                            <span data-i18n="gameEmail">إيميل حساب PUBG</span>
+                            <input id="gameAccountEmail" type="email" data-i18n-placeholder="gameEmailPlaceholder" placeholder="pubg@example.com">
+                        </label>
+
+                        <label>
+                            <span data-i18n="gamePassword">كلمة سر حساب PUBG</span>
+                            <input id="gameAccountPassword" type="password" data-i18n-placeholder="passwordPlaceholder" placeholder="كلمة السر">
+                        </label>
+                    </div>
+
+                    <div class="admin-form-actions compact-actions">
+                        <button type="button" class="btn-save" id="saveGameCredentialsButton" data-i18n="saveCredentials">حفظ بيانات الحساب</button>
+                    </div>
+                </div>
+
                 <!-- ===== العمود الأيمن (4 حقول) ===== -->
 
                 <!-- 1. نوع المنتج -->
                 <label>
-                    نوع المنتج
+                    <span data-i18n="productType">نوع المنتج</span>
                     <select id="accountType">
-                        <option value="حساب">حساب PUBG</option>
-                        <option value="UC">شدات PUBG UC</option>
+                        <option value="حساب" data-i18n="pubgAccount">حساب PUBG</option>
+                        <option value="UC" data-i18n="ucTopUp">شدات PUBG UC</option>
                         <option value="Royale Pass">Royale Pass</option>
                     </select>
                 </label>
@@ -317,52 +352,48 @@
 
                 <!-- 5. العملة -->
                 <label>
-                    العملة
+                    <span data-i18n="currency">العملة</span>
                     <select id="accountCurrency">
-                        <option value="QAR">ريال قطري QAR</option>
-                        <option value="JOD">دينار أردني JOD</option>
-                        <option value="TRY">ليرة تركية TRY</option>
+                        <option value="USD">US Dollar (USD)</option>
                     </select>
                 </label>
 
                 <!-- 2. اسم المنتج -->
                 <label>
-                    اسم المنتج
-                    <input id="accountName" type="text" required placeholder="مثال: حساب لفل 70 / 660 UC / Royale Pass">
+                    <span data-i18n="productName">اسم المنتج</span>
+                    <input id="accountName" type="text" required data-i18n-placeholder="productNamePlaceholder" placeholder="مثال: حساب لفل 70 / 660 UC / Royale Pass">
                 </label>
 
                 <!-- 6. الكمية / المستوى -->
                 <label>
-                    الكمية / المستوى
-                    <input id="accountQuantity" type="text" placeholder="مثال: 660 UC أو لفل 70">
+                    <span data-i18n="quantityLevel">الكمية / المستوى</span>
+                    <input id="accountQuantity" type="text" data-i18n-placeholder="quantityPlaceholder" placeholder="مثال: 660 UC أو لفل 70">
                 </label>
 
                 <!-- 3. الدولة -->
                 <label>
-                    الدولة
+                    <span data-i18n="country">الدولة</span>
                     <select id="accountCountry">
-                        <option value="قطر">🇶🇦 قطر</option>
-                        <option value="الأردن">🇯🇴 الأردن</option>
-                        <option value="تركيا">🇹🇷 تركيا</option>
+                        <option value="QA">🇶🇦 قطر</option>
                     </select>
                 </label>
 
                 <!-- 7. وصف المنتج -->
                 <label>
-                    وصف المنتج
-                    <textarea id="accountDescription" rows="3" placeholder="اكتب تفاصيل المنتج هنا..."></textarea>
+                    <span data-i18n="productDescription">وصف المنتج</span>
+                    <textarea id="accountDescription" rows="3" data-i18n-placeholder="descriptionPlaceholder" placeholder="اكتب تفاصيل المنتج هنا..."></textarea>
                 </label>
 
                 <!-- 4. السعر -->
                 <label>
-                    السعر
+                    <span data-i18n="price">السعر</span>
                     <input id="accountPrice" type="number" required min="0" placeholder="100">
                 </label>
 
                 <!-- 8. صور المنتج (التسمية وزر اختيارات الصور بجانب بعض بفضل الـ CSS) -->
                 <label>
-                    صور المنتج
-                    <small class="muted" style="font-weight: normal; font-size: 11px; display: block;">تستطيع اختيار حتى 10 صور.</small>
+                    <span data-i18n="productImages">صور المنتج</span>
+                    <small class="muted" data-i18n="imageLimit" style="font-weight: normal; font-size: 11px; display: block;">تستطيع اختيار حتى 10 صور.</small>
                 </label>
 
                 <div class="file-input-wrapper">
@@ -373,8 +404,8 @@
                 <div id="imagePreview" class="image-preview"></div>
 
                 <div class="admin-form-actions">
-                    <button type="submit" class="btn-save">حفظ المنتج</button>
-                    <button type="button" class="btn-new" onclick="resetForm()">منتج جديد</button>
+                    <button type="submit" class="btn-save" data-i18n="saveProduct">حفظ المنتج</button>
+                    <button type="button" class="btn-new" onclick="resetForm()" data-i18n="newProduct">منتج جديد</button>
                 </div>
 
             </form>
@@ -384,7 +415,7 @@
 
 
             <h3>
-                المنتجات الموجودة
+                <span data-i18n="existingProducts">المنتجات الموجودة</span>
             </h3>
 
             <div id="adminAccounts"></div>
@@ -403,8 +434,7 @@
         </strong>
 
         <p>
-            حسابات PUBG • UC • Royale Pass
-            — قطر • الأردن • تركيا
+            <span data-i18n="footerText">حسابات PUBG • UC • Royale Pass — كل الدول والعملات</span>
         </p>
 
     </footer>

@@ -155,6 +155,37 @@ body {
     flex-wrap: wrap;
 }
 
+.country-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8493a8;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.country-selector select {
+    min-width: 170px;
+    max-width: 230px;
+    border: 1px solid #25364d;
+    background: #071322;
+    color: white;
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    outline: none;
+}
+
+.country-selector select:focus {
+    border-color: #53df91;
+}
+
+.language-button {
+    border-color: #43a8ff;
+    color: #8ecaff;
+    font-weight: bold;
+}
+
 .filter {
     border: 0;
     background: transparent;
@@ -941,9 +972,103 @@ body {
     color: #53df91;
 }
 
+.paytr-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.paytr-shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 18px;
+    margin-top: 12px;
+}
+
+.paytr-panel {
+    background: rgba(6, 17, 30, 0.8);
+    border: 1px solid #1b2a3e;
+    border-radius: 18px;
+    padding: 18px;
+}
+
+.brand-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(28, 70, 68, 0.82), rgba(7, 18, 32, 0.9));
+    border-color: rgba(83, 223, 145, 0.4);
+}
+
+.paytr-brand {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #53df91;
+    margin-bottom: 8px;
+}
+
+.paytr-tag {
+    font-size: 12px;
+    color: #cfd9e6;
+    margin-bottom: 16px;
+}
+
+.paytr-trust {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.form-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.paytr-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.paytr-note {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.admin-settings-section {
+    grid-column: 1 / -1;
+    background: rgba(6, 17, 30, 0.55);
+    border: 1px solid #1b2a3e;
+    border-radius: 16px;
+    padding: 18px;
+}
+
+.admin-settings-section h3 {
+    margin-bottom: 14px;
+    color: #53df91;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 24px;
+}
+
+.compact-actions {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #1b2a3e;
+}
+
 .submit-buy-btn {
-    margin-top: 10px;
-    height: 48px;
+    margin-top: 4px;
+    height: 52px;
     font-size: 15px;
     display: flex;
     align-items: center;
@@ -1168,4 +1293,21 @@ footer strong {
     background: transparent;
     color: #43a8ff;
     cursor: pointer;
+}
+
+.user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #53df91;
+}
+
+.auth-photo-preview {
+    width: 72px;
+    height: 72px;
+    margin-top: 4px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #53df91;
 }

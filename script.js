@@ -5,8 +5,239 @@
 const ADMIN_CODE = "24680";
 
 const STORAGE_KEY = "PUBG_MARKET_ACCOUNTS";
+const SETTINGS_KEY = "PUBG_MARKET_SETTINGS";
 
 const WHATSAPP_NUMBER = "9620792077942";
+
+const COUNTRY_CODES = `AF AL DZ AS AD AO AI AQ AG AR AM AW AU AT AZ BS BH BD BB BY BE BZ BJ BM BT BO BQ BA BW BV BR IO BN BG BF BI CV KH CM CA KY CF TD CL CN CX CC CO KM CG CD CK CR CI HR CU CW CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FK FO FJ FI FR GF PF TF GA GM GE DE GH GI GR GL GD GP GU GT GG GN GW GY HT HM VA HN HK HU IS IN ID IR IQ IE IM IL IT JM JP JE JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MQ MR MU YT MX FM MD MC MN ME MS MA MZ MM NA NR NP NL NC NZ NI NE NG NU NF MK MP NO OM PK PW PS PA PG PY PE PH PN PL PT PR QA RE RO RU RW BL SH KN LC MF PM VC WS SM ST SA SN RS SC SL SG SX SK SI SB SO ZA GS SS ES LK SD SR SJ SE CH SY TW TJ TZ TH TL TG TK TO TT TN TR TM TC TV UG UA AE GB US UM UY UZ VU VE VN VG VI WF EH YE ZM ZW` .split(" ");
+
+const COUNTRY_ALIASES = {
+    "قطر": "QA",
+    "الأردن": "JO",
+    "تركيا": "TR"
+};
+
+const I18N = {
+    ar: {
+        badge: "PUBG MARKET", storeSubtitle: "متجر ببجي", heroTitle: "كل ما تحتاجه", heroTitleAccent: "لببجي",
+        heroDescription: "حسابات ببجي، شدات UC ورويال باس.", browseStore: "تصفح المتجر",
+        searchPlaceholder: "ابحث عن حساب أو شدات أو رويال باس...", search: "بحث", store: "المتجر",
+        products: "منتجات PUBG", productCount: "{count} منتج", all: "الكل", accounts: "حسابات",
+        uc: "شدات UC", royalePass: "Royale Pass", noProducts: "لا توجد منتجات",
+        noProductsDescription: "لم يتم العثور على منتجات مطابقة للبحث.", countryFilter: "الدولة",
+        allCountries: "كل الدول", login: "تسجيل الدخول", register: "إنشاء حساب", logout: "تسجيل الخروج",
+        authName: "الاسم", email: "البريد الإلكتروني", password: "كلمة السر", forgotPassword: "نسيت كلمة السر؟",
+        confirmPassword: "تأكيد كلمة السر", confirmPasswordPlaceholder: "أعد كتابة كلمة السر", passwordsDoNotMatch: "كلمتا السر غير متطابقتين.",
+        profilePhoto: "الصورة الشخصية",
+        invalidPhoto: "تعذر قراءة الصورة. اختر صورة أخرى.",
+        continueGoogle: "المتابعة باستخدام Google", or: "أو", createAccountPrompt: "ليس لديك حساب؟ إنشاء حساب",
+        namePlaceholder: "اكتب اسمك", passwordPlaceholder: "6 أحرف على الأقل", orderConfirmation: "تأكيد الطلب",
+        purchaseOrder: "طلب شراء", bankCard: "بطاقة بنكية", securePayment: "دفع آمن", securityConfirmed: "🔒 تأكيد الحماية",
+        fastProcessing: "⚡ معالجة سريعة", trusted: "✅ موثوق", cardNumber: "رقم البطاقة", expiryDate: "تاريخ الانتهاء",
+        cvv: "الرمز الثلاثي", cardholderName: "اسم حامل البطاقة", payNow: "دفع الآن",
+        paymentNote: "سيتم إرسال تفاصيل حساب PUBG إلى بريدك الإلكتروني المسجل في الطلب.", adminPanel: "لوحة التحكم",
+        adminDescription: "إضافة وتعديل وحذف حسابات وUC وRoyale Pass.", paymentSettings: "إعدادات الدفع وحساب PUBG",
+        saveSettings: "حفظ الإعدادات", productType: "نوع المنتج", pubgAccount: "حساب PUBG", ucTopUp: "شدات PUBG UC",
+        currency: "العملة", productName: "اسم المنتج", quantityLevel: "الكمية / المستوى", productDescription: "وصف المنتج",
+        price: "السعر", productImages: "صور المنتج", imageLimit: "تستطيع اختيار حتى 10 صور.", saveProduct: "حفظ المنتج",
+        newProduct: "منتج جديد", existingProducts: "المنتجات الموجودة",
+        gatewayPlaceholder: "اسم البوابة أو الحساب البنكي", ownerPlaceholder: "اسم صاحب الحساب",
+        accountNumberPlaceholder: "123456789", productNamePlaceholder: "مثال: حساب لفل 70 / 660 UC / Royale Pass",
+        quantityPlaceholder: "مثال: 660 UC أو لفل 70", descriptionPlaceholder: "اكتب تفاصيل المنتج هنا...",
+        firebaseConfig: "إعدادات Firebase غير مكتملة.", enterEmail: "اكتب بريدك الإلكتروني أولًا.",
+        resetSent: "تم إرسال رابط تغيير كلمة السر إلى بريدك الإلكتروني.", openBrowser: "افتح الرابط في Chrome أو Edge خارج معاينة VS Code.",
+        openingLogin: "جاري فتح تسجيل الدخول...", saveSettingsSuccess: "تم حفظ إعدادات الدفع وحساب PUBG بنجاح.",
+        uploadError: "تعذر رفع المنتجات الحالية إلى Firebase.", saveFirebaseError: "تعذر حفظ البيانات على Firebase. تحقق من قواعد قاعدة البيانات.",
+        saveProductSuccess: "تم حفظ المنتج بنجاح!", noAdminProducts: "لا توجد منتجات حاليًا.", imageCount: "صور",
+        edit: "تعديل", delete: "حذف", confirmDelete: "هل تريد حذف المنتج {name}؟", incompleteFields: "يرجى إكمال جميع الحقول المطلوبة لإتمام الدفع.",
+        missingGameCredentials: "لم يتم إعداد إيميل أو كلمة سر حساب PUBG من لوحة التحكم. يرجى إدخالهما أولًا.",
+        paymentSuccess: "تم تأكيد الدفع بنجاح.\nستصل بيانات حساب PUBG إلى البريد الإلكتروني: {email}", notSet: "غير محدد",
+        adminCodePrompt: "اكتب كود الإدارة:", wrongAdminCode: "كود الإدارة غير صحيح.",
+        greeting: "مرحبًا {name}", previousImage: "الصورة السابقة", nextImage: "الصورة التالية", closeImages: "إغلاق الصور",
+        genericError: "حدث خطأ ({code}).", showPassword: "إظهار كلمة السر", hidePassword: "إخفاء كلمة السر",
+        receiptSubject: "تأكيد طلب شراء PUBG Market", receiptReady: "تمت معالجة طلبك بنجاح.", customer: "اسم العميل",
+        product: "المنتج", priceLabel: "السعر", cardLastFour: "رقم البطاقة", expiryLabel: "تاريخ الانتهاء",
+        paymentData: "بيانات الدفع", gatewayLabel: "اسم البوابة", ownerLabel: "اسم صاحب الحساب", accountLabel: "رقم الحساب",
+        pubgData: "بيانات حساب PUBG", accountEmailLabel: "إيميل الحساب", accountPasswordLabel: "كلمة السر",
+        receiptFooter: "تم تجهيز الحساب وسيتم تسليمه عبر هذا البريد الإلكتروني.",
+        gatewayName: "اسم البوابة / الحساب البنكي", bankOwner: "اسم صاحب الحساب البنكي", bankAccountNumber: "رقم الحساب البنكي",
+        iban: "IBAN", gameEmail: "إيميل حساب PUBG", gamePassword: "كلمة سر حساب PUBG", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "اسم صاحب البطاقة",
+        pubgCredentials: "بيانات حساب PUBG", saveCredentials: "حفظ بيانات الحساب",
+        details: "التفاصيل", buy: "شراء", noImage: "لا توجد صورة", noDescription: "لا يوجد وصف لهذا المنتج.",
+        type: "النوع", country: "الدولة", buyVia: "شراء", footerText: "حسابات PUBG • UC • Royale Pass — كل الدول والعملات"
+    },
+    en: {
+        badge: "PUBG MARKET", storeSubtitle: "PUBG store", heroTitle: "Everything you need", heroTitleAccent: "for PUBG",
+        heroDescription: "PUBG accounts, UC top-ups, and Royale Pass.", browseStore: "Browse store",
+        searchPlaceholder: "Search for an account, UC, or Royale Pass...", search: "Search", store: "Store",
+        products: "PUBG products", productCount: "{count} products", all: "All", accounts: "Accounts",
+        uc: "UC top-ups", royalePass: "Royale Pass", noProducts: "No products",
+        noProductsDescription: "No products match your search.", countryFilter: "Country",
+        allCountries: "All countries", login: "Log in", register: "Create account", logout: "Log out",
+        authName: "Name", email: "Email", password: "Password", forgotPassword: "Forgot password?",
+        confirmPassword: "Confirm password", confirmPasswordPlaceholder: "Re-enter your password", passwordsDoNotMatch: "The passwords do not match.",
+        profilePhoto: "Profile photo",
+        invalidPhoto: "Could not read the image. Choose another photo.",
+        continueGoogle: "Continue with Google", or: "or", createAccountPrompt: "No account? Create one",
+        namePlaceholder: "Enter your name", passwordPlaceholder: "At least 6 characters", orderConfirmation: "Order confirmation",
+        purchaseOrder: "Purchase order", bankCard: "Bank card", securePayment: "Secure payment", securityConfirmed: "🔒 Security confirmed",
+        fastProcessing: "⚡ Fast processing", trusted: "✅ Trusted", cardNumber: "Card number", expiryDate: "Expiry date",
+        cvv: "CVV", cardholderName: "Cardholder name", payNow: "Pay now",
+        paymentNote: "Your PUBG account details will be sent to the email used for this order.", adminPanel: "Admin panel",
+        adminDescription: "Add, edit, and delete PUBG accounts, UC, and Royale Pass.", paymentSettings: "Payment and PUBG account settings",
+        saveSettings: "Save settings", productType: "Product type", pubgAccount: "PUBG account", ucTopUp: "PUBG UC top-up",
+        currency: "Currency", productName: "Product name", quantityLevel: "Quantity / level", productDescription: "Product description",
+        price: "Price", productImages: "Product images", imageLimit: "You can select up to 10 images.", saveProduct: "Save product",
+        newProduct: "New product", existingProducts: "Existing products",
+        gatewayPlaceholder: "Gateway or bank account name", ownerPlaceholder: "Account owner name",
+        accountNumberPlaceholder: "123456789", productNamePlaceholder: "Example: Level 70 account / 660 UC / Royale Pass",
+        quantityPlaceholder: "Example: 660 UC or level 70", descriptionPlaceholder: "Enter product details...",
+        firebaseConfig: "Firebase settings are incomplete.", enterEmail: "Enter your email first.",
+        resetSent: "A password reset link was sent to your email.", openBrowser: "Open this link in Chrome or Edge outside the VS Code preview.",
+        openingLogin: "Opening sign-in...", saveSettingsSuccess: "Payment and PUBG account settings saved.",
+        uploadError: "Could not upload the current products to Firebase.", saveFirebaseError: "Could not save to Firebase. Check the database rules.",
+        saveProductSuccess: "Product saved successfully!", noAdminProducts: "No products yet.", imageCount: "images",
+        edit: "Edit", delete: "Delete", confirmDelete: "Delete product {name}?", incompleteFields: "Please complete all required fields to finish payment.",
+        missingGameCredentials: "PUBG account email or password is not configured in the admin panel. Add them first.",
+        paymentSuccess: "Payment confirmed.\nYour PUBG account details will be sent to: {email}", notSet: "Not set",
+        adminCodePrompt: "Enter the admin code:", wrongAdminCode: "Incorrect admin code.",
+        greeting: "Hello {name}", previousImage: "Previous image", nextImage: "Next image", closeImages: "Close images",
+        genericError: "An error occurred ({code}).", showPassword: "Show password", hidePassword: "Hide password",
+        receiptSubject: "PUBG Market purchase confirmation", receiptReady: "Your order was processed successfully.", customer: "Customer",
+        product: "Product", priceLabel: "Price", cardLastFour: "Card number", expiryLabel: "Expiry date",
+        paymentData: "Payment details", gatewayLabel: "Gateway name", ownerLabel: "Account owner", accountLabel: "Account number",
+        pubgData: "PUBG account details", accountEmailLabel: "Account email", accountPasswordLabel: "Password",
+        receiptFooter: "The account is ready and will be delivered to this email.",
+        gatewayName: "Gateway / bank account name", bankOwner: "Bank account owner", bankAccountNumber: "Bank account number",
+        iban: "IBAN", gameEmail: "PUBG account email", gamePassword: "PUBG account password", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "Cardholder name",
+        pubgCredentials: "PUBG account credentials", saveCredentials: "Save account details",
+        details: "Details", buy: "Buy", noImage: "No image", noDescription: "No description for this product.",
+        type: "Type", country: "Country", buyVia: "Buy", footerText: "PUBG accounts • UC • Royale Pass — all countries and currencies"
+    }
+};
+
+let currentLanguage = localStorage.getItem("GAMEVAULT_LANGUAGE") || "ar";
+
+function t(key) {
+    return I18N[currentLanguage][key] || I18N.ar[key] || key;
+}
+
+function countryCode(value) {
+    return COUNTRY_ALIASES[value] || value || "";
+}
+
+function countryName(code) {
+    const normalizedCode = countryCode(code).toUpperCase();
+    try {
+        return new Intl.DisplayNames([currentLanguage], { type: "region" }).of(normalizedCode) || normalizedCode;
+    } catch {
+        return normalizedCode;
+    }
+}
+
+function flagForCountry(code) {
+    return countryCode(code).toUpperCase().replace(/[A-Z]/g, letter => String.fromCodePoint(letter.charCodeAt(0) + 127397));
+}
+
+function countryLabel(code) {
+    const normalizedCode = countryCode(code).toUpperCase();
+    return `${flagForCountry(normalizedCode)} ${countryName(normalizedCode)}`;
+}
+
+function typeLabel(type) {
+    return currentLanguage === "en"
+        ? ({ "حساب": "PUBG account", UC: "UC top-up", "Royale Pass": "Royale Pass" }[type] || type)
+        : ({ "حساب": "حساب PUBG", UC: "شحن UC", "Royale Pass": "Royale Pass" }[type] || type);
+}
+
+function localizedProductText(value) {
+    const text = String(value || "");
+    if (currentLanguage !== "en") {
+        return text;
+    }
+
+    return text
+        .replaceAll("دينار أردني", "Jordanian dinar")
+        .replaceAll("دينار اردني", "Jordanian dinar")
+        .replaceAll("ريال قطري", "Qatari riyal")
+        .replaceAll("ليرة تركية", "Turkish lira")
+        .replaceAll("دولار أمريكي", "US dollar")
+        .replaceAll("حسابات", "accounts")
+        .replaceAll("حساب", "account")
+        .replaceAll("لفل", "Level")
+        .replaceAll("مستوى", "Level")
+        .replaceAll("شدات", "UC top-ups")
+        .replaceAll("رويال باس", "Royale Pass")
+        .replaceAll("السعر", "Price")
+        .replaceAll("منتج", "product");
+}
+
+function applyTranslations() {
+    document.documentElement.lang = currentLanguage;
+    document.documentElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
+    document.querySelectorAll("[data-i18n]").forEach(element => {
+        element.textContent = t(element.dataset.i18n);
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
+        element.placeholder = t(element.dataset.i18nPlaceholder);
+    });
+    $("languageToggle").textContent = currentLanguage === "ar" ? "English" : "العربية";
+    $("authTitle").textContent = authMode === "login" ? t("login") : t("register");
+    $("authSubmit").textContent = authMode === "login" ? t("login") : t("register");
+    $("authSwitch").textContent = authMode === "login" ? t("createAccountPrompt") : `${t("register")} / ${t("login")}`;
+    $("passwordToggle").setAttribute("aria-label", $("authPassword").type === "text" ? t("hidePassword") : t("showPassword"));
+    populateCountryOptions();
+    populateCurrencyOptions();
+    renderAccounts();
+    if (currentAccount && !$('detailsModal').classList.contains('hidden')) {
+        showDetails(currentAccount.id);
+    } else if (currentAccount && !$('buyModal').classList.contains('hidden')) {
+        openBuy(currentAccount.id);
+    }
+    if (!$('adminModal').classList.contains('hidden')) {
+        renderAdmin();
+    }
+}
+
+function populateCountryOptions() {
+    const filter = $("countryFilter");
+    const accountSelect = $("accountCountry");
+    if (!filter || !accountSelect) return;
+    const selectedFilter = filter.value || "all";
+    const selectedAccount = countryCode(accountSelect.value) || "QA";
+    filter.innerHTML = `<option value="all">${escapeHTML(t("allCountries"))}</option>` + COUNTRY_CODES
+        .map(code => `<option value="${code}">${escapeHTML(countryLabel(code))}</option>`).join("");
+    accountSelect.innerHTML = COUNTRY_CODES
+        .map(code => `<option value="${code}">${escapeHTML(countryLabel(code))}</option>`).join("");
+    filter.value = COUNTRY_CODES.includes(selectedFilter) ? selectedFilter : "all";
+    accountSelect.value = COUNTRY_CODES.includes(selectedAccount) ? selectedAccount : "QA";
+}
+
+function populateCurrencyOptions() {
+    const select = $("accountCurrency");
+    if (!select) return;
+    const selected = select.value || "USD";
+    const currencies = typeof Intl.supportedValuesOf === "function"
+        ? Intl.supportedValuesOf("currency")
+        : ["USD", "EUR", "GBP", "QAR", "JOD", "TRY"];
+    select.innerHTML = currencies.map(code => {
+        let name = code;
+        try {
+            name = new Intl.DisplayNames([currentLanguage], { type: "currency" }).of(code) || code;
+        } catch { /* Keep the ISO code when the browser lacks a localized name. */ }
+        return `<option value="${code}">${escapeHTML(name)} (${code})</option>`;
+    }).join("");
+    select.value = currencies.includes(selected) ? selected : "USD";
+}
+
+const DEFAULT_SETTINGS = {
+    paymentGatewayName: "بوابة الدفع",
+    bankAccountOwner: "",
+    bankAccountNumber: "",
+    bankIban: "",
+    gameAccountEmail: "",
+    gameAccountPassword: ""
+};
 
 const FIREBASE_CONFIG = {
     apiKey: "AIzaSyCqftmFq09lF9MsU19Q9QKhxR6RIu6X0WM",
@@ -27,6 +258,7 @@ const firebaseReady =
 
 let auth = null;
 let authMode = "login";
+let selectedAuthImage = "";
 
 let remoteAccounts = null;
 
@@ -77,7 +309,7 @@ function loadAccounts() {
         remoteAccounts.on("value", snapshot => {
             if (!snapshot.exists() && localAccounts.length) {
                 remoteAccounts.set(localAccounts).catch(() => {
-                    alert("تعذر رفع المنتجات الحالية إلى Firebase.");
+                    alert(t("uploadError"));
                 });
                 return;
             }
@@ -94,12 +326,62 @@ function saveAccounts() {
 
     if (remoteAccounts) {
         remoteAccounts.set(accounts).catch(() => {
-            alert("تعذر حفظ البيانات على Firebase. تحقق من قواعد قاعدة البيانات.");
+            alert(t("saveFirebaseError"));
         });
     }
 }
 
+function loadSettings() {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    if (!saved) {
+        return { ...DEFAULT_SETTINGS };
+    }
+
+    try {
+        return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+    } catch {
+        return { ...DEFAULT_SETTINGS };
+    }
+}
+
+function saveSettings(settings) {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+function populateSettingsFields() {
+    const settings = loadSettings();
+    $("paymentGatewayName") && ($("paymentGatewayName").value = settings.paymentGatewayName || "");
+    $("bankAccountOwner") && ($("bankAccountOwner").value = settings.bankAccountOwner || "");
+    $("bankAccountNumber") && ($("bankAccountNumber").value = settings.bankAccountNumber || "");
+    $("bankIban") && ($("bankIban").value = settings.bankIban || "");
+    $("gameAccountEmail") && ($("gameAccountEmail").value = settings.gameAccountEmail || "");
+    $("gameAccountPassword") && ($("gameAccountPassword").value = settings.gameAccountPassword || "");
+}
+
+$("saveGameCredentialsButton")?.addEventListener("click", function() {
+    const settings = loadSettings();
+    settings.gameAccountEmail = $("gameAccountEmail").value.trim();
+    settings.gameAccountPassword = $("gameAccountPassword").value.trim();
+    saveSettings(settings);
+    alert(t("saveSettingsSuccess"));
+});
+
+$("saveSettingsButton")?.addEventListener("click", function() {
+    const settings = {
+        paymentGatewayName: $("paymentGatewayName").value.trim(),
+        bankAccountOwner: $("bankAccountOwner").value.trim(),
+        bankAccountNumber: $("bankAccountNumber").value.trim(),
+        bankIban: $("bankIban").value.trim(),
+        gameAccountEmail: $("gameAccountEmail").value.trim(),
+        gameAccountPassword: $("gameAccountPassword").value.trim()
+    };
+
+    saveSettings(settings);
+    alert(t("saveSettingsSuccess"));
+});
+
 loadAccounts();
+populateSettingsFields();
 
 function createID() {
     return Date.now().toString() + Math.random().toString(36).substring(2);
@@ -119,22 +401,41 @@ function closeModal(id) {
 
 function openAuth(mode) {
     authMode = mode;
-    $("authTitle").textContent = mode === "login" ? "تسجيل الدخول" : "إنشاء حساب";
+    $("authTitle").textContent = mode === "login" ? t("login") : t("register");
     $("authNameGroup").classList.toggle("hidden", mode === "login");
+    $("authPhotoGroup").classList.toggle("hidden", mode === "login");
+    $("authPasswordConfirmGroup").classList.toggle("hidden", mode === "login");
     $("forgotPassword").classList.toggle("hidden", mode !== "login");
     $("authPassword").autocomplete = mode === "login" ? "current-password" : "new-password";
-    $("authSubmit").textContent = mode === "login" ? "تسجيل الدخول" : "إنشاء حساب";
-    $("authSwitch").textContent = mode === "login" ? "ليس لديك حساب؟ إنشاء حساب" : "لديك حساب؟ تسجيل الدخول";
+    $("authSubmit").textContent = mode === "login" ? t("login") : t("register");
+    $("authSwitch").textContent = mode === "login" ? t("createAccountPrompt") : `${t("register")} / ${t("login")}`;
     $("authMessage").textContent = "";
+    $("authPhoto").value = "";
+    selectedAuthImage = "";
+    $("authPhotoPreview").src = "";
+    $("authPhotoPreview").classList.add("hidden");
+    $("authPasswordConfirm").value = "";
     openModal("authModal");
 }
 
 function authErrorMessage(error) {
-    const messages = {
+    const messages = currentLanguage === "en" ? {
+        "auth/email-already-in-use": "This email is already in use.",
+        "auth/invalid-email": "The email address is invalid.",
+        "auth/weak-password": "The password must be at least 6 characters.",
+        "auth/wrong-password": "The email or password is incorrect.",
+        "auth/popup-closed-by-user": "The Google window was closed.",
+        "auth/operation-not-allowed": "Enable this sign-in method in Firebase.",
+        "auth/unauthorized-domain": "Sign-in is not allowed from this URL.",
+        "auth/invalid-api-key": "The Firebase API key is invalid.",
+        "auth/network-request-failed": "Network error. Please try again.",
+        "auth/account-exists-with-different-credential": "This email uses another sign-in method. Use email and password.",
+        "auth/credential-already-in-use": "This Google account is already in use.",
+        "auth/user-not-found": "No account was found with this email and password."
+    } : {
         "auth/email-already-in-use": "هذا البريد مستخدم من قبل.",
         "auth/invalid-email": "البريد الإلكتروني غير صالح.",
         "auth/weak-password": "كلمة السر يجب أن تكون 6 أحرف على الأقل.",
-        "auth/user-not-found": "لا يوجد حساب بهذا البريد.",
         "auth/wrong-password": "البريد أو كلمة السر غير صحيحة.",
         "auth/popup-closed-by-user": "تم إغلاق نافذة Google.",
         "auth/operation-not-allowed": "يجب تفعيل طريقة الدخول من Firebase.",
@@ -142,9 +443,10 @@ function authErrorMessage(error) {
         "auth/invalid-api-key": "مفتاح Firebase غير صحيح.",
         "auth/network-request-failed": "تعذر الاتصال بالإنترنت، حاول مرة أخرى.",
         "auth/account-exists-with-different-credential": "هذا البريد مسجل بطريقة دخول أخرى. استخدم البريد وكلمة السر.",
-        "auth/credential-already-in-use": "حساب Google مستخدم من قبل."
+        "auth/credential-already-in-use": "حساب Google مستخدم من قبل.",
+        "auth/user-not-found": "لا يوجد حساب بالبريد وكلمة السر بهذا البريد."
     };
-    return messages[error.code] || `حدث خطأ (${error.code || "غير معروف"}).`;
+    return messages[error.code] || t("genericError").replace("{code}", error.code || "unknown");
 }
 
 function updateAuthUI(user) {
@@ -152,8 +454,12 @@ function updateAuthUI(user) {
     $("registerButton").classList.toggle("hidden", Boolean(user));
     $("logoutButton").classList.toggle("hidden", !user);
     $("userGreeting").classList.toggle("hidden", !user);
+    $("userAvatar").classList.toggle("hidden", !user || !user.photoURL);
     if (user) {
-        $("userGreeting").textContent = `مرحبًا ${user.displayName || user.email}`;
+        $("userGreeting").textContent = t("greeting").replace("{name}", user.displayName || user.email);
+        if (user.photoURL) {
+            $("userAvatar").src = user.photoURL;
+        }
     }
 }
 
@@ -174,7 +480,7 @@ if (auth) {
             $("authMessage").textContent = authErrorMessage(error);
             const googleButton = $("googleLoginButton");
             googleButton.disabled = false;
-            googleButton.innerHTML = '<span class="google-icon">G</span> المتابعة باستخدام Google';
+            googleButton.innerHTML = `<span class="google-icon">G</span> <span>${t("continueGoogle")}</span>`;
         });
 }
 
@@ -195,25 +501,66 @@ $("passwordToggle").addEventListener("click", () => {
     const isVisible = password.type === "text";
     password.type = isVisible ? "password" : "text";
     $("passwordToggle").textContent = isVisible ? "◉" : "○";
-    $("passwordToggle").setAttribute("aria-label", isVisible ? "إظهار كلمة السر" : "إخفاء كلمة السر");
+    $("passwordToggle").setAttribute("aria-label", isVisible ? t("showPassword") : t("hidePassword"));
+});
+
+function resizeImageToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const image = new Image();
+            image.onload = () => {
+                const size = 256;
+                const scale = Math.min(size / image.width, size / image.height, 1);
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.max(1, Math.round(image.width * scale));
+                canvas.height = Math.max(1, Math.round(image.height * scale));
+                canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL("image/jpeg", 0.8));
+            };
+            image.onerror = reject;
+            image.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+$("authPhoto").addEventListener("change", async event => {
+    const file = event.target.files[0];
+    if (!file) {
+        return;
+    }
+
+    try {
+        selectedAuthImage = await resizeImageToDataUrl(file);
+        $("authPhotoPreview").src = selectedAuthImage;
+        $("authPhotoPreview").classList.remove("hidden");
+    } catch {
+        selectedAuthImage = "";
+        $("authMessage").textContent = t("invalidPhoto");
+    }
 });
 
 $("forgotPassword").addEventListener("click", async () => {
     if (!auth) {
-        $("authMessage").textContent = "إعدادات Firebase غير مكتملة.";
+        $("authMessage").textContent = t("firebaseConfig");
         return;
     }
 
     const email = $("authEmail").value.trim();
     if (!email) {
-        $("authMessage").textContent = "اكتب بريدك الإلكتروني أولًا.";
+        $("authMessage").textContent = t("enterEmail");
         $("authEmail").focus();
         return;
     }
 
     try {
-        await auth.sendPasswordResetEmail(email);
-        $("authMessage").textContent = "تم إرسال رابط تغيير كلمة السر إلى بريدك الإلكتروني.";
+        await auth.sendPasswordResetEmail(email, {
+            url: "https://tameemdemir-create.github.io/gamevault/",
+            handleCodeInApp: false
+        });
+        $("authMessage").textContent = t("resetSent");
     } catch (error) {
         $("authMessage").textContent = authErrorMessage(error);
     }
@@ -221,18 +568,18 @@ $("forgotPassword").addEventListener("click", async () => {
 
 $("googleLoginButton").addEventListener("click", async () => {
     if (!auth) {
-        $("authMessage").textContent = "إعدادات Firebase غير مكتملة.";
+        $("authMessage").textContent = t("firebaseConfig");
         return;
     }
 
     if (window.top !== window.self) {
-        $("authMessage").textContent = "افتح الرابط في Chrome أو Edge خارج معاينة VS Code.";
+        $("authMessage").textContent = t("openBrowser");
         return;
     }
 
     const googleButton = $("googleLoginButton");
     googleButton.disabled = true;
-    googleButton.textContent = "جاري فتح تسجيل الدخول...";
+    googleButton.textContent = t("openingLogin");
 
     try {
         await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
@@ -241,7 +588,7 @@ $("googleLoginButton").addEventListener("click", async () => {
         googleButton.disabled = false;
     } finally {
         if (!auth.currentUser) {
-            googleButton.innerHTML = '<span class="google-icon">G</span> المتابعة باستخدام Google';
+            googleButton.innerHTML = `<span class="google-icon">G</span> <span>${t("continueGoogle")}</span>`;
         }
     }
 });
@@ -250,19 +597,33 @@ $("authForm").addEventListener("submit", async event => {
     event.preventDefault();
 
     if (!auth) {
-        $("authMessage").textContent = "إعدادات Firebase غير مكتملة.";
+        $("authMessage").textContent = t("firebaseConfig");
         return;
     }
 
     const email = $("authEmail").value.trim();
     const password = $("authPassword").value;
+    const passwordConfirm = $("authPasswordConfirm").value;
     const name = $("authName").value.trim();
+
+    if (authMode === "register" && password !== passwordConfirm) {
+        $("authMessage").textContent = t("passwordsDoNotMatch");
+        $("authPasswordConfirm").focus();
+        return;
+    }
 
     try {
         if (authMode === "register") {
             const result = await auth.createUserWithEmailAndPassword(email, password);
+            const profile = {};
             if (name) {
-                await result.user.updateProfile({ displayName: name });
+                profile.displayName = name;
+            }
+            if (selectedAuthImage) {
+                profile.photoURL = selectedAuthImage;
+            }
+            if (Object.keys(profile).length) {
+                await result.user.updateProfile(profile);
             }
         } else {
             await auth.signInWithEmailAndPassword(email, password);
@@ -276,7 +637,15 @@ $("authForm").addEventListener("submit", async event => {
 });
 
 function formatPrice(price, currency) {
-    return Number(price).toLocaleString("ar-EG") + " " + currency;
+    try {
+        return new Intl.NumberFormat(currentLanguage === "ar" ? "ar" : "en", {
+            style: "currency",
+            currency: currency || "USD",
+            maximumFractionDigits: 2
+        }).format(Number(price) || 0);
+    } catch {
+        return `${Number(price) || 0} ${currency || "USD"}`;
+    }
 }
 
 function escapeHTML(text) {
@@ -320,16 +689,7 @@ function renderAccounts() {
             .toLowerCase();
 
 
-    const countryButton =
-        document.querySelector(
-            ".filter.active"
-        );
-
-
-    const country =
-        countryButton
-            ? countryButton.dataset.country
-            : "all";
+    const country = $("countryFilter")?.value || "all";
 
 
     const typeButton =
@@ -350,7 +710,7 @@ function renderAccounts() {
             const countryMatch =
                 country === "all"
                 ||
-                account.country === country;
+                countryCode(account.country) === country;
 
 
             const typeMatch =
@@ -365,7 +725,7 @@ function renderAccounts() {
                     +
                     " "
                     +
-                    account.country
+                    countryName(account.country)
                     +
                     " "
                     +
@@ -401,10 +761,7 @@ function renderAccounts() {
         });
 
 
-    $("accountCount").textContent =
-        filtered.length
-        +
-        " منتج";
+    $("accountCount").textContent = t("productCount").replace("{count}", filtered.length);
 
 
     if (filtered.length === 0) {
@@ -484,9 +841,9 @@ function createAccountCard(account) {
                     >
                     ${account.images.length > 1 ? `
                         <div class="image-slider-controls">
-                            <button type="button" aria-label="الصورة السابقة" onclick="changeCardImage(event, '${account.id}', -1)">→</button>
+                            <button type="button" aria-label="${t("previousImage")}" onclick="changeCardImage(event, '${account.id}', -1)">→</button>
                             <span id="card-image-count-${account.id}">1 / ${account.images.length}</span>
-                            <button type="button" aria-label="الصورة التالية" onclick="changeCardImage(event, '${account.id}', 1)">←</button>
+                            <button type="button" aria-label="${t("nextImage")}" onclick="changeCardImage(event, '${account.id}', 1)">←</button>
                         </div>
                     ` : ""}
                     `
@@ -497,7 +854,7 @@ function createAccountCard(account) {
                     <div class="no-image">
                         ${icon}
                         <br>
-                        لا توجد صورة
+                        ${t("noImage")}
                     </div>
                     `
                 }
@@ -506,14 +863,14 @@ function createAccountCard(account) {
                 <span class="product-type">
 
                     ${icon}
-                    ${escapeHTML(account.type)}
+                    ${escapeHTML(typeLabel(account.type))}
 
                 </span>
 
 
                 <span class="country-badge">
 
-                    ${escapeHTML(account.country)}
+                    ${escapeHTML(countryLabel(account.country))}
 
                 </span>
 
@@ -527,7 +884,7 @@ function createAccountCard(account) {
                 <div class="account-top">
 
                     <h3>
-                        ${escapeHTML(account.name)}
+                        ${escapeHTML(localizedProductText(account.name))}
                     </h3>
 
                     <span class="price">
@@ -547,7 +904,7 @@ function createAccountCard(account) {
                     ?
                     `
                     <span class="quantity">
-                        ${escapeHTML(account.quantity)}
+                        ${escapeHTML(localizedProductText(account.quantity))}
                     </span>
                     `
                     :
@@ -558,9 +915,9 @@ function createAccountCard(account) {
                 <p class="account-description">
 
                     ${escapeHTML(
-                        account.description
+                        localizedProductText(account.description)
                         ||
-                        "لا يوجد وصف لهذا المنتج."
+                        t("noDescription")
                     )}
 
                 </p>
@@ -571,7 +928,7 @@ function createAccountCard(account) {
                     <button
                         onclick="showDetails('${account.id}')"
                     >
-                        التفاصيل
+                        ${t("details")}
                     </button>
 
 
@@ -579,7 +936,7 @@ function createAccountCard(account) {
                         class="buy"
                         onclick="openBuy('${account.id}')"
                     >
-                        شراء
+                        ${t("buy")}
                     </button>
 
                 </div>
@@ -651,14 +1008,14 @@ function showDetails(id) {
         $("detailsContent").innerHTML = `
             <h2>
                 ${getProductIcon(account.type)}
-                ${escapeHTML(account.name)}
+                ${escapeHTML(localizedProductText(account.name))}
             </h2>
             <p class="muted">
-                النوع:
-                ${escapeHTML(account.type)}
+                ${t("type")}:
+                ${escapeHTML(typeLabel(account.type))}
                 <br>
-                الدولة:
-                ${escapeHTML(account.country)}
+                ${t("country")}:
+                ${escapeHTML(countryLabel(account.country))}
             </p>
             ${
                 account.quantity
@@ -671,7 +1028,7 @@ function showDetails(id) {
                         font-weight:bold;
                     "
                 >
-                    ${escapeHTML(account.quantity)}
+                    ${escapeHTML(localizedProductText(account.quantity))}
                 </p>
                 `
                 :
@@ -711,7 +1068,7 @@ function showDetails(id) {
                     class="no-image"
                     style="height:350px"
                 >
-                    لا توجد صور
+                    ${t("noImage")}
                 </div>
                 `
             }
@@ -720,9 +1077,9 @@ function showDetails(id) {
                 ?
                 `
                 <div class="details-slider-controls">
-                    <button type="button" aria-label="الصورة السابقة" onclick="changeDetailsImage(-1)">→</button>
+                    <button type="button" aria-label="${t("previousImage")}" onclick="changeDetailsImage(-1)">→</button>
                     <span id="detailsImageCounter">1 / ${images.length}</span>
-                    <button type="button" aria-label="الصورة التالية" onclick="changeDetailsImage(1)">←</button>
+                    <button type="button" aria-label="${t("nextImage")}" onclick="changeDetailsImage(1)">←</button>
                 </div>
                 `
                 :
@@ -786,9 +1143,9 @@ function showDetails(id) {
                 "
             >
                 ${escapeHTML(
-                    account.description
+                    localizedProductText(account.description)
                     ||
-                    "لا يوجد وصف."
+                    t("noDescription")
                 )}
             </p>
             <button
@@ -798,7 +1155,7 @@ function showDetails(id) {
                     openBuy('${account.id}');
                 "
             >
-                شراء عبر WhatsApp
+                ${t("buy")}
             </button>
         `;
 
@@ -877,7 +1234,7 @@ function showDetails(id) {
                 class="no-image"
                 style="height:350px"
             >
-                لا توجد صور
+                ${t("noImage")}
             </div>
             `
         }
@@ -956,7 +1313,7 @@ function showDetails(id) {
             ${escapeHTML(
                 account.description
                 ||
-                "لا يوجد وصف."
+                t("noDescription")
             )}
 
         </p>
@@ -970,7 +1327,7 @@ function showDetails(id) {
             "
         >
 
-            شراء عبر WhatsApp
+            ${t("buy")}
 
         </button>
 
@@ -1067,7 +1424,7 @@ function openAccountImageViewer(event, id, startIndex) {
     previous.type = "button";
     previous.className = "viewer-arrow viewer-previous";
     previous.textContent = "→";
-    previous.setAttribute("aria-label", "الصورة السابقة");
+    previous.setAttribute("aria-label", t("previousImage"));
     previous.addEventListener("click", event => {
         event.stopPropagation();
         moveImage(-1);
@@ -1077,7 +1434,7 @@ function openAccountImageViewer(event, id, startIndex) {
     next.type = "button";
     next.className = "viewer-arrow viewer-next";
     next.textContent = "←";
-    next.setAttribute("aria-label", "الصورة التالية");
+    next.setAttribute("aria-label", t("nextImage"));
     next.addEventListener("click", event => {
         event.stopPropagation();
         moveImage(1);
@@ -1087,7 +1444,7 @@ function openAccountImageViewer(event, id, startIndex) {
     close.type = "button";
     close.className = "viewer-close";
     close.textContent = "×";
-    close.setAttribute("aria-label", "إغلاق الصور");
+    close.setAttribute("aria-label", t("closeImages"));
 
     const closeViewer = () => {
         document.removeEventListener("keydown", handleKeydown);
@@ -1162,7 +1519,7 @@ function openBuy(id) {
 
                 ${getProductIcon(account.type)}
 
-                ${escapeHTML(account.name)}
+                ${escapeHTML(localizedProductText(account.name))}
 
             </strong>
 
@@ -1170,10 +1527,10 @@ function openBuy(id) {
 
             <span class="muted">
 
-                ${escapeHTML(account.type)}
+                ${escapeHTML(typeLabel(account.type))}
 
                 •
-                ${escapeHTML(account.country)}
+                ${escapeHTML(countryLabel(account.country))}
 
             </span>
 
@@ -1185,7 +1542,7 @@ function openBuy(id) {
                 <span
                     style="color:#43a8ff"
                 >
-                    ${escapeHTML(account.quantity)}
+                    ${escapeHTML(localizedProductText(account.quantity))}
                 </span>
                 `
                 :
@@ -1274,33 +1631,13 @@ $("searchInput")
    فلترة الدول
 ================================================== */
 
-document
-    .querySelectorAll(".filter")
-    .forEach(button => {
+$("countryFilter").addEventListener("change", renderAccounts);
 
-        button.addEventListener(
-            "click",
-            function() {
-
-                document
-                    .querySelectorAll(".filter")
-                    .forEach(
-                        b =>
-                            b.classList
-                                .remove("active")
-                    );
-
-
-                this.classList
-                    .add("active");
-
-
-                renderAccounts();
-
-            }
-        );
-
-    });
+$("languageToggle").addEventListener("click", () => {
+    currentLanguage = currentLanguage === "ar" ? "en" : "ar";
+    localStorage.setItem("GAMEVAULT_LANGUAGE", currentLanguage);
+    applyTranslations();
+});
 
 
 /* ==================================================
@@ -1345,9 +1682,7 @@ document
 function openAdmin() {
 
     const code =
-        prompt(
-            "اكتب كود الإدارة:"
-        );
+        prompt(t("adminCodePrompt"));
 
 
     if (code === ADMIN_CODE) {
@@ -1360,9 +1695,7 @@ function openAdmin() {
 
     else if (code !== null) {
 
-        alert(
-            "كود الإدارة غير صحيح."
-        );
+        alert(t("wrongAdminCode"));
 
     }
 
@@ -1559,9 +1892,7 @@ $("accountForm")
             resetForm();
 
 
-            alert(
-                "تم حفظ المنتج بنجاح!"
-            );
+            alert(t("saveProductSuccess"));
 
         }
     );
@@ -1582,7 +1913,7 @@ function renderAdmin() {
         container.innerHTML = `
 
             <p class="muted">
-                لا توجد منتجات حاليًا.
+                ${t("noAdminProducts")}
             </p>
 
         `;
@@ -1608,20 +1939,18 @@ function renderAdmin() {
                             )}
 
                             ${escapeHTML(
-                                account.name
+                                localizedProductText(account.name)
                             )}
 
                         </strong>
 
                         <p>
 
-                            ${escapeHTML(
-                                account.type
-                            )}
+                            ${escapeHTML(typeLabel(account.type))}
 
                             •
                             ${escapeHTML(
-                                account.country
+                                countryLabel(account.country)
                             )}
 
                             •
@@ -1635,7 +1964,7 @@ function renderAdmin() {
                                 ?
                                 " • " +
                                 escapeHTML(
-                                    account.quantity
+                                    localizedProductText(account.quantity)
                                 )
                                 :
                                 ""
@@ -1643,7 +1972,7 @@ function renderAdmin() {
 
                             •
                             ${(account.images || []).length}
-                            صور
+                            ${t("imageCount")}
 
                         </p>
 
@@ -1659,7 +1988,7 @@ function renderAdmin() {
                                 )
                             "
                         >
-                            تعديل
+                            ${t("edit")}
                         </button>
 
 
@@ -1671,7 +2000,7 @@ function renderAdmin() {
                                 )
                             "
                         >
-                            حذف
+                            ${t("delete")}
                         </button>
 
                     </div>
@@ -1715,7 +2044,7 @@ function editAccount(id) {
 
 
     $("accountCountry").value =
-        account.country;
+        countryCode(account.country);
 
 
     $("accountPrice").value =
@@ -1767,11 +2096,7 @@ function deleteAccount(id) {
 
 
     const yes =
-        confirm(
-            "هل تريد حذف المنتج " +
-            account.name +
-            "؟"
-        );
+        confirm(t("confirmDelete").replace("{name}", account.name));
 
 
     if (!yes) {
@@ -1816,12 +2141,26 @@ function resetForm() {
    إرسال الطلب إلى WhatsApp
 ================================================== */
 
-document.querySelectorAll(".payment").forEach(button => {
-    button.addEventListener("click", function() {
-        document.querySelectorAll(".payment").forEach(item => item.classList.remove("active"));
-        this.classList.add("active");
-        selectedPayment = this.dataset.payment;
-    });
+function formatCardNumber(value) {
+    return value
+        .replace(/\D/g, "")
+        .slice(0, 16)
+        .replace(/(.{4})/g, "$1 ")
+        .trim();
+}
+
+function formatExpiry(value) {
+    const digits = value.replace(/\D/g, "").slice(0, 4);
+    if (digits.length <= 2) return digits;
+    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+}
+
+$("cardNumber")?.addEventListener("input", function() {
+    this.value = formatCardNumber(this.value);
+});
+
+$("cardExpiry")?.addEventListener("input", function() {
+    this.value = formatExpiry(this.value);
 });
 
 $("buyForm")
@@ -1836,92 +2175,56 @@ $("buyForm")
                 return;
             }
 
+            const buyerEmail = $("buyerEmail").value.trim();
+            const cardNumber = $("cardNumber").value.trim();
+            const cardExpiry = $("cardExpiry").value.trim();
+            const cardCvv = $("cardCvv").value.trim();
+            const cardName = $("cardName").value.trim();
+            const settings = loadSettings();
+            const gameAccountEmail = settings.gameAccountEmail;
+            const gameAccountPassword = settings.gameAccountPassword;
 
-            const buyerName =
-                $("buyerName")
-                    .value
-                    .trim();
+            if (!buyerEmail || !cardNumber || !cardExpiry || !cardCvv || !cardName) {
+                alert(t("incompleteFields"));
+                return;
+            }
 
+            const lastFour = cardNumber.replace(/\D/g, "").slice(-4) || "0000";
+            const productPrice = formatPrice(currentAccount.price, currentAccount.currency);
+            const gatewayName = settings.paymentGatewayName || "بوابة الدفع";
+            const bankOwner = settings.bankAccountOwner || "غير محدد";
+            const bankNumber = settings.bankAccountNumber || "غير محدد";
+            const bankIban = settings.bankIban || "غير محدد";
 
-            const buyerEmail =
-                $("buyerEmail")
-                    .value
-                    .trim();
-
-
-            const buyerPhone =
-                $("buyerPhone")
-                    .value
-                    .trim();
-
-
-            const message =
-
-                "طلب جديد من PUBG Market\n\n" +
-
-                "المنتج: " +
-                currentAccount.name +
-                "\n" +
-
-                "النوع: " +
-                currentAccount.type +
-                "\n" +
-
-                "الدولة: " +
-                currentAccount.country +
-                "\n" +
-
-                (
-                    currentAccount.quantity
-                    ?
-                    "الكمية: " +
-                    currentAccount.quantity +
-                    "\n"
-                    :
-                    ""
-                ) +
-
-                "السعر: " +
-                formatPrice(
-                    currentAccount.price,
-                    currentAccount.currency
-                ) +
-                "\n\n" +
-
-                "اسم العميل: " +
-                buyerName +
-                "\n" +
-
-                "البريد: " +
-                buyerEmail +
-                "\n" +
-
-                "الهاتف: " +
-                buyerPhone +
-                "\n" +
-
-                "طريقة الدفع: " +
-                selectedPayment;
-
-
-            const whatsappURL =
-
-                "https://wa.me/" +
-                WHATSAPP_NUMBER +
-                "?text=" +
-                encodeURIComponent(
-                    message
-                );
-
-
-            window.open(
-                whatsappURL,
-                "_blank"
+            const emailSubject = encodeURIComponent(t("receiptSubject"));
+            const emailBody = encodeURIComponent(
+                t("receiptReady") + "\n\n" +
+                t("customer") + ": " + cardName + "\n" +
+                t("email") + ": " + buyerEmail + "\n" +
+                t("product") + ": " + currentAccount.name + "\n" +
+                t("type") + ": " + typeLabel(currentAccount.type) + "\n" +
+                t("country") + ": " + countryLabel(currentAccount.country) + "\n" +
+                t("priceLabel") + ": " + productPrice + "\n" +
+                t("cardLastFour") + ": **** **** **** " + lastFour + "\n" +
+                t("expiryLabel") + ": " + cardExpiry + "\n\n" +
+                t("paymentData") + ":\n" +
+                t("gatewayLabel") + ": " + gatewayName + "\n" +
+                t("ownerLabel") + ": " + bankOwner + "\n" +
+                t("accountLabel") + ": " + bankNumber + "\n" +
+                "IBAN: " + bankIban + "\n\n" +
+                t("pubgData") + ":\n" +
+                t("accountEmailLabel") + ": " + gameAccountEmail + "\n" +
+                t("accountPasswordLabel") + ": " + gameAccountPassword + "\n\n" +
+                t("receiptFooter")
             );
 
+            const mailtoURL = `mailto:${buyerEmail}?subject=${emailSubject}&body=${emailBody}`;
+
+            window.location.href = mailtoURL;
+
+            alert(t("paymentSuccess").replace("{email}", buyerEmail));
 
             closeModal("buyModal");
-
             this.reset();
 
         }
@@ -1960,4 +2263,7 @@ document
    تشغيل الموقع
 ================================================== */
 
+populateCountryOptions();
+populateCurrencyOptions();
+applyTranslations();
 renderAccounts();
