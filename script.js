@@ -268,6 +268,7 @@ const firebaseReady =
 let auth = null;
 let authMode = "login";
 let selectedAuthImage = "";
+let registrationInProgress = false;
 
 let remoteAccounts = null;
 let remoteProfiles = null;
@@ -557,7 +558,11 @@ async function saveUserProfile(user, profile = {}) {
     loadedProfiles.add(user.uid);
     localStorage.setItem(`GAMEVAULT_PROFILE_${user.uid}`, JSON.stringify(data));
     if (remoteProfiles) {
-        await remoteProfiles.child(user.uid).set(data);
+        try {
+            await remoteProfiles.child(user.uid).set(data);
+        } catch (error) {
+            console.error("Could not save user profile to Firebase", error);
+        }
     }
 }
 
@@ -607,7 +612,7 @@ if (auth) {
         console.error("Firebase persistence failed", error);
     });
     auth.onAuthStateChanged(async user => {
-        if (user && !user.emailVerified) {
+        if (user && !user.emailVerified && !registrationInProgress) {
             await auth.signOut();
             openAuth("login");
             $("authMessage").textContent = t("emailNotVerified");
@@ -715,6 +720,7 @@ $("resendVerification").addEventListener("click", async () => {
     }
 
     try {
+        registrationInProgress = true;
         const result = await auth.signInWithEmailAndPassword(email, password);
         await result.user.sendEmailVerification(authActionSettings());
         await auth.signOut();
@@ -722,6 +728,8 @@ $("resendVerification").addEventListener("click", async () => {
         $("authMessage").textContent = t("verificationSent");
     } catch (error) {
         $("authMessage").textContent = authErrorMessage(error);
+    } finally {
+        registrationInProgress = false;
     }
 });
 
@@ -758,6 +766,7 @@ $("authForm").addEventListener("submit", async event => {
 
     try {
         if (authMode === "register") {
+            registrationInProgress = true;
             const result = await auth.createUserWithEmailAndPassword(email, password);
             const profile = {};
             if (name) {
@@ -766,18 +775,12 @@ $("authForm").addEventListener("submit", async event => {
             if (Object.keys(profile).length) {
                 await result.user.updateProfile(profile);
             }
-            if (selectedAuthImage) {
-                await saveUserProfile(result.user, {
-                    name,
-                    photoURL: selectedAuthImage
-                });
-            } else {
-                await saveUserProfile(result.user, { name });
-            }
-            await result.user.reload();
-            await result.user.sendEmailVerification({
-                ...authActionSettings()
+            await saveUserProfile(result.user, {
+                name,
+                photoURL: selectedAuthImage
             });
+            await result.user.reload();
+            await result.user.sendEmailVerification(authActionSettings());
             startVerificationCooldown(email);
             await auth.signOut();
             event.target.reset();
@@ -804,6 +807,8 @@ $("authForm").addEventListener("submit", async event => {
             return;
         }
         $("authMessage").textContent = authErrorMessage(error);
+    } finally {
+        registrationInProgress = false;
     }
 });
 
