@@ -8,6 +8,7 @@ const STORAGE_KEY = "PUBG_MARKET_ACCOUNTS";
 const SETTINGS_KEY = "PUBG_MARKET_SETTINGS";
 
 const WHATSAPP_NUMBER = "9620792077942";
+const UC_LEVEL_BONUSES = { 1: 60, 2: 150, 3: 250, 4: 400, 5: 600 };
 
 const COUNTRY_CODES = `AF AL DZ AS AD AO AI AQ AG AR AM AW AU AT AZ BS BH BD BB BY BE BZ BJ BM BT BO BQ BA BW BV BR IO BN BG BF BI CV KH CM CA KY CF TD CL CN CX CC CO KM CG CD CK CR CI HR CU CW CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FK FO FJ FI FR GF PF TF GA GM GE DE GH GI GR GL GD GP GU GT GG GN GW GY HT HM VA HN HK HU IS IN ID IR IQ IE IM IL IT JM JP JE JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MQ MR MU YT MX FM MD MC MN ME MS MA MZ MM NA NR NP NL NC NZ NI NE NG NU NF MK MP NO OM PK PW PS PA PG PY PE PH PN PL PT PR QA RE RO RU RW BL SH KN LC MF PM VC WS SM ST SA SN RS SC SL SG SX SK SI SB SO ZA GS SS ES LK SD SR SJ SE CH SY TW TJ TZ TH TL TG TK TO TT TN TR TM TC TV UG UA AE GB US UM UY UZ VU VE VN VG VI WF EH YE ZM ZW` .split(" ");
 
@@ -28,6 +29,7 @@ const I18N = {
         allCountries: "كل الدول", login: "تسجيل الدخول", register: "إنشاء حساب", logout: "تسجيل الخروج",
         authName: "الاسم", email: "البريد الإلكتروني", password: "كلمة السر", forgotPassword: "نسيت كلمة السر؟",
         invalidEmail: "اكتب بريدًا إلكترونيًا صحيحًا.", disposableEmail: "هذا النوع من الإيميلات المؤقتة غير مسموح.", verifyEmailSent: "تم إنشاء الحساب. افتح رابط التأكيد في بريدك الإلكتروني قبل تسجيل الدخول.", emailNotVerified: "أكد بريدك الإلكتروني أولًا من الرابط المرسل إليه.", resendVerification: "إعادة إرسال رسالة التأكيد", verificationSent: "تم إرسال رسالة تأكيد جديدة. افحص بريدك الإلكتروني.", verificationWait: "يمكنك إعادة الإرسال بعد {minutes}:{seconds}.",
+        loginRequiredForUC: "يجب تسجيل الدخول حتى تضاف الشدات إلى رصيدك.",
         confirmPassword: "تأكيد كلمة السر", confirmPasswordPlaceholder: "أعد كتابة كلمة السر", passwordsDoNotMatch: "كلمتا السر غير متطابقتين.",
         emailExistsLogin: "هذا الإيميل مسجل مسبقًا. تم تحويلك إلى تسجيل الدخول.",
         profilePhoto: "الصورة الشخصية",
@@ -66,8 +68,11 @@ const I18N = {
         gatewayName: "اسم البوابة / الحساب البنكي", bankOwner: "اسم صاحب الحساب البنكي", bankAccountNumber: "رقم الحساب البنكي",
         iban: "IBAN", gameEmail: "إيميل حساب PUBG", gamePassword: "كلمة سر حساب PUBG", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "اسم صاحب البطاقة",
         pubgCredentials: "بيانات حساب PUBG", saveCredentials: "حفظ بيانات الحساب",
+        baseUC: "الشدات الأساسية", baseUCPlaceholder: "600", ucLevel: "مستوى المكافأة",
+        levelOne: "المستوى 1 (+60)", levelTwo: "المستوى 2 (+150)", levelThree: "المستوى 3 (+250)", levelFour: "المستوى 4 (+400)", levelFive: "المستوى 5 (+600)",
         details: "التفاصيل", buy: "شراء", noImage: "لا توجد صورة", noDescription: "لا يوجد وصف لهذا المنتج.",
         type: "النوع", country: "الدولة", buyVia: "شراء", footerText: "حسابات PUBG • UC • Royale Pass — كل الدول والعملات"
+        ,ucBalance: "رصيد UC: {count}"
     },
     en: {
         badge: "PUBG MARKET", storeSubtitle: "PUBG store", heroTitle: "Everything you need", heroTitleAccent: "for PUBG",
@@ -79,6 +84,7 @@ const I18N = {
         allCountries: "All countries", login: "Log in", register: "Create account", logout: "Log out",
         authName: "Name", email: "Email", password: "Password", forgotPassword: "Forgot password?",
         invalidEmail: "Enter a valid email address.", disposableEmail: "Temporary email addresses are not allowed.", verifyEmailSent: "Account created. Open the verification link in your email before signing in.", emailNotVerified: "Verify your email first using the link we sent.", resendVerification: "Resend verification email", verificationSent: "A new verification email was sent. Check your inbox.", verificationWait: "You can resend after {minutes}:{seconds}.",
+        loginRequiredForUC: "You must sign in so the UC can be added to your balance.",
         confirmPassword: "Confirm password", confirmPasswordPlaceholder: "Re-enter your password", passwordsDoNotMatch: "The passwords do not match.",
         emailExistsLogin: "This email is already registered. You have been switched to sign in.",
         profilePhoto: "Profile photo",
@@ -117,8 +123,11 @@ const I18N = {
         gatewayName: "Gateway / bank account name", bankOwner: "Bank account owner", bankAccountNumber: "Bank account number",
         iban: "IBAN", gameEmail: "PUBG account email", gamePassword: "PUBG account password", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "Cardholder name",
         pubgCredentials: "PUBG account credentials", saveCredentials: "Save account details",
+        baseUC: "Base UC", baseUCPlaceholder: "600", ucLevel: "Bonus level",
+        levelOne: "Level 1 (+60)", levelTwo: "Level 2 (+150)", levelThree: "Level 3 (+250)", levelFour: "Level 4 (+400)", levelFive: "Level 5 (+600)",
         details: "Details", buy: "Buy", noImage: "No image", noDescription: "No description for this product.",
         type: "Type", country: "Country", buyVia: "Buy", footerText: "PUBG accounts • UC • Royale Pass — all countries and currencies"
+        ,ucBalance: "UC balance: {count}"
     }
 };
 
@@ -154,6 +163,10 @@ function typeLabel(type) {
     return currentLanguage === "en"
         ? ({ "حساب": "PUBG account", UC: "UC top-up", "Royale Pass": "Royale Pass" }[type] || type)
         : ({ "حساب": "حساب PUBG", UC: "شحن UC", "Royale Pass": "Royale Pass" }[type] || type);
+}
+
+function updateUCSettingsVisibility() {
+    $("ucSettings").classList.toggle("hidden", $("accountType").value !== "UC");
 }
 
 function localizedProductText(value) {
@@ -299,7 +312,25 @@ function normalizeAccounts(result) {
             type: account.type || "حساب",
             quantity: account.quantity || "",
             images: Array.isArray(account.images) ? account.images : []
+            ,baseUC: Number(account.baseUC) || 0
+            ,ucLevel: Number(account.ucLevel) || 1
         }));
+}
+
+function getUCDetails(account) {
+    if (account.type !== "UC") {
+        return null;
+    }
+    const base = Number(account.baseUC) || Number.parseInt(account.quantity, 10) || 0;
+    const level = Math.min(5, Math.max(1, Number(account.ucLevel) || 1));
+    const bonus = UC_LEVEL_BONUSES[level] || 0;
+    return { base, level, bonus, total: base + bonus };
+}
+
+function ucSummary(account) {
+    const details = getUCDetails(account);
+    if (!details || !details.base) return "";
+    return `${details.base} UC + ${details.bonus} UC = ${details.total} UC`;
 }
 
 function loadAccounts() {
@@ -552,7 +583,8 @@ async function saveUserProfile(user, profile = {}) {
         name: profile.name || user.displayName || getEmailDisplayName(user),
         photoURL: profile.photoURL || getUserPhoto(user),
         email: user.email || "",
-        provider: "password"
+        provider: "password",
+        ucBalance: Number(profile.ucBalance) || Number(getCachedUserProfile(user).ucBalance) || 0
     };
     profileCache.set(user.uid, data);
     loadedProfiles.add(user.uid);
@@ -564,6 +596,16 @@ async function saveUserProfile(user, profile = {}) {
             console.error("Could not save user profile to Firebase", error);
         }
     }
+}
+
+async function addPurchasedUC(account) {
+    const details = getUCDetails(account);
+    const user = auth?.currentUser;
+    if (!details || !user) return;
+    const profile = getCachedUserProfile(user);
+    const updated = { ...profile, ucBalance: Number(profile.ucBalance) || 0 };
+    updated.ucBalance += details.total;
+    await saveUserProfile(user, updated);
 }
 
 async function loadUserProfile(user) {
@@ -601,9 +643,13 @@ function updateAuthUI(user) {
             $("userAvatar").src = photoURL;
             $("userAvatar").alt = displayName;
         }
+        const ucBalance = Number(profile.ucBalance) || 0;
+        $("userUCBalance").textContent = t("ucBalance").replace("{count}", ucBalance);
+        $("userUCBalance").classList.toggle("hidden", ucBalance <= 0);
         loadUserProfile(user);
     } else {
         $("userAvatar").classList.add("hidden");
+        $("userUCBalance").classList.add("hidden");
     }
 }
 
@@ -913,7 +959,7 @@ function renderAccounts() {
                     +
                     " "
                     +
-                    account.quantity
+                    (account.type === "UC" ? ucSummary(account) : account.quantity)
                     +
                     " "
                     +
@@ -1080,7 +1126,7 @@ function createAccountCard(account) {
                     ?
                     `
                     <span class="quantity">
-                        ${escapeHTML(localizedProductText(account.quantity))}
+                        ${escapeHTML(localizedProductText(account.type === "UC" ? ucSummary(account) : account.quantity))}
                     </span>
                     `
                     :
@@ -1194,7 +1240,7 @@ function showDetails(id) {
                 ${escapeHTML(countryLabel(account.country))}
             </p>
             ${
-                account.quantity
+                (account.type === "UC" ? ucSummary(account) : account.quantity)
                 ?
                 `
                 <p
@@ -1204,7 +1250,7 @@ function showDetails(id) {
                         font-weight:bold;
                     "
                 >
-                    ${escapeHTML(localizedProductText(account.quantity))}
+                    ${escapeHTML(localizedProductText(account.type === "UC" ? ucSummary(account) : account.quantity))}
                 </p>
                 `
                 :
@@ -1711,14 +1757,14 @@ function openBuy(id) {
             </span>
 
             ${
-                account.quantity
+                (account.type === "UC" ? ucSummary(account) : account.quantity)
                 ?
                 `
                 <br>
                 <span
                     style="color:#43a8ff"
                 >
-                    ${escapeHTML(localizedProductText(account.quantity))}
+                    ${escapeHTML(localizedProductText(account.type === "UC" ? ucSummary(account) : account.quantity))}
                 </span>
                 `
                 :
@@ -1849,6 +1895,9 @@ document
         );
 
     });
+
+$("accountType").addEventListener("change", updateUCSettingsVisibility);
+updateUCSettingsVisibility();
 
 
 /* ==================================================
@@ -2012,6 +2061,12 @@ $("accountForm")
                     $("accountDescription")
                         .value
                         .trim(),
+
+                baseUC:
+                    Number($("accountBaseUC").value) || 0,
+
+                ucLevel:
+                    Number($("accountUCLevel").value) || 1,
 
 
                 images:
@@ -2230,6 +2285,10 @@ function editAccount(id) {
     $("accountCurrency").value =
         account.currency;
 
+    $("accountBaseUC").value = account.baseUC || "";
+    $("accountUCLevel").value = account.ucLevel || 1;
+    updateUCSettingsVisibility();
+
 
     $("accountQuantity").value =
         account.quantity || "";
@@ -2310,6 +2369,8 @@ function resetForm() {
     $("imagePreview")
         .innerHTML = "";
 
+    updateUCSettingsVisibility();
+
 }
 
 
@@ -2342,12 +2403,19 @@ $("cardExpiry")?.addEventListener("input", function() {
 $("buyForm")
     .addEventListener(
         "submit",
-        function(event) {
+        async function(event) {
 
             event.preventDefault();
 
 
             if (!currentAccount) {
+                return;
+            }
+
+            if (currentAccount.type === "UC" && !auth?.currentUser) {
+                alert(t("loginRequiredForUC"));
+                closeModal("buyModal");
+                openAuth("login");
                 return;
             }
 
@@ -2396,6 +2464,7 @@ $("buyForm")
 
             const mailtoURL = `mailto:${buyerEmail}?subject=${emailSubject}&body=${emailBody}`;
 
+            await addPurchasedUC(currentAccount);
             window.location.href = mailtoURL;
 
             alert(t("paymentSuccess").replace("{email}", buyerEmail));

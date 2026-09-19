@@ -77,6 +77,24 @@ body {
     align-items: center;
     gap: 8px;
     max-width: 190px;
+    flex-wrap: wrap;
+}
+
+.user-uc-balance {
+    width: 100%;
+    color: #43a8ff;
+    font-size: 11px;
+    text-align: center;
+}
+
+.uc-settings {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    padding: 14px;
+    border: 1px dashed #25364d;
+    border-radius: 12px;
 }
 
 

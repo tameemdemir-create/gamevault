@@ -40,6 +40,7 @@
             <div id="userProfile" class="user-profile hidden">
                 <img id="userAvatar" class="user-avatar" alt="">
                 <span id="userGreeting" class="user-greeting"></span>
+                <span id="userUCBalance" class="user-uc-balance hidden"></span>
             </div>
         </div>
 
@@ -367,6 +368,23 @@
                     <span data-i18n="quantityLevel">الكمية / المستوى</span>
                     <input id="accountQuantity" type="text" data-i18n-placeholder="quantityPlaceholder" placeholder="مثال: 660 UC أو لفل 70">
                 </label>
+
+                <div class="uc-settings hidden" id="ucSettings">
+                    <label>
+                        <span data-i18n="baseUC">الشدات الأساسية</span>
+                        <input id="accountBaseUC" type="number" min="1" data-i18n-placeholder="baseUCPlaceholder" placeholder="600">
+                    </label>
+                    <label>
+                        <span data-i18n="ucLevel">مستوى المكافأة</span>
+                        <select id="accountUCLevel">
+                            <option value="1" data-i18n="levelOne">المستوى 1 (+60)</option>
+                            <option value="2" data-i18n="levelTwo">المستوى 2 (+150)</option>
+                            <option value="3" data-i18n="levelThree">المستوى 3 (+250)</option>
+                            <option value="4" data-i18n="levelFour">المستوى 4 (+400)</option>
+                            <option value="5" data-i18n="levelFive">المستوى 5 (+600)</option>
+                        </select>
+                    </label>
+                </div>
 
                 <!-- 3. الدولة -->
                 <label>
