@@ -460,7 +460,19 @@ function getEmailDisplayName(user) {
         .trim();
 }
 
+function isGoogleUser(user) {
+    return user?.providerData?.some(provider => provider.providerId === "google.com") || false;
+}
+
 function getUserPhoto(user) {
+    if (!user) {
+        return "";
+    }
+
+    if (!isGoogleUser(user)) {
+        return localStorage.getItem(`GAMEVAULT_PROFILE_PHOTO_${user.uid}`) || user.photoURL || "";
+    }
+
     return user.photoURL || user.providerData?.find(provider => provider.photoURL)?.photoURL || "";
 }
 
@@ -471,8 +483,7 @@ function updateAuthUI(user) {
     $("userProfile").classList.toggle("hidden", !user);
     const photoURL = user ? getUserPhoto(user) : "";
     if (user) {
-        const isGoogleUser = user.providerData?.some(provider => provider.providerId === "google.com");
-        const displayName = isGoogleUser ? getEmailDisplayName(user) : (user.displayName || getEmailDisplayName(user));
+        const displayName = isGoogleUser(user) ? getEmailDisplayName(user) : (user.displayName || getEmailDisplayName(user));
         $("userGreeting").textContent = displayName;
         $("userAvatar").classList.toggle("hidden", !photoURL);
         if (photoURL) {
@@ -640,14 +651,17 @@ $("authForm").addEventListener("submit", async event => {
             if (name) {
                 profile.displayName = name;
             }
-            if (selectedAuthImage) {
-                profile.photoURL = selectedAuthImage;
-            }
             if (Object.keys(profile).length) {
                 await result.user.updateProfile(profile);
             }
+            if (selectedAuthImage) {
+                localStorage.setItem(`GAMEVAULT_PROFILE_PHOTO_${result.user.uid}`, selectedAuthImage);
+            }
+            await result.user.reload();
+            updateAuthUI(auth.currentUser || result.user);
         } else {
             await auth.signInWithEmailAndPassword(email, password);
+            updateAuthUI(auth.currentUser);
         }
 
         event.target.reset();
