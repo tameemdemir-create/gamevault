@@ -87,6 +87,17 @@ body {
     text-align: center;
 }
 
+.user-level {
+    padding: 3px 7px;
+    border: 1px solid rgba(83, 223, 145, .45);
+    border-radius: 7px;
+    background: rgba(83, 223, 145, .1);
+    color: #53df91;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
 .uc-settings {
     grid-column: 1 / -1;
     display: grid;
