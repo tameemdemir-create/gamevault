@@ -27,6 +27,7 @@ const I18N = {
         noProductsDescription: "لم يتم العثور على منتجات مطابقة للبحث.", countryFilter: "الدولة",
         allCountries: "كل الدول", login: "تسجيل الدخول", register: "إنشاء حساب", logout: "تسجيل الخروج",
         authName: "الاسم", email: "البريد الإلكتروني", password: "كلمة السر", forgotPassword: "نسيت كلمة السر؟",
+        invalidEmail: "اكتب بريدًا إلكترونيًا صحيحًا.", disposableEmail: "هذا النوع من الإيميلات المؤقتة غير مسموح.", verifyEmailSent: "تم إنشاء الحساب. افتح رسالة التأكيد في بريدك الإلكتروني قبل تسجيل الدخول.", emailNotVerified: "أكد بريدك الإلكتروني أولًا من الرابط المرسل إليه.",
         confirmPassword: "تأكيد كلمة السر", confirmPasswordPlaceholder: "أعد كتابة كلمة السر", passwordsDoNotMatch: "كلمتا السر غير متطابقتين.",
         emailExistsLogin: "هذا الإيميل مسجل مسبقًا. تم تحويلك إلى تسجيل الدخول.",
         profilePhoto: "الصورة الشخصية",
@@ -77,6 +78,7 @@ const I18N = {
         noProductsDescription: "No products match your search.", countryFilter: "Country",
         allCountries: "All countries", login: "Log in", register: "Create account", logout: "Log out",
         authName: "Name", email: "Email", password: "Password", forgotPassword: "Forgot password?",
+        invalidEmail: "Enter a valid email address.", disposableEmail: "Temporary email addresses are not allowed.", verifyEmailSent: "Account created. Verify your email using the link we sent before signing in.", emailNotVerified: "Verify your email first using the link we sent.",
         confirmPassword: "Confirm password", confirmPasswordPlaceholder: "Re-enter your password", passwordsDoNotMatch: "The passwords do not match.",
         emailExistsLogin: "This email is already registered. You have been switched to sign in.",
         profilePhoto: "Profile photo",
@@ -454,6 +456,19 @@ function authErrorMessage(error) {
     return messages[error.code] || t("genericError").replace("{code}", error.code || "unknown");
 }
 
+const DISPOSABLE_EMAIL_DOMAINS = new Set([
+    "10minutemail.com", "guerrillamail.com", "mailinator.com", "tempmail.com",
+    "temp-mail.org", "yopmail.com", "sharklasers.com", "trashmail.com"
+]);
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
+
+function isDisposableEmail(email) {
+    return DISPOSABLE_EMAIL_DOMAINS.has(email.toLowerCase().split("@")[1]);
+}
+
 function getEmailDisplayName(user) {
     return (user.email || "user")
         .split("@")[0]
@@ -543,7 +558,15 @@ if (auth) {
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(error => {
         console.error("Firebase persistence failed", error);
     });
-    auth.onAuthStateChanged(updateAuthUI);
+    auth.onAuthStateChanged(async user => {
+        if (user && !user.emailVerified) {
+            await auth.signOut();
+            openAuth("login");
+            $("authMessage").textContent = t("emailNotVerified");
+            return;
+        }
+        updateAuthUI(user);
+    });
 }
 
 $("loginButton").addEventListener("click", () => openAuth("login"));
@@ -641,6 +664,18 @@ $("authForm").addEventListener("submit", async event => {
     const passwordConfirm = $("authPasswordConfirm").value;
     const name = $("authName").value.trim();
 
+    if (!isValidEmail(email)) {
+        $("authMessage").textContent = t("invalidEmail");
+        $("authEmail").focus();
+        return;
+    }
+
+    if (isDisposableEmail(email)) {
+        $("authMessage").textContent = t("disposableEmail");
+        $("authEmail").focus();
+        return;
+    }
+
     if (authMode === "register" && password !== passwordConfirm) {
         $("authMessage").textContent = t("passwordsDoNotMatch");
         $("authPasswordConfirm").focus();
@@ -666,9 +701,22 @@ $("authForm").addEventListener("submit", async event => {
                 await saveUserProfile(result.user, { name });
             }
             await result.user.reload();
-            updateAuthUI(auth.currentUser || result.user);
+            await result.user.sendEmailVerification({
+                url: "https://tameemdemir-create.github.io/gamevault/",
+                handleCodeInApp: false
+            });
+            await auth.signOut();
+            event.target.reset();
+            closeModal("authModal");
+            alert(t("verifyEmailSent"));
+            return;
         } else {
             await auth.signInWithEmailAndPassword(email, password);
+            if (!auth.currentUser.emailVerified) {
+                await auth.signOut();
+                $("authMessage").textContent = t("emailNotVerified");
+                return;
+            }
             updateAuthUI(auth.currentUser);
         }
 
