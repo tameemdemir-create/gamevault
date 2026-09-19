@@ -69,6 +69,7 @@ const I18N = {
         gatewayName: "اسم البوابة / الحساب البنكي", bankOwner: "اسم صاحب الحساب البنكي", bankAccountNumber: "رقم الحساب البنكي",
         iban: "IBAN", gameEmail: "إيميل حساب PUBG", gamePassword: "كلمة سر حساب PUBG", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "اسم صاحب البطاقة",
         pubgCredentials: "بيانات حساب PUBG", saveCredentials: "حفظ بيانات الحساب",
+        enterUCAmount: "اكتب عدد الشدات من لوحة التحكم", bonusUC: "مكافأة UC",
         baseUC: "الشدات الأساسية", baseUCPlaceholder: "600", ucLevel: "مستوى المكافأة",
         levelOne: "المستوى 1 (+60)", levelTwo: "المستوى 2 (+150)", levelThree: "المستوى 3 (+250)", levelFour: "المستوى 4 (+400)", levelFive: "المستوى 5 (+600)",
         details: "التفاصيل", buy: "شراء", noImage: "لا توجد صورة", noDescription: "لا يوجد وصف لهذا المنتج.",
@@ -124,6 +125,7 @@ const I18N = {
         gatewayName: "Gateway / bank account name", bankOwner: "Bank account owner", bankAccountNumber: "Bank account number",
         iban: "IBAN", gameEmail: "PUBG account email", gamePassword: "PUBG account password", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "Cardholder name",
         pubgCredentials: "PUBG account credentials", saveCredentials: "Save account details",
+        enterUCAmount: "Enter the UC amount from the admin panel", bonusUC: "bonus UC",
         baseUC: "Base UC", baseUCPlaceholder: "600", ucLevel: "Bonus level",
         levelOne: "Level 1 (+60)", levelTwo: "Level 2 (+150)", levelThree: "Level 3 (+250)", levelFour: "Level 4 (+400)", levelFive: "Level 5 (+600)",
         details: "Details", buy: "Buy", noImage: "No image", noDescription: "No description for this product.",
@@ -332,6 +334,14 @@ function ucSummary(account) {
     const details = getUCDetails(account);
     if (!details || !details.base) return "";
     return `${details.base} UC + ${details.bonus} UC = ${details.total} UC`;
+}
+
+function ucProductVisual(account) {
+    const details = getUCDetails(account);
+    if (!details || !details.base) {
+        return `<strong>UC</strong><span>${escapeHTML(t("enterUCAmount"))}</span>`;
+    }
+    return `<strong>${details.total.toLocaleString()} UC</strong><span>${details.base.toLocaleString()} + ${details.bonus.toLocaleString()} ${t("bonusUC")}</span>`;
 }
 
 function getUserLevel(ucBalance) {
@@ -1039,6 +1049,8 @@ function createAccountCard(account) {
             ? account.images[0]
             : null;
 
+    const isUCProduct = account.type === "UC";
+
     const icon =
         getProductIcon(
             account.type
@@ -1053,7 +1065,7 @@ function createAccountCard(account) {
             <div
                 class="account-image"
                 ${
-                    image
+                    !isUCProduct && image
                     ?
                     `onclick="showDetails('${account.id}')"
                      style="cursor:pointer;"`
@@ -1064,7 +1076,13 @@ function createAccountCard(account) {
 
 
                 ${
-                    image
+                    isUCProduct
+
+                    ?
+
+                    `<div class="uc-product-visual">${ucProductVisual(account)}</div>`
+
+                    : !isUCProduct && image
 
                     ?
 
@@ -1236,7 +1254,7 @@ function showDetails(id) {
 
 
     const firstImage =
-        images.length
+        account.type !== "UC" && images.length
             ? images[0]
             : null;
 
@@ -1300,12 +1318,9 @@ function showDetails(id) {
                 `
                 :
                 `
-                <div
-                    class="no-image"
-                    style="height:350px"
-                >
-                    ${t("noImage")}
-                </div>
+                ${account.type === "UC"
+                    ? `<div class="uc-product-visual" style="height:350px">${ucProductVisual(account)}</div>`
+                    : `<div class="no-image" style="height:350px">${t("noImage")}</div>`}
                 `
             }
             ${
