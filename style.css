@@ -72,6 +72,13 @@ body {
     white-space: nowrap;
 }
 
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 190px;
+}
+
 
 /* ================= اللوجو ================= */
 

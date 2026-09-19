@@ -197,6 +197,9 @@ function applyTranslations() {
     if (!$('adminModal').classList.contains('hidden')) {
         renderAdmin();
     }
+    if (auth?.currentUser) {
+        updateAuthUI(auth.currentUser);
+    }
 }
 
 function populateCountryOptions() {
@@ -453,12 +456,18 @@ function updateAuthUI(user) {
     $("loginButton").classList.toggle("hidden", Boolean(user));
     $("registerButton").classList.toggle("hidden", Boolean(user));
     $("logoutButton").classList.toggle("hidden", !user);
-    $("userGreeting").classList.toggle("hidden", !user);
+    $("userProfile").classList.toggle("hidden", !user);
     $("userAvatar").classList.toggle("hidden", !user || !user.photoURL);
     if (user) {
-        $("userGreeting").textContent = t("greeting").replace("{name}", user.displayName || user.email);
+        const emailName = (user.email || "user")
+            .split("@")[0]
+            .replace(/[._-]+/g, " ")
+            .replace(/\b\w/g, letter => letter.toUpperCase());
+        const displayName = (user.displayName || emailName).trim();
+        $("userGreeting").textContent = t("greeting").replace("{name}", displayName);
         if (user.photoURL) {
             $("userAvatar").src = user.photoURL;
+            $("userAvatar").alt = displayName;
         }
     }
 }
