@@ -76,7 +76,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    max-width: 190px;
+    max-width: 260px;
     flex-wrap: wrap;
 }
 
@@ -92,6 +92,8 @@ body {
     align-items: center;
     justify-content: center;
     order: 2;
+    min-width: 58px;
+    text-align: center;
     padding: 3px 7px;
     border: 1px solid rgba(83, 223, 145, .45);
     border-radius: 7px;

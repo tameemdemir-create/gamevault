@@ -656,6 +656,7 @@ function updateAuthUI(user) {
         const ucBalance = Number(profile.ucBalance) || 0;
         const userLevel = getUserLevel(ucBalance);
         $("userLevel").textContent = t("userLevel").replace("{level}", userLevel);
+        $("userLevel").setAttribute("aria-label", t("userLevel").replace("{level}", userLevel));
         $("userUCBalance").textContent = t("ucBalance").replace("{count}", ucBalance);
         $("userUCBalance").classList.toggle("hidden", ucBalance <= 0);
         loadUserProfile(user);
