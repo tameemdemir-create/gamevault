@@ -30,8 +30,9 @@ const I18N = {
         confirmPassword: "تأكيد كلمة السر", confirmPasswordPlaceholder: "أعد كتابة كلمة السر", passwordsDoNotMatch: "كلمتا السر غير متطابقتين.",
         emailExistsLogin: "هذا الإيميل مسجل مسبقًا. تم تحويلك إلى تسجيل الدخول.",
         profilePhoto: "الصورة الشخصية",
+        chooseImage: "اختيار صورة", chooseImages: "اختيار صور",
         invalidPhoto: "تعذر قراءة الصورة. اختر صورة أخرى.",
-        continueGoogle: "المتابعة باستخدام Google", or: "أو", createAccountPrompt: "ليس لديك حساب؟ إنشاء حساب",
+        createAccountPrompt: "ليس لديك حساب؟ إنشاء حساب",
         namePlaceholder: "اكتب اسمك", passwordPlaceholder: "6 أحرف على الأقل", orderConfirmation: "تأكيد الطلب",
         purchaseOrder: "طلب شراء", bankCard: "بطاقة بنكية", securePayment: "دفع آمن", securityConfirmed: "🔒 تأكيد الحماية",
         fastProcessing: "⚡ معالجة سريعة", trusted: "✅ موثوق", cardNumber: "رقم البطاقة", expiryDate: "تاريخ الانتهاء",
@@ -79,8 +80,9 @@ const I18N = {
         confirmPassword: "Confirm password", confirmPasswordPlaceholder: "Re-enter your password", passwordsDoNotMatch: "The passwords do not match.",
         emailExistsLogin: "This email is already registered. You have been switched to sign in.",
         profilePhoto: "Profile photo",
+        chooseImage: "Choose image", chooseImages: "Choose images",
         invalidPhoto: "Could not read the image. Choose another photo.",
-        continueGoogle: "Continue with Google", or: "or", createAccountPrompt: "No account? Create one",
+        createAccountPrompt: "No account? Create one",
         namePlaceholder: "Enter your name", passwordPlaceholder: "At least 6 characters", orderConfirmation: "Order confirmation",
         purchaseOrder: "Purchase order", bankCard: "Bank card", securePayment: "Secure payment", securityConfirmed: "🔒 Security confirmed",
         fastProcessing: "⚡ Fast processing", trusted: "✅ Trusted", cardNumber: "Card number", expiryDate: "Expiry date",
@@ -433,26 +435,20 @@ function authErrorMessage(error) {
         "auth/invalid-email": "The email address is invalid.",
         "auth/weak-password": "The password must be at least 6 characters.",
         "auth/wrong-password": "The email or password is incorrect.",
-        "auth/popup-closed-by-user": "The Google window was closed.",
         "auth/operation-not-allowed": "Enable this sign-in method in Firebase.",
         "auth/unauthorized-domain": "Sign-in is not allowed from this URL.",
         "auth/invalid-api-key": "The Firebase API key is invalid.",
         "auth/network-request-failed": "Network error. Please try again.",
-        "auth/account-exists-with-different-credential": "This email uses another sign-in method. Use email and password.",
-        "auth/credential-already-in-use": "This Google account is already in use.",
         "auth/user-not-found": "No account was found with this email and password."
     } : {
         "auth/email-already-in-use": "هذا البريد مستخدم من قبل.",
         "auth/invalid-email": "البريد الإلكتروني غير صالح.",
         "auth/weak-password": "كلمة السر يجب أن تكون 6 أحرف على الأقل.",
         "auth/wrong-password": "البريد أو كلمة السر غير صحيحة.",
-        "auth/popup-closed-by-user": "تم إغلاق نافذة Google.",
         "auth/operation-not-allowed": "يجب تفعيل طريقة الدخول من Firebase.",
         "auth/unauthorized-domain": "تعذر تسجيل الدخول من هذا الرابط.",
         "auth/invalid-api-key": "مفتاح Firebase غير صحيح.",
         "auth/network-request-failed": "تعذر الاتصال بالإنترنت، حاول مرة أخرى.",
-        "auth/account-exists-with-different-credential": "هذا البريد مسجل بطريقة دخول أخرى. استخدم البريد وكلمة السر.",
-        "auth/credential-already-in-use": "حساب Google مستخدم من قبل.",
         "auth/user-not-found": "لا يوجد حساب بالبريد وكلمة السر بهذا البريد."
     };
     return messages[error.code] || t("genericError").replace("{code}", error.code || "unknown");
@@ -466,20 +462,12 @@ function getEmailDisplayName(user) {
         .trim();
 }
 
-function isGoogleUser(user) {
-    return user?.providerData?.some(provider => provider.providerId === "google.com") || false;
-}
-
 function getUserPhoto(user) {
     if (!user) {
         return "";
     }
 
-    if (!isGoogleUser(user)) {
-        return localStorage.getItem(`GAMEVAULT_PROFILE_PHOTO_${user.uid}`) || user.photoURL || "";
-    }
-
-    return user.photoURL || user.providerData?.find(provider => provider.photoURL)?.photoURL || "";
+    return localStorage.getItem(`GAMEVAULT_PROFILE_PHOTO_${user.uid}`) || user.photoURL || "";
 }
 
 function getCachedUserProfile(user) {
@@ -497,10 +485,10 @@ function getCachedUserProfile(user) {
 
 async function saveUserProfile(user, profile = {}) {
     const data = {
-        name: profile.name || (isGoogleUser(user) ? getEmailDisplayName(user) : user.displayName) || getEmailDisplayName(user),
+        name: profile.name || user.displayName || getEmailDisplayName(user),
         photoURL: profile.photoURL || getUserPhoto(user),
         email: user.email || "",
-        provider: isGoogleUser(user) ? "google" : "password"
+        provider: "password"
     };
     profileCache.set(user.uid, data);
     loadedProfiles.add(user.uid);
@@ -519,10 +507,6 @@ async function loadUserProfile(user) {
         const snapshot = await remoteProfiles.child(user.uid).once("value");
         if (snapshot.exists()) {
             const data = { ...getCachedUserProfile(user), ...snapshot.val() };
-            if (isGoogleUser(user)) {
-                data.name = getEmailDisplayName(user);
-                data.photoURL = getUserPhoto(user);
-            }
             profileCache.set(user.uid, data);
             localStorage.setItem(`GAMEVAULT_PROFILE_${user.uid}`, JSON.stringify(data));
             updateAuthUI(user);
@@ -541,9 +525,8 @@ function updateAuthUI(user) {
     $("userProfile").classList.toggle("hidden", !user);
     if (user) {
         const profile = getCachedUserProfile(user);
-        const googleAccount = isGoogleUser(user);
-        const displayName = googleAccount ? getEmailDisplayName(user) : (profile.name || user.displayName || getEmailDisplayName(user));
-        const photoURL = googleAccount ? getUserPhoto(user) : (profile.photoURL || getUserPhoto(user));
+        const displayName = profile.name || user.displayName || getEmailDisplayName(user);
+        const photoURL = profile.photoURL || getUserPhoto(user);
         $("userGreeting").textContent = displayName;
         $("userAvatar").classList.toggle("hidden", !photoURL);
         if (photoURL) {
@@ -561,20 +544,6 @@ if (auth) {
         console.error("Firebase persistence failed", error);
     });
     auth.onAuthStateChanged(updateAuthUI);
-    auth.getRedirectResult()
-        .then(result => {
-            if (result.user) {
-                closeModal("authModal");
-                updateAuthUI(result.user);
-            }
-        })
-        .catch(error => {
-            openModal("authModal");
-            $("authMessage").textContent = authErrorMessage(error);
-            const googleButton = $("googleLoginButton");
-            googleButton.disabled = false;
-            googleButton.innerHTML = `<span class="google-icon">G</span> <span>${t("continueGoogle")}</span>`;
-        });
 }
 
 $("loginButton").addEventListener("click", () => openAuth("login"));
@@ -655,40 +624,7 @@ $("forgotPassword").addEventListener("click", async () => {
         });
         $("authMessage").textContent = t("resetSent");
     } catch (error) {
-        if (error.code === "auth/email-already-in-use" && authMode === "register") {
-            openAuth("login");
-            $("authEmail").value = email;
-            $("authMessage").textContent = t("emailExistsLogin");
-            return;
-        }
         $("authMessage").textContent = authErrorMessage(error);
-    }
-});
-
-$("googleLoginButton").addEventListener("click", async () => {
-    if (!auth) {
-        $("authMessage").textContent = t("firebaseConfig");
-        return;
-    }
-
-    if (window.top !== window.self) {
-        $("authMessage").textContent = t("openBrowser");
-        return;
-    }
-
-    const googleButton = $("googleLoginButton");
-    googleButton.disabled = true;
-    googleButton.textContent = t("openingLogin");
-
-    try {
-        await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
-    } catch (error) {
-        $("authMessage").textContent = authErrorMessage(error);
-        googleButton.disabled = false;
-    } finally {
-        if (!auth.currentUser) {
-            googleButton.innerHTML = `<span class="google-icon">G</span> <span>${t("continueGoogle")}</span>`;
-        }
     }
 });
 
@@ -739,6 +675,12 @@ $("authForm").addEventListener("submit", async event => {
         event.target.reset();
         closeModal("authModal");
     } catch (error) {
+        if (error.code === "auth/email-already-in-use" && authMode === "register") {
+            openAuth("login");
+            $("authEmail").value = email;
+            $("authMessage").textContent = t("emailExistsLogin");
+            return;
+        }
         $("authMessage").textContent = authErrorMessage(error);
     }
 });

@@ -172,13 +172,6 @@
                 <h2 id="authTitle" data-i18n="login">تسجيل الدخول</h2>
             </div>
 
-                <button type="button" class="google-button" id="googleLoginButton">
-                <span class="google-icon">G</span>
-                <span data-i18n="continueGoogle">المتابعة باستخدام Google</span>
-            </button>
-
-            <div class="auth-divider"><span data-i18n="or">أو</span></div>
-
             <form id="authForm" class="auth-form">
                 <div class="input-group hidden" id="authNameGroup">
                     <label for="authName" data-i18n="authName">الاسم</label>
@@ -187,7 +180,8 @@
 
                 <div class="input-group hidden" id="authPhotoGroup">
                     <label for="authPhoto" data-i18n="profilePhoto">الصورة الشخصية</label>
-                    <input id="authPhoto" type="file" accept="image/*">
+                    <label class="file-picker" for="authPhoto" data-i18n="chooseImage">اختيار صورة</label>
+                    <input id="authPhoto" class="visually-hidden-file" type="file" accept="image/*">
                     <img id="authPhotoPreview" class="auth-photo-preview hidden" alt="">
                 </div>
 
@@ -399,7 +393,8 @@
                 </label>
 
                 <div class="file-input-wrapper">
-                    <input id="accountImages" type="file" accept="image/*" multiple>
+                    <label class="file-picker" for="accountImages" data-i18n="chooseImages">اختيار صور</label>
+                    <input id="accountImages" class="visually-hidden-file" type="file" accept="image/*" multiple>
                 </div>
 
                 <!-- معاينة الصور والأزرار وتأخذ العرض الكامل -->
