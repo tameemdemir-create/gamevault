@@ -370,23 +370,6 @@
                     <input id="accountQuantity" type="text" data-i18n-placeholder="quantityPlaceholder" placeholder="مثال: 660 UC أو لفل 70">
                 </label>
 
-                <div class="uc-settings hidden" id="ucSettings">
-                    <label>
-                        <span data-i18n="baseUC">الشدات الأساسية</span>
-                        <input id="accountBaseUC" type="number" min="1" data-i18n-placeholder="baseUCPlaceholder" placeholder="600">
-                    </label>
-                    <label>
-                        <span data-i18n="ucLevel">مستوى المكافأة</span>
-                        <select id="accountUCLevel">
-                            <option value="1" data-i18n="levelOne">المستوى 1 (+60)</option>
-                            <option value="2" data-i18n="levelTwo">المستوى 2 (+150)</option>
-                            <option value="3" data-i18n="levelThree">المستوى 3 (+250)</option>
-                            <option value="4" data-i18n="levelFour">المستوى 4 (+400)</option>
-                            <option value="5" data-i18n="levelFive">المستوى 5 (+600)</option>
-                        </select>
-                    </label>
-                </div>
-
                 <!-- 3. الدولة -->
                 <label>
                     <span data-i18n="country">الدولة</span>
@@ -408,12 +391,12 @@
                 </label>
 
                 <!-- 8. صور المنتج (التسمية وزر اختيارات الصور بجانب بعض بفضل الـ CSS) -->
-                <label>
+                <label id="accountImagesLabel">
                     <span data-i18n="productImages">صور المنتج</span>
                     <small class="muted" data-i18n="imageLimit" style="font-weight: normal; font-size: 11px; display: block;">تستطيع اختيار حتى 10 صور.</small>
                 </label>
 
-                <div class="file-input-wrapper">
+                <div class="file-input-wrapper" id="accountImagesWrapper">
                     <label class="file-picker" for="accountImages" data-i18n="chooseImages">اختيار صور</label>
                     <input id="accountImages" class="visually-hidden-file" type="file" accept="image/*" multiple>
                 </div>

@@ -104,16 +104,6 @@ body {
     white-space: nowrap;
 }
 
-.uc-settings {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px 24px;
-    padding: 14px;
-    border: 1px dashed #25364d;
-    border-radius: 12px;
-}
-
 
 /* ================= اللوجو ================= */
 

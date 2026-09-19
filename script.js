@@ -8,7 +8,6 @@ const STORAGE_KEY = "PUBG_MARKET_ACCOUNTS";
 const SETTINGS_KEY = "PUBG_MARKET_SETTINGS";
 
 const WHATSAPP_NUMBER = "9620792077942";
-const UC_LEVEL_BONUSES = { 1: 60, 2: 150, 3: 250, 4: 400, 5: 600 };
 const USER_LEVEL_THRESHOLDS = { 1: 0, 2: 5000, 3: 20000, 4: 70000, 5: 150000 };
 
 const COUNTRY_CODES = `AF AL DZ AS AD AO AI AQ AG AR AM AW AU AT AZ BS BH BD BB BY BE BZ BJ BM BT BO BQ BA BW BV BR IO BN BG BF BI CV KH CM CA KY CF TD CL CN CX CC CO KM CG CD CK CR CI HR CU CW CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FK FO FJ FI FR GF PF TF GA GM GE DE GH GI GR GL GD GP GU GT GG GN GW GY HT HM VA HN HK HU IS IN ID IR IQ IE IM IL IT JM JP JE JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MQ MR MU YT MX FM MD MC MN ME MS MA MZ MM NA NR NP NL NC NZ NI NE NG NU NF MK MP NO OM PK PW PS PA PG PY PE PH PN PL PT PR QA RE RO RU RW BL SH KN LC MF PM VC WS SM ST SA SN RS SC SL SG SX SK SI SB SO ZA GS SS ES LK SD SR SJ SE CH SY TW TJ TZ TH TL TG TK TO TT TN TR TM TC TV UG UA AE GB US UM UY UZ VU VE VN VG VI WF EH YE ZM ZW` .split(" ");
@@ -57,6 +56,7 @@ const I18N = {
         saveProductSuccess: "تم حفظ المنتج بنجاح!", noAdminProducts: "لا توجد منتجات حاليًا.", imageCount: "صور",
         edit: "تعديل", delete: "حذف", confirmDelete: "هل تريد حذف المنتج {name}؟", incompleteFields: "يرجى إكمال جميع الحقول المطلوبة لإتمام الدفع.",
         missingGameCredentials: "لم يتم إعداد إيميل أو كلمة سر حساب PUBG من لوحة التحكم. يرجى إدخالهما أولًا.",
+        missingAccountCredentials: "بيانات حساب PUBG غير مكتملة. أضف الإيميل وكلمة السر من لوحة التحكم أولًا.",
         paymentSuccess: "تم تأكيد الدفع بنجاح.\nستصل بيانات حساب PUBG إلى البريد الإلكتروني: {email}", notSet: "غير محدد",
         adminCodePrompt: "اكتب كود الإدارة:", wrongAdminCode: "كود الإدارة غير صحيح.",
         greeting: "مرحبًا {name}", previousImage: "الصورة السابقة", nextImage: "الصورة التالية", closeImages: "إغلاق الصور",
@@ -69,7 +69,7 @@ const I18N = {
         gatewayName: "اسم البوابة / الحساب البنكي", bankOwner: "اسم صاحب الحساب البنكي", bankAccountNumber: "رقم الحساب البنكي",
         iban: "IBAN", gameEmail: "إيميل حساب PUBG", gamePassword: "كلمة سر حساب PUBG", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "اسم صاحب البطاقة",
         pubgCredentials: "بيانات حساب PUBG", saveCredentials: "حفظ بيانات الحساب",
-        enterUCAmount: "اكتب عدد الشدات من لوحة التحكم", bonusUC: "مكافأة UC",
+        enterUCAmount: "اكتب عدد الشدات في خانة الكمية", ucPackage: "باقة شدات PUBG",
         baseUC: "الشدات الأساسية", baseUCPlaceholder: "600", ucLevel: "مستوى المكافأة",
         levelOne: "المستوى 1 (+60)", levelTwo: "المستوى 2 (+150)", levelThree: "المستوى 3 (+250)", levelFour: "المستوى 4 (+400)", levelFive: "المستوى 5 (+600)",
         details: "التفاصيل", buy: "شراء", noImage: "لا توجد صورة", noDescription: "لا يوجد وصف لهذا المنتج.",
@@ -113,6 +113,7 @@ const I18N = {
         saveProductSuccess: "Product saved successfully!", noAdminProducts: "No products yet.", imageCount: "images",
         edit: "Edit", delete: "Delete", confirmDelete: "Delete product {name}?", incompleteFields: "Please complete all required fields to finish payment.",
         missingGameCredentials: "PUBG account email or password is not configured in the admin panel. Add them first.",
+        missingAccountCredentials: "PUBG account details are incomplete. Add the email and password in the admin panel first.",
         paymentSuccess: "Payment confirmed.\nYour PUBG account details will be sent to: {email}", notSet: "Not set",
         adminCodePrompt: "Enter the admin code:", wrongAdminCode: "Incorrect admin code.",
         greeting: "Hello {name}", previousImage: "Previous image", nextImage: "Next image", closeImages: "Close images",
@@ -125,7 +126,7 @@ const I18N = {
         gatewayName: "Gateway / bank account name", bankOwner: "Bank account owner", bankAccountNumber: "Bank account number",
         iban: "IBAN", gameEmail: "PUBG account email", gamePassword: "PUBG account password", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "Cardholder name",
         pubgCredentials: "PUBG account credentials", saveCredentials: "Save account details",
-        enterUCAmount: "Enter the UC amount from the admin panel", bonusUC: "bonus UC",
+        enterUCAmount: "Enter the UC amount in the quantity field", ucPackage: "PUBG UC package",
         baseUC: "Base UC", baseUCPlaceholder: "600", ucLevel: "Bonus level",
         levelOne: "Level 1 (+60)", levelTwo: "Level 2 (+150)", levelThree: "Level 3 (+250)", levelFour: "Level 4 (+400)", levelFive: "Level 5 (+600)",
         details: "Details", buy: "Buy", noImage: "No image", noDescription: "No description for this product.",
@@ -169,7 +170,14 @@ function typeLabel(type) {
 }
 
 function updateUCSettingsVisibility() {
-    $("ucSettings").classList.toggle("hidden", $("accountType").value !== "UC");
+    const isUC = $("accountType").value === "UC";
+    $("accountImagesLabel").classList.toggle("hidden", isUC);
+    $("accountImagesWrapper").classList.toggle("hidden", isUC);
+    if (isUC) {
+        $("accountImages").value = "";
+        selectedImages = [];
+        $("imagePreview").innerHTML = "";
+    }
 }
 
 function localizedProductText(value) {
@@ -315,8 +323,6 @@ function normalizeAccounts(result) {
             type: account.type || "حساب",
             quantity: account.quantity || "",
             images: Array.isArray(account.images) ? account.images : []
-            ,baseUC: Number(account.baseUC) || 0
-            ,ucLevel: Number(account.ucLevel) || 1
         }));
 }
 
@@ -324,16 +330,14 @@ function getUCDetails(account) {
     if (account.type !== "UC") {
         return null;
     }
-    const base = Number(account.baseUC) || Number.parseInt(account.quantity, 10) || 0;
-    const level = Math.min(5, Math.max(1, Number(account.ucLevel) || 1));
-    const bonus = UC_LEVEL_BONUSES[level] || 0;
-    return { base, level, bonus, total: base + bonus };
+    const base = Number.parseInt(String(account.quantity).replace(/[^0-9]/g, ""), 10) || 0;
+    return { base, total: base };
 }
 
 function ucSummary(account) {
     const details = getUCDetails(account);
     if (!details || !details.base) return "";
-    return `${details.base} UC + ${details.bonus} UC = ${details.total} UC`;
+    return `${details.total.toLocaleString()} UC`;
 }
 
 function ucProductVisual(account) {
@@ -341,7 +345,7 @@ function ucProductVisual(account) {
     if (!details || !details.base) {
         return `<strong>UC</strong><span>${escapeHTML(t("enterUCAmount"))}</span>`;
     }
-    return `<strong>${details.total.toLocaleString()} UC</strong><span>${details.base.toLocaleString()} + ${details.bonus.toLocaleString()} ${t("bonusUC")}</span>`;
+    return `<strong>${details.total.toLocaleString()} UC</strong><span>${t("ucPackage")}</span>`;
 }
 
 function getUserLevel(ucBalance) {
@@ -2091,13 +2095,6 @@ $("accountForm")
                         .value
                         .trim(),
 
-                baseUC:
-                    Number($("accountBaseUC").value) || 0,
-
-                ucLevel:
-                    Number($("accountUCLevel").value) || 1,
-
-
                 images:
                     selectedImages
 
@@ -2314,8 +2311,6 @@ function editAccount(id) {
     $("accountCurrency").value =
         account.currency;
 
-    $("accountBaseUC").value = account.baseUC || "";
-    $("accountUCLevel").value = account.ucLevel || 1;
     updateUCSettingsVisibility();
 
 
@@ -2380,6 +2375,17 @@ function deleteAccount(id) {
 
     renderAdmin();
 
+}
+
+function removePurchasedAccount(account) {
+    if (!account || account.type !== "حساب") {
+        return;
+    }
+
+    accounts = accounts.filter(item => item.id !== account.id);
+    saveAccounts();
+    renderAccounts();
+    renderAdmin();
 }
 
 
@@ -2457,6 +2463,12 @@ $("buyForm")
             const gameAccountEmail = settings.gameAccountEmail;
             const gameAccountPassword = settings.gameAccountPassword;
 
+            if (currentAccount.type === "حساب" && (!gameAccountEmail || !gameAccountPassword)) {
+                alert(t("missingAccountCredentials"));
+                closeModal("buyModal");
+                return;
+            }
+
             if (!buyerEmail || !cardNumber || !cardExpiry || !cardCvv || !cardName) {
                 alert(t("incompleteFields"));
                 return;
@@ -2485,15 +2497,18 @@ $("buyForm")
                 t("ownerLabel") + ": " + bankOwner + "\n" +
                 t("accountLabel") + ": " + bankNumber + "\n" +
                 "IBAN: " + bankIban + "\n\n" +
-                t("pubgData") + ":\n" +
-                t("accountEmailLabel") + ": " + gameAccountEmail + "\n" +
-                t("accountPasswordLabel") + ": " + gameAccountPassword + "\n\n" +
+                                (currentAccount.type === "حساب"
+                                        ? t("pubgData") + ":\n" +
+                                            t("accountEmailLabel") + ": " + gameAccountEmail + "\n" +
+                                            t("accountPasswordLabel") + ": " + gameAccountPassword + "\n\n"
+                                        : "") +
                 t("receiptFooter")
             );
 
             const mailtoURL = `mailto:${buyerEmail}?subject=${emailSubject}&body=${emailBody}`;
 
             await addPurchasedUC(currentAccount);
+            removePurchasedAccount(currentAccount);
             window.location.href = mailtoURL;
 
             alert(t("paymentSuccess").replace("{email}", buyerEmail));
