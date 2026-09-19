@@ -28,6 +28,7 @@ const I18N = {
         allCountries: "كل الدول", login: "تسجيل الدخول", register: "إنشاء حساب", logout: "تسجيل الخروج",
         authName: "الاسم", email: "البريد الإلكتروني", password: "كلمة السر", forgotPassword: "نسيت كلمة السر؟",
         confirmPassword: "تأكيد كلمة السر", confirmPasswordPlaceholder: "أعد كتابة كلمة السر", passwordsDoNotMatch: "كلمتا السر غير متطابقتين.",
+        emailExistsLogin: "هذا الإيميل مسجل مسبقًا. تم تحويلك إلى تسجيل الدخول.",
         profilePhoto: "الصورة الشخصية",
         invalidPhoto: "تعذر قراءة الصورة. اختر صورة أخرى.",
         continueGoogle: "المتابعة باستخدام Google", or: "أو", createAccountPrompt: "ليس لديك حساب؟ إنشاء حساب",
@@ -76,6 +77,7 @@ const I18N = {
         allCountries: "All countries", login: "Log in", register: "Create account", logout: "Log out",
         authName: "Name", email: "Email", password: "Password", forgotPassword: "Forgot password?",
         confirmPassword: "Confirm password", confirmPasswordPlaceholder: "Re-enter your password", passwordsDoNotMatch: "The passwords do not match.",
+        emailExistsLogin: "This email is already registered. You have been switched to sign in.",
         profilePhoto: "Profile photo",
         invalidPhoto: "Could not read the image. Choose another photo.",
         continueGoogle: "Continue with Google", or: "or", createAccountPrompt: "No account? Create one",
@@ -264,11 +266,15 @@ let authMode = "login";
 let selectedAuthImage = "";
 
 let remoteAccounts = null;
+let remoteProfiles = null;
+const profileCache = new Map();
+const loadedProfiles = new Set();
 
 if (firebaseReady) {
     try {
         firebase.initializeApp(FIREBASE_CONFIG);
         remoteAccounts = firebase.database().ref("products");
+        remoteProfiles = firebase.database().ref("profiles");
         auth = firebase.auth();
     } catch (error) {
         console.error("Firebase initialization failed", error);
@@ -476,20 +482,75 @@ function getUserPhoto(user) {
     return user.photoURL || user.providerData?.find(provider => provider.photoURL)?.photoURL || "";
 }
 
+function getCachedUserProfile(user) {
+    let profile = profileCache.get(user.uid);
+    if (!profile) {
+        try {
+            profile = JSON.parse(localStorage.getItem(`GAMEVAULT_PROFILE_${user.uid}`) || "null") || {};
+        } catch {
+            profile = {};
+        }
+        profileCache.set(user.uid, profile);
+    }
+    return profile;
+}
+
+async function saveUserProfile(user, profile = {}) {
+    const data = {
+        name: profile.name || (isGoogleUser(user) ? getEmailDisplayName(user) : user.displayName) || getEmailDisplayName(user),
+        photoURL: profile.photoURL || getUserPhoto(user),
+        email: user.email || "",
+        provider: isGoogleUser(user) ? "google" : "password"
+    };
+    profileCache.set(user.uid, data);
+    loadedProfiles.add(user.uid);
+    localStorage.setItem(`GAMEVAULT_PROFILE_${user.uid}`, JSON.stringify(data));
+    if (remoteProfiles) {
+        await remoteProfiles.child(user.uid).set(data);
+    }
+}
+
+async function loadUserProfile(user) {
+    if (!user || !remoteProfiles || loadedProfiles.has(user.uid)) {
+        return;
+    }
+    loadedProfiles.add(user.uid);
+    try {
+        const snapshot = await remoteProfiles.child(user.uid).once("value");
+        if (snapshot.exists()) {
+            const data = { ...getCachedUserProfile(user), ...snapshot.val() };
+            if (isGoogleUser(user)) {
+                data.name = getEmailDisplayName(user);
+                data.photoURL = getUserPhoto(user);
+            }
+            profileCache.set(user.uid, data);
+            localStorage.setItem(`GAMEVAULT_PROFILE_${user.uid}`, JSON.stringify(data));
+            updateAuthUI(user);
+        } else {
+            await saveUserProfile(user);
+        }
+    } catch (error) {
+        console.error("Could not load user profile", error);
+    }
+}
+
 function updateAuthUI(user) {
     $("loginButton").classList.toggle("hidden", Boolean(user));
     $("registerButton").classList.toggle("hidden", Boolean(user));
     $("logoutButton").classList.toggle("hidden", !user);
     $("userProfile").classList.toggle("hidden", !user);
-    const photoURL = user ? getUserPhoto(user) : "";
     if (user) {
-        const displayName = isGoogleUser(user) ? getEmailDisplayName(user) : (user.displayName || getEmailDisplayName(user));
+        const profile = getCachedUserProfile(user);
+        const googleAccount = isGoogleUser(user);
+        const displayName = googleAccount ? getEmailDisplayName(user) : (profile.name || user.displayName || getEmailDisplayName(user));
+        const photoURL = googleAccount ? getUserPhoto(user) : (profile.photoURL || getUserPhoto(user));
         $("userGreeting").textContent = displayName;
         $("userAvatar").classList.toggle("hidden", !photoURL);
         if (photoURL) {
             $("userAvatar").src = photoURL;
             $("userAvatar").alt = displayName;
         }
+        loadUserProfile(user);
     } else {
         $("userAvatar").classList.add("hidden");
     }
@@ -594,6 +655,12 @@ $("forgotPassword").addEventListener("click", async () => {
         });
         $("authMessage").textContent = t("resetSent");
     } catch (error) {
+        if (error.code === "auth/email-already-in-use" && authMode === "register") {
+            openAuth("login");
+            $("authEmail").value = email;
+            $("authMessage").textContent = t("emailExistsLogin");
+            return;
+        }
         $("authMessage").textContent = authErrorMessage(error);
     }
 });
@@ -655,7 +722,12 @@ $("authForm").addEventListener("submit", async event => {
                 await result.user.updateProfile(profile);
             }
             if (selectedAuthImage) {
-                localStorage.setItem(`GAMEVAULT_PROFILE_PHOTO_${result.user.uid}`, selectedAuthImage);
+                await saveUserProfile(result.user, {
+                    name,
+                    photoURL: selectedAuthImage
+                });
+            } else {
+                await saveUserProfile(result.user, { name });
             }
             await result.user.reload();
             updateAuthUI(auth.currentUser || result.user);
