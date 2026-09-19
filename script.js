@@ -73,7 +73,7 @@ const I18N = {
         levelOne: "المستوى 1 (+60)", levelTwo: "المستوى 2 (+150)", levelThree: "المستوى 3 (+250)", levelFour: "المستوى 4 (+400)", levelFive: "المستوى 5 (+600)",
         details: "التفاصيل", buy: "شراء", noImage: "لا توجد صورة", noDescription: "لا يوجد وصف لهذا المنتج.",
         type: "النوع", country: "الدولة", buyVia: "شراء", footerText: "حسابات PUBG • UC • Royale Pass — كل الدول والعملات"
-        ,ucBalance: "رصيد UC: {count}", userLevel: "المستوى {level}"
+        ,ucBalance: "رصيد UC: {count}", userLevel: "مستوى {level}"
     },
     en: {
         badge: "PUBG MARKET", storeSubtitle: "PUBG store", heroTitle: "Everything you need", heroTitleAccent: "for PUBG",
@@ -128,7 +128,7 @@ const I18N = {
         levelOne: "Level 1 (+60)", levelTwo: "Level 2 (+150)", levelThree: "Level 3 (+250)", levelFour: "Level 4 (+400)", levelFive: "Level 5 (+600)",
         details: "Details", buy: "Buy", noImage: "No image", noDescription: "No description for this product.",
         type: "Type", country: "Country", buyVia: "Buy", footerText: "PUBG accounts • UC • Royale Pass — all countries and currencies"
-        ,ucBalance: "UC balance: {count}", userLevel: "Level {level}"
+        ,ucBalance: "UC balance: {count}", userLevel: "Lv. {level}"
     }
 };
 

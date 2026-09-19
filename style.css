@@ -88,6 +88,10 @@ body {
 }
 
 .user-level {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    order: 2;
     padding: 3px 7px;
     border: 1px solid rgba(83, 223, 145, .45);
     border-radius: 7px;
