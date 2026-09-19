@@ -452,23 +452,35 @@ function authErrorMessage(error) {
     return messages[error.code] || t("genericError").replace("{code}", error.code || "unknown");
 }
 
+function getEmailDisplayName(user) {
+    return (user.email || "user")
+        .split("@")[0]
+        .replace(/[._-]+/g, " ")
+        .replace(/\b\w/g, letter => letter.toUpperCase())
+        .trim();
+}
+
+function getUserPhoto(user) {
+    return user.photoURL || user.providerData?.find(provider => provider.photoURL)?.photoURL || "";
+}
+
 function updateAuthUI(user) {
     $("loginButton").classList.toggle("hidden", Boolean(user));
     $("registerButton").classList.toggle("hidden", Boolean(user));
     $("logoutButton").classList.toggle("hidden", !user);
     $("userProfile").classList.toggle("hidden", !user);
-    $("userAvatar").classList.toggle("hidden", !user || !user.photoURL);
+    const photoURL = user ? getUserPhoto(user) : "";
     if (user) {
-        const emailName = (user.email || "user")
-            .split("@")[0]
-            .replace(/[._-]+/g, " ")
-            .replace(/\b\w/g, letter => letter.toUpperCase());
-        const displayName = (user.displayName || emailName).trim();
-        $("userGreeting").textContent = t("greeting").replace("{name}", displayName);
-        if (user.photoURL) {
-            $("userAvatar").src = user.photoURL;
+        const isGoogleUser = user.providerData?.some(provider => provider.providerId === "google.com");
+        const displayName = isGoogleUser ? getEmailDisplayName(user) : (user.displayName || getEmailDisplayName(user));
+        $("userGreeting").textContent = displayName;
+        $("userAvatar").classList.toggle("hidden", !photoURL);
+        if (photoURL) {
+            $("userAvatar").src = photoURL;
             $("userAvatar").alt = displayName;
         }
+    } else {
+        $("userAvatar").classList.add("hidden");
     }
 }
 
