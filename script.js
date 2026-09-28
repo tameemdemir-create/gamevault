@@ -62,7 +62,7 @@ const I18N = {
         openingLogin: "جاري فتح تسجيل الدخول...", saveSettingsSuccess: "تم حفظ إعدادات الدفع وحساب PUBG بنجاح.",
         uploadError: "تعذر رفع المنتجات الحالية إلى Firebase.", saveFirebaseError: "تعذر حفظ البيانات على Firebase. تحقق من قواعد قاعدة البيانات.",
         saveProductSuccess: "تم حفظ المنتج بنجاح!", noAdminProducts: "لا توجد منتجات حاليًا.", imageCount: "صور",
-        translationProgress: "جاري ترجمة المنتج...", automaticTranslationError: "تعذرت الترجمة التلقائية. سجّل الدخول وتأكد من نشر خدمة الترجمة وإعداد Google Cloud.",
+        translationProgress: "جاري ترجمة المنتج...",
         edit: "تعديل", delete: "حذف", confirmDelete: "هل تريد حذف المنتج {name}؟", incompleteFields: "يرجى إكمال الحقول المطلوبة.",
         missingGameCredentials: "لم يتم إعداد إيميل أو كلمة سر حساب PUBG من لوحة التحكم. يرجى إدخالهما أولًا.",
         missingAccountCredentials: "بيانات حساب PUBG غير مكتملة. أضف الإيميل وكلمة السر من لوحة التحكم أولًا.",
@@ -129,7 +129,7 @@ const I18N = {
         openingLogin: "Opening sign-in...", saveSettingsSuccess: "Payment and PUBG account settings saved.",
         uploadError: "Could not upload the current products to Firebase.", saveFirebaseError: "Could not save to Firebase. Check the database rules.",
         saveProductSuccess: "Product saved successfully!", noAdminProducts: "No products yet.", imageCount: "images",
-        translationProgress: "Translating product...", automaticTranslationError: "Automatic translation failed. Sign in and verify that the translation function and Google Cloud are configured.",
+        translationProgress: "Translating product...",
         edit: "Edit", delete: "Delete", confirmDelete: "Delete product {name}?", incompleteFields: "Please complete the required fields.",
         missingGameCredentials: "PUBG account email or password is not configured in the admin panel. Add them first.",
         missingAccountCredentials: "PUBG account details are incomplete. Add the email and password in the admin panel first.",
@@ -366,9 +366,66 @@ const DEFAULT_SETTINGS = {
     bankAccountOwner: "",
     bankAccountNumber: "",
     bankIban: "",
-    gameAccountEmail: "",
-    gameAccountPassword: ""
+    gameAccountEmail: LOCAL_TEST_MODE ? "demo@gamevault.invalid" : "",
+    gameAccountPassword: LOCAL_TEST_MODE ? "demo-only-password" : ""
 };
+
+const LOCAL_DEMO_ACCOUNTS = [
+    {
+        id: "local-demo-account",
+        type: "حساب",
+        name: "حساب PUBG تجريبي",
+        nameEn: "Demo PUBG account",
+        quantity: "المستوى 70",
+        quantityEn: "Level 70",
+        description: "حساب تجريبي لاختبار تفاصيل المنتج والشراء المحلي.",
+        descriptionEn: "Sample account for testing product details and local checkout.",
+        translations: {
+            ar: { name: "حساب PUBG تجريبي", quantity: "المستوى 70", description: "حساب تجريبي لاختبار تفاصيل المنتج والشراء المحلي." },
+            en: { name: "Demo PUBG account", quantity: "Level 70", description: "Sample account for testing product details and local checkout." }
+        },
+        country: "QA",
+        price: 25,
+        currency: "USD",
+        images: []
+    },
+    {
+        id: "local-demo-uc",
+        type: "UC",
+        name: "باقة شدات تجريبية",
+        nameEn: "Demo UC package",
+        quantity: "660 UC",
+        quantityEn: "660 UC",
+        description: "باقة تجريبية لاختبار الشراء المحلي.",
+        descriptionEn: "Sample package for testing local checkout.",
+        translations: {
+            ar: { name: "باقة شدات تجريبية", quantity: "660 UC", description: "باقة تجريبية لاختبار الشراء المحلي." },
+            en: { name: "Demo UC package", quantity: "660 UC", description: "Sample package for testing local checkout." }
+        },
+        country: "QA",
+        price: 5,
+        currency: "USD",
+        images: []
+    },
+    {
+        id: "local-demo-royale",
+        type: "Royale Pass",
+        name: "رويال باس تجريبي",
+        nameEn: "Demo Royale Pass",
+        quantity: "30 يومًا",
+        quantityEn: "30 days",
+        description: "منتج تجريبي لاختبار بطاقة الرويال باس والشراء المحلي.",
+        descriptionEn: "Sample product for testing the Royale Pass card and local checkout.",
+        translations: {
+            ar: { name: "رويال باس تجريبي", quantity: "30 يومًا", description: "منتج تجريبي لاختبار بطاقة الرويال باس والشراء المحلي." },
+            en: { name: "Demo Royale Pass", quantity: "30 days", description: "Sample product for testing the Royale Pass card and local checkout." }
+        },
+        country: "QA",
+        price: 8,
+        currency: "USD",
+        images: []
+    }
+];
 
 const FIREBASE_CONFIG = {
     apiKey: "AIzaSyCqftmFq09lF9MsU19Q9QKhxR6RIu6X0WM",
@@ -382,6 +439,8 @@ const FIREBASE_CONFIG = {
 };
 
 const firebaseReady =
+    !LOCAL_TEST_MODE
+    &&
     window.firebase
     && !FIREBASE_CONFIG.apiKey.startsWith("ضع_")
     && FIREBASE_CONFIG.databaseURL
@@ -480,6 +539,9 @@ function loadAccounts() {
         } catch {
             localAccounts = [];
         }
+    } else if (LOCAL_TEST_MODE) {
+        localAccounts = normalizeAccounts(LOCAL_DEMO_ACCOUNTS);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(localAccounts));
     }
 
     accounts = localAccounts;
@@ -588,6 +650,11 @@ function configureCheckoutMode() {
     buttonLabel.dataset.i18n = buttonKey;
     buttonLabel.textContent = t(buttonKey);
     $("submitBuyButton").disabled = !LOCAL_TEST_MODE;
+        if (LOCAL_TEST_MODE && !auth) {
+            updateAuthUI(null);
+            $("localAdminButton").classList.remove("hidden");
+            $("localAdminButton").addEventListener("click", openAdmin);
+        }
 }
 
 function openModal(id) {
@@ -776,8 +843,8 @@ async function loadUserProfile(user) {
 }
 
 function updateAuthUI(user) {
-    $("loginButton").classList.toggle("hidden", Boolean(user));
-    $("registerButton").classList.toggle("hidden", Boolean(user));
+    $("loginButton").classList.toggle("hidden", LOCAL_TEST_MODE || Boolean(user));
+    $("registerButton").classList.toggle("hidden", LOCAL_TEST_MODE || Boolean(user));
     $("logoutButton").classList.toggle("hidden", !user);
     $("userProfile").classList.toggle("hidden", !user);
     if (user) {
@@ -2147,6 +2214,12 @@ updateProductTypeVisibility();
 
 function openAdmin() {
 
+    if (LOCAL_TEST_MODE) {
+        renderAdmin();
+        openModal("adminModal");
+        return;
+    }
+
     const code =
         prompt(t("adminCodePrompt"));
 
@@ -2302,11 +2375,7 @@ $("accountForm")
                         };
                     }
                 } catch (error) {
-                    console.error("Automatic product translation failed", error);
-                    alert(t("automaticTranslationError"));
-                    submitButton.disabled = false;
-                    submitButton.textContent = t("saveProduct");
-                    return;
+                    console.warn("Automatic product translation unavailable; saving the original text.", error);
                 }
 
                 submitButton.disabled = false;
@@ -2780,8 +2849,8 @@ $("buyForm")
             }
 
             const settings = loadSettings();
-            const gameAccountEmail = settings.gameAccountEmail;
-            const gameAccountPassword = settings.gameAccountPassword;
+            const gameAccountEmail = settings.gameAccountEmail || (LOCAL_TEST_MODE ? "demo@gamevault.invalid" : "");
+            const gameAccountPassword = settings.gameAccountPassword || (LOCAL_TEST_MODE ? "demo-only-password" : "");
 
             if (currentAccount.type === "حساب" && (!gameAccountEmail || !gameAccountPassword)) {
                 alert(t("missingAccountCredentials"));
