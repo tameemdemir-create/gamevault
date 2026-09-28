@@ -80,6 +80,11 @@ body {
     flex-wrap: wrap;
 }
 
+.user-profile .admin-dashboard-button {
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
 .user-uc-balance {
     width: 100%;
     color: #43a8ff;

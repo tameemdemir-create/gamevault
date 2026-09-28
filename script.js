@@ -6,6 +6,7 @@ const STORAGE_KEY = "PUBG_MARKET_ACCOUNTS";
 const SETTINGS_KEY = "PUBG_MARKET_SETTINGS";
 const ORDERS_STORAGE_KEY = "GAMEVAULT_LOCAL_ORDERS";
 const LOCAL_TEST_MODE = location.protocol === "file:" || ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
+const ADMIN_EMAIL = "tameemdemir@gmail.com";
 
 const WHATSAPP_NUMBER = "9620792077942";
 const USER_LEVEL_THRESHOLDS = { 1: 0, 2: 5000, 3: 20000, 4: 70000, 5: 150000 };
@@ -67,7 +68,7 @@ const I18N = {
         missingGameCredentials: "لم يتم إعداد إيميل أو كلمة سر حساب PUBG من لوحة التحكم. يرجى إدخالهما أولًا.",
         missingAccountCredentials: "بيانات حساب PUBG غير مكتملة. أضف الإيميل وكلمة السر من لوحة التحكم أولًا.",
         paymentSuccess: "تم تأكيد الدفع بنجاح.\nستظهر بيانات حساب PUBG داخل الموقع.", notSet: "غير محدد",
-        adminAccessDenied: "هذا الحساب ليس مديرًا. أضف UID التالي إلى admins في Firebase: {uid}",
+        adminAccessDenied: "هذا الحساب غير مخوّل لفتح لوحة التحكم.",
         adminAccessError: "تعذر التحقق من صلاحية المدير. تحقق من إعداد Firebase واتصال الإنترنت.",
         greeting: "مرحبًا {name}", previousImage: "الصورة السابقة", nextImage: "الصورة التالية", closeImages: "إغلاق الصور",
         genericError: "حدث خطأ ({code}).", showPassword: "إظهار كلمة السر", hidePassword: "إخفاء كلمة السر",
@@ -136,7 +137,7 @@ const I18N = {
         missingGameCredentials: "PUBG account email or password is not configured in the admin panel. Add them first.",
         missingAccountCredentials: "PUBG account details are incomplete. Add the email and password in the admin panel first.",
         paymentSuccess: "Payment confirmed.\nYour PUBG account details will appear on the website.", notSet: "Not set",
-        adminAccessDenied: "This account is not an admin. Add this UID to admins in Firebase: {uid}",
+        adminAccessDenied: "This account is not authorized to open the admin panel.",
         adminAccessError: "Could not verify admin access. Check Firebase setup and your internet connection.",
         greeting: "Hello {name}", previousImage: "Previous image", nextImage: "Next image", closeImages: "Close images",
         genericError: "An error occurred ({code}).", showPassword: "Show password", hidePassword: "Hide password",
@@ -1049,6 +1050,8 @@ function updateAuthUI(user) {
     $("registerButton").classList.toggle("hidden", LOCAL_TEST_MODE || Boolean(user));
     $("logoutButton").classList.toggle("hidden", !user);
     $("userProfile").classList.toggle("hidden", !user);
+    const isAdmin = Boolean(user?.emailVerified && user.email?.trim().toLowerCase() === ADMIN_EMAIL);
+    $("adminDashboardButton").classList.toggle("hidden", !isAdmin);
     if (user) {
         const profile = getCachedUserProfile(user);
         const displayName = profile.name || user.displayName || getEmailDisplayName(user);
@@ -1092,6 +1095,7 @@ if (auth) {
 
 $("loginButton").addEventListener("click", () => openAuth("login"));
 $("registerButton").addEventListener("click", () => openAuth("register"));
+$("adminDashboardButton").addEventListener("click", openAdmin);
 $("logoutButton").addEventListener("click", () => {
     if (auth) {
         auth.signOut();
@@ -2421,24 +2425,18 @@ async function openAdmin() {
     }
 
     const user = auth?.currentUser;
-    if (!user || !remoteProfiles) {
+    if (!user || !user.emailVerified) {
         openAuth("login");
         return;
     }
 
-    try {
-        const adminSnapshot = await firebase.database().ref(`admins/${user.uid}`).once("value");
-        if (adminSnapshot.val() !== true) {
-            alert(t("adminAccessDenied").replace("{uid}", user.uid));
-            return;
-        }
-
-        renderAdmin();
-        openModal("adminModal");
-    } catch (error) {
-        console.error("Admin role check failed", error);
-        alert(t("adminAccessError"));
+    if (user.email?.trim().toLowerCase() !== ADMIN_EMAIL) {
+        alert(t("adminAccessDenied"));
+        return;
     }
+
+    renderAdmin();
+    openModal("adminModal");
 
 }
 
