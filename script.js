@@ -924,16 +924,6 @@ function isDisposableEmail(email) {
     return DISPOSABLE_EMAIL_DOMAINS.has(email.toLowerCase().split("@")[1]);
 }
 
-function authActionSettings() {
-    const currentUrl = window.location.protocol === "http:" || window.location.protocol === "https:"
-        ? window.location.href.split("#")[0]
-        : "https://tameemdemir-create.github.io/gamevault/";
-    return {
-        url: currentUrl,
-        handleCodeInApp: false
-    };
-}
-
 function verificationCooldownKey(email) {
     return `GAMEVAULT_VERIFICATION_COOLDOWN_${email.toLowerCase()}`;
 }
@@ -1184,9 +1174,7 @@ $("forgotPassword").addEventListener("click", async () => {
     }
 
     try {
-        await auth.sendPasswordResetEmail(email, {
-            ...authActionSettings()
-        });
+        await auth.sendPasswordResetEmail(email);
         $("authMessage").textContent = t("resetSent");
     } catch (error) {
         $("authMessage").textContent = authErrorMessage(error);
@@ -1210,7 +1198,7 @@ $("resendVerification").addEventListener("click", async () => {
     try {
         registrationInProgress = true;
         const result = await auth.signInWithEmailAndPassword(email, password);
-        await result.user.sendEmailVerification(authActionSettings());
+        await result.user.sendEmailVerification();
         await auth.signOut();
         startVerificationCooldown(email);
         $("authMessage").textContent = t("verificationSent");
@@ -1268,7 +1256,7 @@ $("authForm").addEventListener("submit", async event => {
                 photoURL: selectedAuthImage
             });
             await result.user.reload();
-            await result.user.sendEmailVerification(authActionSettings());
+            await result.user.sendEmailVerification();
             startVerificationCooldown(email);
             await auth.signOut();
             event.target.reset();
