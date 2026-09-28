@@ -6,7 +6,7 @@
 
 1. فعّل خطة Blaze لمشروع Firebase `gamevault-5458b`، ثم فعّل **Cloud Translation API** في Google Cloud Console. استخدام الترجمة يخضع لتسعير Google.
 2. امنح حساب خدمة Cloud Functions دور **Cloud Translation API User** (`roles/cloudtranslate.user`). في الجيل الثاني يكون الحساب الافتراضي عادةً `PROJECT_NUMBER-compute@developer.gserviceaccount.com`.
-3. ثبّت Firebase CLI وسجّل الدخول:
+3. استخدم Node.js 22 في الطرفية؛ بيئة التطوير الحالية تستخدم Node 26 الذي لا يدعمه Firebase CLI. ثم ثبّت Firebase CLI وسجّل الدخول:
 
    ```powershell
    npm install -g firebase-tools

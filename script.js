@@ -21,7 +21,7 @@ const COUNTRY_ALIASES = {
 
 const I18N = {
     ar: {
-        pageTitle: "Game Vault", languageLabel: "اللغة", additionalTranslations: "ترجمات إضافية", badge: "PUBG MARKET", storeSubtitle: "متجر ببجي", heroTitle: "كل ما تحتاجه", heroTitleAccent: "لببجي",
+        pageTitle: "Game Vault", languageLabel: "اللغة", badge: "PUBG MARKET", storeSubtitle: "متجر ببجي", heroTitle: "كل ما تحتاجه", heroTitleAccent: "لببجي",
         heroDescription: "حسابات ببجي، شدات UC ورويال باس.", browseStore: "تصفح المتجر",
         searchPlaceholder: "ابحث عن حساب أو شدات أو رويال باس...", search: "بحث", store: "المتجر",
         products: "منتجات PUBG", productCount: "{count} منتج", all: "الكل", accounts: "حسابات",
@@ -50,11 +50,8 @@ const I18N = {
         adminDescription: "إضافة وتعديل وحذف حسابات وUC والرويال باس.", paymentSettings: "إعدادات الدفع وحساب PUBG",
         saveSettings: "حفظ الإعدادات", productType: "نوع المنتج", pubgAccount: "حساب PUBG", ucTopUp: "شدات PUBG UC",
         currency: "العملة", currencySearchLabel: "البحث عن عملة", currencySearchPlaceholder: "ابحث عن عملة...",
-        productName: "اسم المنتج", productNameArabic: "اسم المنتج بالعربية", productNameEnglish: "اسم المنتج بالإنجليزية",
-        productNameEnPlaceholder: "مثال: Elite PUBG account", quantityLevel: "الكمية / المستوى", quantityLevelArabic: "الكمية / المستوى بالعربية",
-        quantityLevelEnglish: "الكمية / المستوى بالإنجليزية", quantityEnPlaceholder: "مثال: Level 70",
-        productDescription: "وصف المنتج", productDescriptionArabic: "وصف المنتج بالعربية", productDescriptionEnglish: "وصف المنتج بالإنجليزية",
-        descriptionEnPlaceholder: "اكتب الوصف بالإنجليزية...", translationMissing: "الترجمة غير متوفرة بهذه اللغة.",
+        productName: "اسم المنتج", quantityLevel: "الكمية / المستوى",
+        productDescription: "وصف المنتج",
         price: "السعر", productImages: "صور المنتج", imageLimit: "تستطيع اختيار حتى 10 صور.", saveProduct: "حفظ المنتج",
         newProduct: "منتج جديد", existingProducts: "المنتجات الموجودة",
         gatewayPlaceholder: "اسم البوابة أو الحساب البنكي", ownerPlaceholder: "اسم صاحب الحساب",
@@ -91,7 +88,7 @@ const I18N = {
         accountLogin: "إيميل الحساب", accountPassword: "كلمة السر", closeDelivery: "إغلاق", ucAdded: "تمت إضافة {count} UC إلى رصيدك."
     },
     en: {
-        pageTitle: "Game Vault", languageLabel: "Language", additionalTranslations: "Additional translations", badge: "PUBG MARKET", storeSubtitle: "PUBG store", heroTitle: "Everything you need", heroTitleAccent: "for PUBG",
+        pageTitle: "Game Vault", languageLabel: "Language", badge: "PUBG MARKET", storeSubtitle: "PUBG store", heroTitle: "Everything you need", heroTitleAccent: "for PUBG",
         heroDescription: "PUBG accounts, UC top-ups, and Royale Pass.", browseStore: "Browse store",
         searchPlaceholder: "Search for an account, UC, or Royale Pass...", search: "Search", store: "Store",
         products: "PUBG products", productCount: "{count} products", all: "All", accounts: "Accounts",
@@ -120,11 +117,8 @@ const I18N = {
         adminDescription: "Add, edit, and delete PUBG accounts, UC, and Royale Pass.", paymentSettings: "Payment and PUBG account settings",
         saveSettings: "Save settings", productType: "Product type", pubgAccount: "PUBG account", ucTopUp: "PUBG UC top-up",
         currency: "Currency", currencySearchLabel: "Search currencies", currencySearchPlaceholder: "Search currencies...",
-        productName: "Product name", productNameArabic: "Product name (Arabic)", productNameEnglish: "Product name (English)",
-        productNameEnPlaceholder: "Example: Elite PUBG account", quantityLevel: "Quantity / level", quantityLevelArabic: "Quantity / level (Arabic)",
-        quantityLevelEnglish: "Quantity / level (English)", quantityEnPlaceholder: "Example: Level 70",
-        productDescription: "Product description", productDescriptionArabic: "Product description (Arabic)", productDescriptionEnglish: "Product description (English)",
-        descriptionEnPlaceholder: "Write product details in English...", translationMissing: "Translation is not available in this language.",
+        productName: "Product name", quantityLevel: "Quantity / level",
+        productDescription: "Product description",
         price: "Price", productImages: "Product images", imageLimit: "You can select up to 10 images.", saveProduct: "Save product",
         newProduct: "New product", existingProducts: "Existing products",
         gatewayPlaceholder: "Gateway or bank account name", ownerPlaceholder: "Account owner name",
@@ -255,43 +249,6 @@ function localizedProductQuantity(account) {
         return ucSummary(account);
     }
     return localizedProductText(account.quantity, account.quantityEn, account.translations, "quantity");
-}
-
-function renderProductTranslationFields() {
-    const fields = [
-        { key: "productName", field: "name", placeholder: "productNamePlaceholder", type: "input" },
-        { key: "quantityLevel", field: "quantity", placeholder: "quantityPlaceholder", type: "input" },
-        { key: "productDescription", field: "description", placeholder: "descriptionPlaceholder", type: "textarea" }
-    ];
-
-    $("productTranslationFields").innerHTML = Array.from($("languageToggle").options)
-        .filter(option => option.value !== "ar")
-        .map(option => `
-            <details class="admin-translation-language">
-                <summary>${escapeHTML(option.textContent.trim())}</summary>
-                <div class="admin-translation-fields">
-                    ${fields.map(item => `
-                        <label${item.field === "description" ? ' class="translation-description"' : ""}>
-                            <span data-i18n="${item.key}">${escapeHTML(t(item.key))}</span>
-                            ${item.type === "textarea"
-                                ? `<textarea class="product-translation-input" data-locale="${escapeHTML(option.value)}" data-field="${item.field}" data-i18n-placeholder="${item.placeholder}" placeholder="${escapeHTML(t(item.placeholder))}"></textarea>`
-                                : `<input class="product-translation-input" type="text" data-locale="${escapeHTML(option.value)}" data-field="${item.field}" data-i18n-placeholder="${item.placeholder}" placeholder="${escapeHTML(t(item.placeholder))}">`}
-                        </label>
-                    `).join("")}
-                </div>
-            </details>
-        `)
-        .join("");
-}
-
-function populateProductTranslationFields(translations = {}) {
-    document.querySelectorAll(".product-translation-input").forEach(input => {
-        const localeTranslation = translations[input.dataset.locale];
-        const value = typeof localeTranslation === "string"
-            ? input.dataset.field === "name" ? localeTranslation : ""
-            : localeTranslation?.[input.dataset.field];
-        input.value = typeof value === "string" ? value : "";
-    });
 }
 
 function applyTranslations() {
@@ -457,7 +414,7 @@ let currentAccount = null;
 let currentDelivery = null;
 let selectedPayment = "تحويل بنكي";
 let selectedImages = [];
-let preservedProductTranslations = {};
+let savedProductTranslations = {};
 
 let accounts = [];
 
@@ -2294,14 +2251,9 @@ $("accountForm")
                 $("editId").value;
 
             const translations = Object.fromEntries(
-                Object.entries(preservedProductTranslations)
+                Object.entries(savedProductTranslations)
                     .map(([locale, values]) => [locale, { ...values }])
             );
-            document.querySelectorAll(".product-translation-input").forEach(input => {
-                const locale = input.dataset.locale;
-                translations[locale] ||= {};
-                translations[locale][input.dataset.field] = input.value.trim();
-            });
             const arabicProduct = {
                 name: $("accountName").value.trim(),
                 quantity: $("accountQuantity").value.trim(),
@@ -2597,13 +2549,12 @@ function editAccount(id) {
         return;
     }
 
-    preservedProductTranslations = Object.fromEntries(
+    savedProductTranslations = Object.fromEntries(
         Object.entries(account.translations || {}).map(([locale, values]) => [
             locale,
             typeof values === "string" ? { name: values } : { ...values }
         ])
     );
-    populateProductTranslationFields(preservedProductTranslations);
 
 
     $("editId").value =
@@ -2744,12 +2695,7 @@ function resetForm() {
     populateCountryOptions();
     populateCurrencyOptions();
 
-    preservedProductTranslations = {};
-    populateProductTranslationFields();
-    $("productTranslations").open = false;
-    document.querySelectorAll(".admin-translation-language").forEach(language => {
-        language.open = false;
-    });
+    savedProductTranslations = {};
 
     $("editId").value = "";
 
@@ -2879,6 +2825,5 @@ document
 
 populateCountryOptions();
 populateCurrencyOptions();
-renderProductTranslationFields();
 applyTranslations();
 renderAccounts();

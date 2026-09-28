@@ -959,75 +959,6 @@ body {
     gap: 18px 24px;
 }
 
-.admin-translations {
-    border: 1px solid #1b2a3e;
-    border-radius: 12px;
-    background: rgba(6, 17, 30, 0.45);
-}
-
-.admin-translations > summary {
-    padding: 13px 16px;
-    color: #8ecaff;
-    font-weight: bold;
-    cursor: pointer;
-    list-style: none;
-}
-
-.admin-translations > summary::-webkit-details-marker,
-.admin-translation-language > summary::-webkit-details-marker {
-    display: none;
-}
-
-.admin-translations > summary::after {
-    content: "+";
-    float: inline-end;
-    color: #53df91;
-}
-
-.admin-translations[open] > summary::after {
-    content: "-";
-}
-
-.admin-translation-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    padding: 12px;
-    border-top: 1px solid #1b2a3e;
-}
-
-.admin-translation-language {
-    min-width: 0;
-    overflow: hidden;
-    border: 1px solid #25364d;
-    border-radius: 9px;
-    background: #091626;
-}
-
-.admin-translation-language > summary {
-    padding: 10px 12px;
-    color: #cbd5e1;
-    font-weight: bold;
-    cursor: pointer;
-    list-style: none;
-}
-
-.admin-translation-language[open] > summary {
-    border-bottom: 1px solid #25364d;
-    color: #53df91;
-}
-
-.admin-translation-fields {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    padding: 12px;
-}
-
-.admin-translation-fields .translation-description {
-    grid-column: 1 / -1;
-}
-
 .modal-content.admin .admin-product-grid > .admin-full-width,
 .modal-content.admin .admin-product-grid > .admin-image-field {
     grid-column: 1 / -1;
@@ -1526,15 +1457,6 @@ footer strong {
     .settings-grid,
     .admin-image-field {
         grid-template-columns: 1fr;
-    }
-
-    .admin-translation-list,
-    .admin-translation-fields {
-        grid-template-columns: 1fr;
-    }
-
-    .admin-translation-fields .translation-description {
-        grid-column: auto;
     }
 
     .modal-content.admin .admin-product-grid > .admin-full-width,
