@@ -486,12 +486,16 @@ function loadAccounts() {
     renderAccounts();
 
     if (remoteAccounts) {
+        let isInitialRemoteSnapshot = true;
         remoteAccounts.on("value", snapshot => {
-            if (!snapshot.exists() && localAccounts.length) {
-                remoteAccounts.set(localAccounts).catch(() => {
-                    alert(t("uploadError"));
-                });
-                return;
+            if (isInitialRemoteSnapshot) {
+                isInitialRemoteSnapshot = false;
+                if (!snapshot.exists() && localAccounts.length) {
+                    remoteAccounts.set(localAccounts).catch(() => {
+                        alert(t("uploadError"));
+                    });
+                    return;
+                }
             }
 
             accounts = normalizeAccounts(snapshot.val());
@@ -2426,6 +2430,17 @@ function renderAdmin() {
     const container =
         $("adminAccounts");
 
+    container.onclick = event => {
+        const button = event.target.closest("[data-admin-action]");
+        if (!button || !container.contains(button)) return;
+
+        if (button.dataset.adminAction === "edit") {
+            editAccount(button.dataset.accountId);
+        } else if (button.dataset.adminAction === "delete") {
+            deleteAccount(button.dataset.accountId);
+        }
+    };
+
 
     if (accounts.length === 0) {
 
@@ -2500,25 +2515,12 @@ function renderAdmin() {
 
                     <div class="admin-actions">
 
-                        <button
-                            onclick="
-                                editAccount(
-                                    '${account.id}'
-                                )
-                            "
-                        >
+                        <button type="button" data-admin-action="edit" data-account-id="${escapeHTML(account.id)}">
                             ${t("edit")}
                         </button>
 
 
-                        <button
-                            class="delete"
-                            onclick="
-                                deleteAccount(
-                                    '${account.id}'
-                                )
-                            "
-                        >
+                        <button type="button" class="delete" data-admin-action="delete" data-account-id="${escapeHTML(account.id)}">
                             ${t("delete")}
                         </button>
 
@@ -2541,7 +2543,7 @@ function editAccount(id) {
 
     const account =
         accounts.find(
-            a => a.id === id
+            a => String(a.id) === String(id)
         );
 
 
@@ -2607,11 +2609,11 @@ function editAccount(id) {
    حذف المنتج
 ================================================== */
 
-function deleteAccount(id) {
+async function deleteAccount(id) {
 
     const account =
         accounts.find(
-            a => a.id === id
+            a => String(a.id) === String(id)
         );
 
 
@@ -2629,13 +2631,22 @@ function deleteAccount(id) {
     }
 
 
-    accounts =
-        accounts.filter(
-            a => a.id !== id
-        );
+    const remainingAccounts = accounts.filter(
+        item => String(item.id) !== String(id)
+    );
 
+    try {
+        if (remoteAccounts) {
+            await remoteAccounts.set(remainingAccounts);
+        }
+    } catch (error) {
+        console.error("Product deletion failed", error);
+        alert(t("saveFirebaseError"));
+        return;
+    }
 
-    saveAccounts();
+    accounts = remainingAccounts;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
 
     renderAccounts();
 
