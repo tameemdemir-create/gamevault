@@ -6,6 +6,7 @@ const ADMIN_CODE = "24680";
 
 const STORAGE_KEY = "PUBG_MARKET_ACCOUNTS";
 const SETTINGS_KEY = "PUBG_MARKET_SETTINGS";
+const LOCAL_TEST_MODE = location.protocol === "file:" || ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
 
 const WHATSAPP_NUMBER = "9620792077942";
 const USER_LEVEL_THRESHOLDS = { 1: 0, 2: 5000, 3: 20000, 4: 70000, 5: 150000 };
@@ -20,15 +21,17 @@ const COUNTRY_ALIASES = {
 
 const I18N = {
     ar: {
-        badge: "PUBG MARKET", storeSubtitle: "متجر ببجي", heroTitle: "كل ما تحتاجه", heroTitleAccent: "لببجي",
+        pageTitle: "Game Vault", languageLabel: "اللغة", additionalTranslations: "ترجمات إضافية", badge: "PUBG MARKET", storeSubtitle: "متجر ببجي", heroTitle: "كل ما تحتاجه", heroTitleAccent: "لببجي",
         heroDescription: "حسابات ببجي، شدات UC ورويال باس.", browseStore: "تصفح المتجر",
         searchPlaceholder: "ابحث عن حساب أو شدات أو رويال باس...", search: "بحث", store: "المتجر",
         products: "منتجات PUBG", productCount: "{count} منتج", all: "الكل", accounts: "حسابات",
-        uc: "شدات UC", royalePass: "Royale Pass", noProducts: "لا توجد منتجات",
-        noProductsDescription: "لم يتم العثور على منتجات مطابقة للبحث.", countryFilter: "الدولة",
+        uc: "شدات UC", ucProductLabel: "شدات", ucDeliveryPromise: "شدات تصل خلال 3 دقائق.", royalePass: "رويال باس", noProducts: "لا توجد منتجات",
+        noProductsDescription: "لم يتم العثور على منتجات مطابقة للبحث.", countryFilter: "الدولة", countrySearchLabel: "البحث عن دولة", countrySearchPlaceholder: "ابحث عن دولة...",
+        currencySearchLabel: "البحث عن عملة", currencySearchPlaceholder: "ابحث عن عملة...",
         allCountries: "كل الدول", login: "تسجيل الدخول", register: "إنشاء حساب", logout: "تسجيل الخروج",
         authName: "الاسم", email: "البريد الإلكتروني", password: "كلمة السر", forgotPassword: "نسيت كلمة السر؟",
-        invalidEmail: "اكتب بريدًا إلكترونيًا صحيحًا.", disposableEmail: "هذا النوع من الإيميلات المؤقتة غير مسموح.", verifyEmailSent: "تم إنشاء الحساب. افتح رابط التأكيد في بريدك الإلكتروني قبل تسجيل الدخول.", emailNotVerified: "أكد بريدك الإلكتروني أولًا من الرابط المرسل إليه.", resendVerification: "إعادة إرسال رسالة التأكيد", verificationSent: "تم إرسال رسالة تأكيد جديدة. افحص بريدك الإلكتروني.", verificationWait: "يمكنك إعادة الإرسال بعد {minutes}:{seconds}.",
+        invalidEmail: "اكتب بريدًا إلكترونيًا صحيحًا.", authEmailInUse: "هذا البريد مستخدم من قبل.", authInvalidEmail: "البريد الإلكتروني غير صالح.", authWeakPassword: "كلمة السر يجب أن تكون 6 أحرف على الأقل.", authWrongPassword: "البريد أو كلمة السر غير صحيحة.", authOperationNotAllowed: "يجب تفعيل طريقة الدخول من Firebase.", authUnauthorizedDomain: "تعذر تسجيل الدخول من هذا الرابط.", authInvalidApiKey: "مفتاح Firebase غير صحيح.", authNetworkError: "تعذر الاتصال بالإنترنت، حاول مرة أخرى.", authUserNotFound: "لا يوجد حساب بهذا البريد وكلمة السر.",
+        disposableEmail: "هذا النوع من الإيميلات المؤقتة غير مسموح.", verifyEmailSent: "تم إنشاء الحساب. افتح رابط التأكيد في بريدك الإلكتروني قبل تسجيل الدخول.", emailNotVerified: "أكد بريدك الإلكتروني أولًا من الرابط المرسل إليه.", resendVerification: "إعادة إرسال رسالة التأكيد", verificationSent: "تم إرسال رسالة تأكيد جديدة. افحص بريدك الإلكتروني.", verificationWait: "يمكنك إعادة الإرسال بعد {minutes}:{seconds}.",
         loginRequiredForUC: "يجب تسجيل الدخول حتى تضاف الشدات إلى رصيدك.",
         confirmPassword: "تأكيد كلمة السر", confirmPasswordPlaceholder: "أعد كتابة كلمة السر", passwordsDoNotMatch: "كلمتا السر غير متطابقتين.",
         emailExistsLogin: "هذا الإيميل مسجل مسبقًا. تم تحويلك إلى تسجيل الدخول.",
@@ -37,27 +40,36 @@ const I18N = {
         invalidPhoto: "تعذر قراءة الصورة. اختر صورة أخرى.",
         createAccountPrompt: "ليس لديك حساب؟ إنشاء حساب",
         namePlaceholder: "اكتب اسمك", passwordPlaceholder: "6 أحرف على الأقل", orderConfirmation: "تأكيد الطلب",
-        purchaseOrder: "طلب شراء", bankCard: "بطاقة بنكية", securePayment: "دفع آمن", securityConfirmed: "🔒 تأكيد الحماية",
-        fastProcessing: "⚡ معالجة سريعة", trusted: "✅ موثوق", cardNumber: "رقم البطاقة", expiryDate: "تاريخ الانتهاء",
-        cvv: "الرمز الثلاثي", cardholderName: "اسم حامل البطاقة", payNow: "دفع الآن",
-        paymentNote: "سيتم إرسال تفاصيل حساب PUBG إلى بريدك الإلكتروني المسجل في الطلب.", adminPanel: "لوحة التحكم",
-        adminDescription: "إضافة وتعديل وحذف حسابات وUC وRoyale Pass.", paymentSettings: "إعدادات الدفع وحساب PUBG",
+        purchaseOrder: "طلب شراء", localTestOnly: "وضع اختبار محلي فقط. استخدم بيانات تجريبية؛ لن تُرسل بيانات البطاقة أو تُحفظ، ولن يُخصم مبلغ أو يتغير المخزون.",
+        paymentUnavailable: "الشراء غير متاح حتى ربط بوابة دفع حقيقية.", completeLocalTest: "إكمال الاختبار",
+        localTestProduct: "اكتمل الاختبار محليًا. لم يتم تحصيل مبلغ أو تغيير المخزون.",
+        localTestBadge: "اختبار محلي", localTestResult: "نتيجة الاختبار",
+        cardNumber: "رقم البطاقة", expiryDate: "تاريخ الانتهاء", cvv: "الرمز الثلاثي", cardholderName: "اسم حامل البطاقة",
+        playerIdLabel: "معرّف لاعب PUBG", userLevelAccessible: "مستوى المستخدم",
+        adminPanel: "لوحة التحكم",
+        adminDescription: "إضافة وتعديل وحذف حسابات وUC والرويال باس.", paymentSettings: "إعدادات الدفع وحساب PUBG",
         saveSettings: "حفظ الإعدادات", productType: "نوع المنتج", pubgAccount: "حساب PUBG", ucTopUp: "شدات PUBG UC",
-        currency: "العملة", productName: "اسم المنتج", quantityLevel: "الكمية / المستوى", productDescription: "وصف المنتج",
+        currency: "العملة", currencySearchLabel: "البحث عن عملة", currencySearchPlaceholder: "ابحث عن عملة...",
+        productName: "اسم المنتج", productNameArabic: "اسم المنتج بالعربية", productNameEnglish: "اسم المنتج بالإنجليزية",
+        productNameEnPlaceholder: "مثال: Elite PUBG account", quantityLevel: "الكمية / المستوى", quantityLevelArabic: "الكمية / المستوى بالعربية",
+        quantityLevelEnglish: "الكمية / المستوى بالإنجليزية", quantityEnPlaceholder: "مثال: Level 70",
+        productDescription: "وصف المنتج", productDescriptionArabic: "وصف المنتج بالعربية", productDescriptionEnglish: "وصف المنتج بالإنجليزية",
+        descriptionEnPlaceholder: "اكتب الوصف بالإنجليزية...", translationMissing: "الترجمة غير متوفرة بهذه اللغة.",
         price: "السعر", productImages: "صور المنتج", imageLimit: "تستطيع اختيار حتى 10 صور.", saveProduct: "حفظ المنتج",
         newProduct: "منتج جديد", existingProducts: "المنتجات الموجودة",
         gatewayPlaceholder: "اسم البوابة أو الحساب البنكي", ownerPlaceholder: "اسم صاحب الحساب",
-        accountNumberPlaceholder: "123456789", productNamePlaceholder: "مثال: حساب لفل 70 / 660 UC / Royale Pass",
-        quantityPlaceholder: "مثال: 660 UC أو لفل 70", descriptionPlaceholder: "اكتب تفاصيل المنتج هنا...",
+        accountNumberPlaceholder: "123456789", productNamePlaceholder: "مثال: حساب مستوى 70 / 660 UC / رويال باس",
+        quantityPlaceholder: "مثال: 660 UC أو مستوى 70", descriptionPlaceholder: "اكتب تفاصيل المنتج هنا...",
         firebaseConfig: "إعدادات Firebase غير مكتملة.", enterEmail: "اكتب بريدك الإلكتروني أولًا.",
         resetSent: "تم إرسال رابط تغيير كلمة السر إلى بريدك الإلكتروني.", openBrowser: "افتح الرابط في Chrome أو Edge خارج معاينة VS Code.",
         openingLogin: "جاري فتح تسجيل الدخول...", saveSettingsSuccess: "تم حفظ إعدادات الدفع وحساب PUBG بنجاح.",
         uploadError: "تعذر رفع المنتجات الحالية إلى Firebase.", saveFirebaseError: "تعذر حفظ البيانات على Firebase. تحقق من قواعد قاعدة البيانات.",
         saveProductSuccess: "تم حفظ المنتج بنجاح!", noAdminProducts: "لا توجد منتجات حاليًا.", imageCount: "صور",
-        edit: "تعديل", delete: "حذف", confirmDelete: "هل تريد حذف المنتج {name}؟", incompleteFields: "يرجى إكمال جميع الحقول المطلوبة لإتمام الدفع.",
+        translationProgress: "جاري ترجمة المنتج...", automaticTranslationError: "تعذرت الترجمة التلقائية. سجّل الدخول وتأكد من نشر خدمة الترجمة وإعداد Google Cloud.",
+        edit: "تعديل", delete: "حذف", confirmDelete: "هل تريد حذف المنتج {name}؟", incompleteFields: "يرجى إكمال الحقول المطلوبة.",
         missingGameCredentials: "لم يتم إعداد إيميل أو كلمة سر حساب PUBG من لوحة التحكم. يرجى إدخالهما أولًا.",
         missingAccountCredentials: "بيانات حساب PUBG غير مكتملة. أضف الإيميل وكلمة السر من لوحة التحكم أولًا.",
-        paymentSuccess: "تم تأكيد الدفع بنجاح.\nستصل بيانات حساب PUBG إلى البريد الإلكتروني: {email}", notSet: "غير محدد",
+        paymentSuccess: "تم تأكيد الدفع بنجاح.\nستظهر بيانات حساب PUBG داخل الموقع.", notSet: "غير محدد",
         adminCodePrompt: "اكتب كود الإدارة:", wrongAdminCode: "كود الإدارة غير صحيح.",
         greeting: "مرحبًا {name}", previousImage: "الصورة السابقة", nextImage: "الصورة التالية", closeImages: "إغلاق الصور",
         genericError: "حدث خطأ ({code}).", showPassword: "إظهار كلمة السر", hidePassword: "إخفاء كلمة السر",
@@ -65,7 +77,7 @@ const I18N = {
         product: "المنتج", priceLabel: "السعر", cardLastFour: "رقم البطاقة", expiryLabel: "تاريخ الانتهاء",
         paymentData: "بيانات الدفع", gatewayLabel: "اسم البوابة", ownerLabel: "اسم صاحب الحساب", accountLabel: "رقم الحساب",
         pubgData: "بيانات حساب PUBG", accountEmailLabel: "إيميل الحساب", accountPasswordLabel: "كلمة السر",
-        receiptFooter: "تم تجهيز الحساب وسيتم تسليمه عبر هذا البريد الإلكتروني.",
+        receiptFooter: "بيانات حساب PUBG لا تُرسل عبر البريد الإلكتروني.",
         gatewayName: "اسم البوابة / الحساب البنكي", bankOwner: "اسم صاحب الحساب البنكي", bankAccountNumber: "رقم الحساب البنكي",
         iban: "IBAN", gameEmail: "إيميل حساب PUBG", gamePassword: "كلمة سر حساب PUBG", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "اسم صاحب البطاقة",
         pubgCredentials: "بيانات حساب PUBG", saveCredentials: "حفظ بيانات الحساب",
@@ -73,19 +85,23 @@ const I18N = {
         baseUC: "الشدات الأساسية", baseUCPlaceholder: "600", ucLevel: "مستوى المكافأة",
         levelOne: "المستوى 1 (+60)", levelTwo: "المستوى 2 (+150)", levelThree: "المستوى 3 (+250)", levelFour: "المستوى 4 (+400)", levelFive: "المستوى 5 (+600)",
         details: "التفاصيل", buy: "شراء", noImage: "لا توجد صورة", noDescription: "لا يوجد وصف لهذا المنتج.",
-        type: "النوع", country: "الدولة", buyVia: "شراء", footerText: "حسابات PUBG • UC • Royale Pass — كل الدول والعملات"
+        type: "النوع", country: "الدولة", buyVia: "شراء", footerText: "حسابات PUBG • شدات UC • رويال باس — كل الدول والعملات"
         ,ucBalance: "رصيد UC: {count}", userLevel: "مستوى {level}"
+        ,deliveryBadge: "تم التسليم", deliveryTitle: "بيانات حسابك", accountReady: "تم تجهيز حساب PUBG الخاص بك.",
+        accountLogin: "إيميل الحساب", accountPassword: "كلمة السر", closeDelivery: "إغلاق", ucAdded: "تمت إضافة {count} UC إلى رصيدك."
     },
     en: {
-        badge: "PUBG MARKET", storeSubtitle: "PUBG store", heroTitle: "Everything you need", heroTitleAccent: "for PUBG",
+        pageTitle: "Game Vault", languageLabel: "Language", additionalTranslations: "Additional translations", badge: "PUBG MARKET", storeSubtitle: "PUBG store", heroTitle: "Everything you need", heroTitleAccent: "for PUBG",
         heroDescription: "PUBG accounts, UC top-ups, and Royale Pass.", browseStore: "Browse store",
         searchPlaceholder: "Search for an account, UC, or Royale Pass...", search: "Search", store: "Store",
         products: "PUBG products", productCount: "{count} products", all: "All", accounts: "Accounts",
-        uc: "UC top-ups", royalePass: "Royale Pass", noProducts: "No products",
-        noProductsDescription: "No products match your search.", countryFilter: "Country",
+        uc: "UC top-ups", ucProductLabel: "UC top-up", ucDeliveryPromise: "UC delivered within 3 minutes.", royalePass: "Royale Pass", noProducts: "No products",
+        noProductsDescription: "No products match your search.", countryFilter: "Country", countrySearchLabel: "Search countries", countrySearchPlaceholder: "Search countries...",
+        currencySearchLabel: "Search currencies", currencySearchPlaceholder: "Search currencies...",
         allCountries: "All countries", login: "Log in", register: "Create account", logout: "Log out",
         authName: "Name", email: "Email", password: "Password", forgotPassword: "Forgot password?",
-        invalidEmail: "Enter a valid email address.", disposableEmail: "Temporary email addresses are not allowed.", verifyEmailSent: "Account created. Open the verification link in your email before signing in.", emailNotVerified: "Verify your email first using the link we sent.", resendVerification: "Resend verification email", verificationSent: "A new verification email was sent. Check your inbox.", verificationWait: "You can resend after {minutes}:{seconds}.",
+        invalidEmail: "Enter a valid email address.", authEmailInUse: "This email is already in use.", authInvalidEmail: "The email address is invalid.", authWeakPassword: "The password must be at least 6 characters.", authWrongPassword: "The email or password is incorrect.", authOperationNotAllowed: "Enable this sign-in method in Firebase.", authUnauthorizedDomain: "Sign-in is not allowed from this URL.", authInvalidApiKey: "The Firebase API key is invalid.", authNetworkError: "Network error. Please try again.", authUserNotFound: "No account was found with this email and password.",
+        disposableEmail: "Temporary email addresses are not allowed.", verifyEmailSent: "Account created. Open the verification link in your email before signing in.", emailNotVerified: "Verify your email first using the link we sent.", resendVerification: "Resend verification email", verificationSent: "A new verification email was sent. Check your inbox.", verificationWait: "You can resend after {minutes}:{seconds}.",
         loginRequiredForUC: "You must sign in so the UC can be added to your balance.",
         confirmPassword: "Confirm password", confirmPasswordPlaceholder: "Re-enter your password", passwordsDoNotMatch: "The passwords do not match.",
         emailExistsLogin: "This email is already registered. You have been switched to sign in.",
@@ -94,13 +110,21 @@ const I18N = {
         invalidPhoto: "Could not read the image. Choose another photo.",
         createAccountPrompt: "No account? Create one",
         namePlaceholder: "Enter your name", passwordPlaceholder: "At least 6 characters", orderConfirmation: "Order confirmation",
-        purchaseOrder: "Purchase order", bankCard: "Bank card", securePayment: "Secure payment", securityConfirmed: "🔒 Security confirmed",
-        fastProcessing: "⚡ Fast processing", trusted: "✅ Trusted", cardNumber: "Card number", expiryDate: "Expiry date",
-        cvv: "CVV", cardholderName: "Cardholder name", payNow: "Pay now",
-        paymentNote: "Your PUBG account details will be sent to the email used for this order.", adminPanel: "Admin panel",
+        purchaseOrder: "Purchase order", localTestOnly: "Local test mode only. Use test details; card data is not sent or saved, and no money is charged or inventory changed.",
+        paymentUnavailable: "Purchases are disabled until a real payment gateway is connected.", completeLocalTest: "Complete local test",
+        localTestProduct: "Local test complete. No money was charged and inventory was unchanged.",
+        localTestBadge: "Local test", localTestResult: "Test result",
+        cardNumber: "Card number", expiryDate: "Expiry date", cvv: "CVV", cardholderName: "Cardholder name",
+        playerIdLabel: "PUBG player ID", userLevelAccessible: "User level",
+        adminPanel: "Admin panel",
         adminDescription: "Add, edit, and delete PUBG accounts, UC, and Royale Pass.", paymentSettings: "Payment and PUBG account settings",
         saveSettings: "Save settings", productType: "Product type", pubgAccount: "PUBG account", ucTopUp: "PUBG UC top-up",
-        currency: "Currency", productName: "Product name", quantityLevel: "Quantity / level", productDescription: "Product description",
+        currency: "Currency", currencySearchLabel: "Search currencies", currencySearchPlaceholder: "Search currencies...",
+        productName: "Product name", productNameArabic: "Product name (Arabic)", productNameEnglish: "Product name (English)",
+        productNameEnPlaceholder: "Example: Elite PUBG account", quantityLevel: "Quantity / level", quantityLevelArabic: "Quantity / level (Arabic)",
+        quantityLevelEnglish: "Quantity / level (English)", quantityEnPlaceholder: "Example: Level 70",
+        productDescription: "Product description", productDescriptionArabic: "Product description (Arabic)", productDescriptionEnglish: "Product description (English)",
+        descriptionEnPlaceholder: "Write product details in English...", translationMissing: "Translation is not available in this language.",
         price: "Price", productImages: "Product images", imageLimit: "You can select up to 10 images.", saveProduct: "Save product",
         newProduct: "New product", existingProducts: "Existing products",
         gatewayPlaceholder: "Gateway or bank account name", ownerPlaceholder: "Account owner name",
@@ -111,10 +135,11 @@ const I18N = {
         openingLogin: "Opening sign-in...", saveSettingsSuccess: "Payment and PUBG account settings saved.",
         uploadError: "Could not upload the current products to Firebase.", saveFirebaseError: "Could not save to Firebase. Check the database rules.",
         saveProductSuccess: "Product saved successfully!", noAdminProducts: "No products yet.", imageCount: "images",
-        edit: "Edit", delete: "Delete", confirmDelete: "Delete product {name}?", incompleteFields: "Please complete all required fields to finish payment.",
+        translationProgress: "Translating product...", automaticTranslationError: "Automatic translation failed. Sign in and verify that the translation function and Google Cloud are configured.",
+        edit: "Edit", delete: "Delete", confirmDelete: "Delete product {name}?", incompleteFields: "Please complete the required fields.",
         missingGameCredentials: "PUBG account email or password is not configured in the admin panel. Add them first.",
         missingAccountCredentials: "PUBG account details are incomplete. Add the email and password in the admin panel first.",
-        paymentSuccess: "Payment confirmed.\nYour PUBG account details will be sent to: {email}", notSet: "Not set",
+        paymentSuccess: "Payment confirmed.\nYour PUBG account details will appear on the website.", notSet: "Not set",
         adminCodePrompt: "Enter the admin code:", wrongAdminCode: "Incorrect admin code.",
         greeting: "Hello {name}", previousImage: "Previous image", nextImage: "Next image", closeImages: "Close images",
         genericError: "An error occurred ({code}).", showPassword: "Show password", hidePassword: "Hide password",
@@ -122,7 +147,7 @@ const I18N = {
         product: "Product", priceLabel: "Price", cardLastFour: "Card number", expiryLabel: "Expiry date",
         paymentData: "Payment details", gatewayLabel: "Gateway name", ownerLabel: "Account owner", accountLabel: "Account number",
         pubgData: "PUBG account details", accountEmailLabel: "Account email", accountPasswordLabel: "Password",
-        receiptFooter: "The account is ready and will be delivered to this email.",
+        receiptFooter: "PUBG account details are not sent by email.",
         gatewayName: "Gateway / bank account name", bankOwner: "Bank account owner", bankAccountNumber: "Bank account number",
         iban: "IBAN", gameEmail: "PUBG account email", gamePassword: "PUBG account password", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "Cardholder name",
         pubgCredentials: "PUBG account credentials", saveCredentials: "Save account details",
@@ -132,13 +157,22 @@ const I18N = {
         details: "Details", buy: "Buy", noImage: "No image", noDescription: "No description for this product.",
         type: "Type", country: "Country", buyVia: "Buy", footerText: "PUBG accounts • UC • Royale Pass — all countries and currencies"
         ,ucBalance: "UC balance: {count}", userLevel: "Lv. {level}"
+        ,deliveryBadge: "Delivered", deliveryTitle: "Your account details", accountReady: "Your PUBG account is ready.",
+        accountLogin: "Account email", accountPassword: "Password", closeDelivery: "Close", ucAdded: "{count} UC was added to your balance."
     }
 };
 
-let currentLanguage = localStorage.getItem("GAMEVAULT_LANGUAGE") || "ar";
+for (const [locale, messages] of Object.entries(EXTRA_I18N)) {
+    I18N[locale] = { ...I18N.en, ...messages };
+}
+
+const savedLanguage = localStorage.getItem("GAMEVAULT_LANGUAGE");
+const SUPPORTED_LANGUAGES = ["ar", "en", "zh-CN", "es", "hi", "fr", "pt", "ru", "de", "id", "ja", "ko", "ur"];
+const RTL_LANGUAGES = new Set(["ar", "ur"]);
+let currentLanguage = SUPPORTED_LANGUAGES.includes(savedLanguage) ? savedLanguage : "ar";
 
 function t(key) {
-    return I18N[currentLanguage][key] || I18N.ar[key] || key;
+    return I18N[currentLanguage]?.[key] || I18N.en[key] || I18N.ar[key] || key;
 }
 
 function countryCode(value) {
@@ -164,54 +198,116 @@ function countryLabel(code) {
 }
 
 function typeLabel(type) {
-    return currentLanguage === "en"
-        ? ({ "حساب": "PUBG account", UC: "UC top-up", "Royale Pass": "Royale Pass" }[type] || type)
-        : ({ "حساب": "حساب PUBG", UC: "شحن UC", "Royale Pass": "Royale Pass" }[type] || type);
+    const labels = { "حساب": "pubgAccount", UC: "ucTopUp", "Royale Pass": "royalePass" };
+    return labels[type] ? t(labels[type]) : type;
 }
 
-function updateUCSettingsVisibility() {
-    const isUC = $("accountType").value === "UC";
-    $("accountImagesLabel").classList.toggle("hidden", isUC);
-    $("accountImagesWrapper").classList.toggle("hidden", isUC);
-    if (isUC) {
+function updateProductTypeVisibility() {
+    const selectedType = $("accountType").value;
+    const isAccount = selectedType === "حساب";
+    const hidesImages = selectedType === "UC" || selectedType === "Royale Pass";
+    $("pubgCredentialsSection").classList.toggle("hidden", !isAccount);
+    $("accountImagesWrapper").classList.toggle("hidden", hidesImages);
+    $("imagePreview").classList.toggle("hidden", hidesImages);
+    if (hidesImages) {
         $("accountImages").value = "";
         selectedImages = [];
         $("imagePreview").innerHTML = "";
     }
 }
 
-function localizedProductText(value) {
-    const text = String(value || "");
-    if (currentLanguage !== "en") {
-        return text;
+function localizedProductText(arabicValue, englishValue, translations = {}, field = "name") {
+    const localeValues = Object.fromEntries(
+        Object.entries(translations || {}).map(([locale, values]) => [
+            locale,
+            typeof values === "string" ? values : values?.[field]
+        ])
+    );
+    const values = { ar: arabicValue, en: englishValue, ...localeValues };
+    const arabicText = typeof arabicValue === "string" ? arabicValue.trim() : "";
+    const knownProductCopy = {
+        "شدات": "ucProductLabel",
+        "شدات تصل خلال 3 دقاق": "ucDeliveryPromise",
+        "شدات تصل خلال 3 دقائق": "ucDeliveryPromise"
+    }[arabicText];
+    const explicitTranslation = localeValues[currentLanguage];
+    if (typeof explicitTranslation === "string" && explicitTranslation.trim() && explicitTranslation.trim() !== arabicText) {
+        return explicitTranslation.trim();
+    }
+    if (knownProductCopy) return t(knownProductCopy);
+    const preferredValue = values[currentLanguage];
+    if (typeof preferredValue === "string" && preferredValue.trim()) {
+        return preferredValue.trim();
     }
 
-    return text
-        .replaceAll("دينار أردني", "Jordanian dinar")
-        .replaceAll("دينار اردني", "Jordanian dinar")
-        .replaceAll("ريال قطري", "Qatari riyal")
-        .replaceAll("ليرة تركية", "Turkish lira")
-        .replaceAll("دولار أمريكي", "US dollar")
-        .replaceAll("حسابات", "accounts")
-        .replaceAll("حساب", "account")
-        .replaceAll("لفل", "Level")
-        .replaceAll("مستوى", "Level")
-        .replaceAll("شدات", "UC top-ups")
-        .replaceAll("رويال باس", "Royale Pass")
-        .replaceAll("السعر", "Price")
-        .replaceAll("منتج", "product");
+    for (const fallbackLocale of ["en", "ar"]) {
+        const fallbackValue = values[fallbackLocale];
+        if (typeof fallbackValue === "string" && fallbackValue.trim()) {
+            return fallbackValue.trim();
+        }
+    }
+
+    return "";
+}
+
+function localizedProductQuantity(account) {
+    if (account.type === "UC") {
+        return ucSummary(account);
+    }
+    return localizedProductText(account.quantity, account.quantityEn, account.translations, "quantity");
+}
+
+function renderProductTranslationFields() {
+    const fields = [
+        { key: "productName", field: "name", placeholder: "productNamePlaceholder", type: "input" },
+        { key: "quantityLevel", field: "quantity", placeholder: "quantityPlaceholder", type: "input" },
+        { key: "productDescription", field: "description", placeholder: "descriptionPlaceholder", type: "textarea" }
+    ];
+
+    $("productTranslationFields").innerHTML = Array.from($("languageToggle").options)
+        .filter(option => option.value !== "ar")
+        .map(option => `
+            <details class="admin-translation-language">
+                <summary>${escapeHTML(option.textContent.trim())}</summary>
+                <div class="admin-translation-fields">
+                    ${fields.map(item => `
+                        <label${item.field === "description" ? ' class="translation-description"' : ""}>
+                            <span data-i18n="${item.key}">${escapeHTML(t(item.key))}</span>
+                            ${item.type === "textarea"
+                                ? `<textarea class="product-translation-input" data-locale="${escapeHTML(option.value)}" data-field="${item.field}" data-i18n-placeholder="${item.placeholder}" placeholder="${escapeHTML(t(item.placeholder))}"></textarea>`
+                                : `<input class="product-translation-input" type="text" data-locale="${escapeHTML(option.value)}" data-field="${item.field}" data-i18n-placeholder="${item.placeholder}" placeholder="${escapeHTML(t(item.placeholder))}">`}
+                        </label>
+                    `).join("")}
+                </div>
+            </details>
+        `)
+        .join("");
+}
+
+function populateProductTranslationFields(translations = {}) {
+    document.querySelectorAll(".product-translation-input").forEach(input => {
+        const localeTranslation = translations[input.dataset.locale];
+        const value = typeof localeTranslation === "string"
+            ? input.dataset.field === "name" ? localeTranslation : ""
+            : localeTranslation?.[input.dataset.field];
+        input.value = typeof value === "string" ? value : "";
+    });
 }
 
 function applyTranslations() {
     document.documentElement.lang = currentLanguage;
-    document.documentElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
+    document.documentElement.dir = RTL_LANGUAGES.has(currentLanguage) ? "rtl" : "ltr";
     document.querySelectorAll("[data-i18n]").forEach(element => {
         element.textContent = t(element.dataset.i18n);
     });
     document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
         element.placeholder = t(element.dataset.i18nPlaceholder);
     });
-    $("languageToggle").textContent = currentLanguage === "ar" ? "English" : "العربية";
+    document.querySelectorAll("[data-i18n-aria-label]").forEach(element => {
+        element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+    });
+    $("languageToggle").value = currentLanguage;
+    $("languageToggle").setAttribute("aria-label", t("languageLabel"));
     $("authTitle").textContent = authMode === "login" ? t("login") : t("register");
     $("authSubmit").textContent = authMode === "login" ? t("login") : t("register");
     $("authSwitch").textContent = authMode === "login" ? t("createAccountPrompt") : `${t("register")} / ${t("login")}`;
@@ -222,10 +318,18 @@ function applyTranslations() {
     if (currentAccount && !$('detailsModal').classList.contains('hidden')) {
         showDetails(currentAccount.id);
     } else if (currentAccount && !$('buyModal').classList.contains('hidden')) {
-        openBuy(currentAccount.id);
+        openBuy(currentAccount.id, false);
     }
     if (!$('adminModal').classList.contains('hidden')) {
         renderAdmin();
+    }
+    if (currentDelivery && !$('deliveryModal').classList.contains('hidden')) {
+        showDelivery(
+            currentDelivery.account,
+            currentDelivery.gameAccountEmail,
+            currentDelivery.gameAccountPassword,
+            currentDelivery.playerId
+        );
     }
     if (auth?.currentUser) {
         updateAuthUI(auth.currentUser);
@@ -235,32 +339,69 @@ function applyTranslations() {
 function populateCountryOptions() {
     const filter = $("countryFilter");
     const accountSelect = $("accountCountry");
-    if (!filter || !accountSelect) return;
+    const options = $("countryOptions");
+    const adminOptions = $("accountCountryOptions");
+    if (!filter || !accountSelect || !options || !adminOptions) return;
     const selectedFilter = filter.value || "all";
-    const selectedAccount = countryCode(accountSelect.value) || "QA";
-    filter.innerHTML = `<option value="all">${escapeHTML(t("allCountries"))}</option>` + COUNTRY_CODES
-        .map(code => `<option value="${code}">${escapeHTML(countryLabel(code))}</option>`).join("");
+    const selectedAccount = countryCode(accountSelect.dataset.selectedCountry || accountSelect.value) || "QA";
+    const search = $("countrySearch")?.value.trim().toLocaleLowerCase(currentLanguage) || "";
+    const filteredCountries = COUNTRY_CODES.filter(code => {
+        const name = countryName(code).toLocaleLowerCase(currentLanguage);
+        return !search || name.includes(search) || code.toLowerCase().includes(search);
+    });
+    options.innerHTML = [
+        `<button class="country-option" type="button" role="option" aria-selected="${selectedFilter === "all"}" data-country="all">${escapeHTML(t("allCountries"))}</button>`,
+        ...filteredCountries.map(code => `<button class="country-option" type="button" role="option" aria-selected="${selectedFilter === code}" data-country="${code}">${escapeHTML(countryLabel(code))}</button>`)
+    ].join("");
+    const adminCountrySearch = $("accountCountrySearch")?.value.trim().toLocaleLowerCase(currentLanguage) || "";
+    const matchingAdminCountries = COUNTRY_CODES.filter(code => {
+        const name = countryName(code).toLocaleLowerCase(currentLanguage);
+        return !adminCountrySearch || name.includes(adminCountrySearch) || code.toLowerCase().includes(adminCountrySearch);
+    });
+    adminOptions.innerHTML = matchingAdminCountries
+        .map(code => `<button class="country-option" type="button" role="option" aria-selected="${code === selectedAccount}" data-value="${code}">${escapeHTML(countryLabel(code))}</button>`)
+        .join("");
     accountSelect.innerHTML = COUNTRY_CODES
         .map(code => `<option value="${code}">${escapeHTML(countryLabel(code))}</option>`).join("");
-    filter.value = COUNTRY_CODES.includes(selectedFilter) ? selectedFilter : "all";
-    accountSelect.value = COUNTRY_CODES.includes(selectedAccount) ? selectedAccount : "QA";
+    filter.value = selectedFilter === "all" || COUNTRY_CODES.includes(selectedFilter) ? selectedFilter : "all";
+    $("countrySelectedLabel").textContent = filter.value === "all" ? t("allCountries") : countryLabel(filter.value);
+    accountSelect.dataset.selectedCountry = COUNTRY_CODES.includes(selectedAccount) ? selectedAccount : "QA";
+    accountSelect.value = accountSelect.dataset.selectedCountry;
+    $("accountCountrySelectedLabel").textContent = countryLabel(accountSelect.dataset.selectedCountry);
 }
 
 function populateCurrencyOptions() {
     const select = $("accountCurrency");
-    if (!select) return;
-    const selected = select.value || "USD";
+    const pickerOptions = $("accountCurrencyOptions");
+    if (!select || !pickerOptions) return;
+    const selected = select.dataset.selectedCurrency || select.value || "USD";
     const currencies = typeof Intl.supportedValuesOf === "function"
         ? Intl.supportedValuesOf("currency")
         : ["USD", "EUR", "GBP", "QAR", "JOD", "TRY"];
-    select.innerHTML = currencies.map(code => {
+    const options = currencies.map(code => {
         let name = code;
         try {
             name = new Intl.DisplayNames([currentLanguage], { type: "currency" }).of(code) || code;
         } catch { /* Keep the ISO code when the browser lacks a localized name. */ }
-        return `<option value="${code}">${escapeHTML(name)} (${code})</option>`;
-    }).join("");
-    select.value = currencies.includes(selected) ? selected : "USD";
+        return { code, name };
+    });
+    const search = $("accountCurrencySearch")?.value.trim().toLocaleLowerCase(currentLanguage) || "";
+    const matches = options.filter(({ code, name }) =>
+        !search || `${name} ${code}`.toLocaleLowerCase(currentLanguage).includes(search)
+    );
+    const selectedCurrency = currencies.includes(selected) ? selected : "USD";
+    select.dataset.selectedCurrency = selectedCurrency;
+    pickerOptions.innerHTML = matches
+        .map(({ code, name }) => `<button class="country-option" type="button" role="option" aria-selected="${code === selectedCurrency}" data-value="${code}">${escapeHTML(name)} (${code})</button>`)
+        .join("");
+    select.innerHTML = options
+        .map(({ code, name }) => `<option value="${code}">${escapeHTML(name)} (${code})</option>`)
+        .join("");
+    select.value = selectedCurrency;
+    const selectedOption = options.find(option => option.code === selectedCurrency);
+    $("accountCurrencySelectedLabel").textContent = selectedOption
+        ? `${selectedOption.name} (${selectedOption.code})`
+        : selectedCurrency;
 }
 
 const DEFAULT_SETTINGS = {
@@ -296,6 +437,7 @@ let registrationInProgress = false;
 
 let remoteAccounts = null;
 let remoteProfiles = null;
+let cloudFunctions = null;
 const profileCache = new Map();
 const loadedProfiles = new Set();
 
@@ -305,14 +447,17 @@ if (firebaseReady) {
         remoteAccounts = firebase.database().ref("products");
         remoteProfiles = firebase.database().ref("profiles");
         auth = firebase.auth();
+        cloudFunctions = firebase.functions();
     } catch (error) {
         console.error("Firebase initialization failed", error);
     }
 }
 
 let currentAccount = null;
+let currentDelivery = null;
 let selectedPayment = "تحويل بنكي";
 let selectedImages = [];
+let preservedProductTranslations = {};
 
 let accounts = [];
 
@@ -337,7 +482,7 @@ function getUCDetails(account) {
 function ucSummary(account) {
     const details = getUCDetails(account);
     if (!details || !details.base) return "";
-    return `${details.total.toLocaleString()} UC`;
+    return `${new Intl.NumberFormat(currentLanguage).format(details.total)} UC`;
 }
 
 function ucProductVisual(account) {
@@ -345,7 +490,16 @@ function ucProductVisual(account) {
     if (!details || !details.base) {
         return `<strong>UC</strong><span>${escapeHTML(t("enterUCAmount"))}</span>`;
     }
-    return `<strong>${details.total.toLocaleString()} UC</strong><span>${t("ucPackage")}</span>`;
+    return `<strong>${new Intl.NumberFormat(currentLanguage).format(details.total)} UC</strong><span>${t("ucPackage")}</span>`;
+}
+
+function royalePassVisual(account) {
+    const quantity = localizedProductQuantity(account);
+    return `
+        <span class="royale-pass-emblem" aria-hidden="true">RP</span>
+        <strong>${escapeHTML(t("royalePass"))}</strong>
+        ${quantity ? `<span>${escapeHTML(quantity)}</span>` : ""}
+    `;
 }
 
 function getUserLevel(ucBalance) {
@@ -451,6 +605,7 @@ $("saveSettingsButton")?.addEventListener("click", function() {
 
 loadAccounts();
 populateSettingsFields();
+configureCheckoutMode();
 
 function createID() {
     return Date.now().toString() + Math.random().toString(36).substring(2);
@@ -460,12 +615,28 @@ function $(id) {
     return document.getElementById(id);
 }
 
+function configureCheckoutMode() {
+    const noticeKey = LOCAL_TEST_MODE ? "localTestOnly" : "paymentUnavailable";
+    const buttonKey = LOCAL_TEST_MODE ? "completeLocalTest" : "paymentUnavailable";
+    const notice = $("checkoutNotice");
+    const buttonLabel = $("submitBuyButton").querySelector("span");
+
+    notice.dataset.i18n = noticeKey;
+    notice.textContent = t(noticeKey);
+    $("testPaymentFields").classList.toggle("hidden", !LOCAL_TEST_MODE);
+    buttonLabel.dataset.i18n = buttonKey;
+    buttonLabel.textContent = t(buttonKey);
+    $("submitBuyButton").disabled = !LOCAL_TEST_MODE;
+}
+
 function openModal(id) {
     $(id).classList.remove("hidden");
 }
 
 function closeModal(id) {
     $(id).classList.add("hidden");
+    if (id === "buyModal") $("buyForm").reset();
+    if (id === "deliveryModal") currentDelivery = null;
 }
 
 function openAuth(mode) {
@@ -490,28 +661,19 @@ function openAuth(mode) {
 }
 
 function authErrorMessage(error) {
-    const messages = currentLanguage === "en" ? {
-        "auth/email-already-in-use": "This email is already in use.",
-        "auth/invalid-email": "The email address is invalid.",
-        "auth/weak-password": "The password must be at least 6 characters.",
-        "auth/wrong-password": "The email or password is incorrect.",
-        "auth/operation-not-allowed": "Enable this sign-in method in Firebase.",
-        "auth/unauthorized-domain": "Sign-in is not allowed from this URL.",
-        "auth/invalid-api-key": "The Firebase API key is invalid.",
-        "auth/network-request-failed": "Network error. Please try again.",
-        "auth/user-not-found": "No account was found with this email and password."
-    } : {
-        "auth/email-already-in-use": "هذا البريد مستخدم من قبل.",
-        "auth/invalid-email": "البريد الإلكتروني غير صالح.",
-        "auth/weak-password": "كلمة السر يجب أن تكون 6 أحرف على الأقل.",
-        "auth/wrong-password": "البريد أو كلمة السر غير صحيحة.",
-        "auth/operation-not-allowed": "يجب تفعيل طريقة الدخول من Firebase.",
-        "auth/unauthorized-domain": "تعذر تسجيل الدخول من هذا الرابط.",
-        "auth/invalid-api-key": "مفتاح Firebase غير صحيح.",
-        "auth/network-request-failed": "تعذر الاتصال بالإنترنت، حاول مرة أخرى.",
-        "auth/user-not-found": "لا يوجد حساب بالبريد وكلمة السر بهذا البريد."
+    const messageKeys = {
+        "auth/email-already-in-use": "authEmailInUse",
+        "auth/invalid-email": "authInvalidEmail",
+        "auth/weak-password": "authWeakPassword",
+        "auth/wrong-password": "authWrongPassword",
+        "auth/operation-not-allowed": "authOperationNotAllowed",
+        "auth/unauthorized-domain": "authUnauthorizedDomain",
+        "auth/invalid-api-key": "authInvalidApiKey",
+        "auth/network-request-failed": "authNetworkError",
+        "auth/user-not-found": "authUserNotFound"
     };
-    return messages[error.code] || t("genericError").replace("{code}", error.code || "unknown");
+    const message = t(messageKeys[error.code] || "genericError");
+    return message.replace("{code}", error.code || "unknown");
 }
 
 const DISPOSABLE_EMAIL_DOMAINS = new Set([
@@ -888,7 +1050,7 @@ $("authForm").addEventListener("submit", async event => {
 
 function formatPrice(price, currency) {
     try {
-        return new Intl.NumberFormat(currentLanguage === "ar" ? "ar" : "en", {
+        return new Intl.NumberFormat(currentLanguage, {
             style: "currency",
             currency: currency || "USD",
             maximumFractionDigits: 2
@@ -927,116 +1089,44 @@ function getProductIcon(type) {
 ================================================== */
 
 function renderAccounts() {
-
-    const container =
-        $("accountsContainer");
-
-
-    const search =
-        $("searchInput")
-            .value
-            .trim()
-            .toLowerCase();
-
-
+    const container = $("accountsContainer");
+    const search = $("searchInput").value.trim().toLowerCase();
     const country = $("countryFilter")?.value || "all";
+    const typeButton = document.querySelector(".product-filter.active");
+    const type = typeButton ? typeButton.dataset.type : "all";
 
+    const filtered = accounts.filter(account => {
+        const countryMatch = country === "all" || countryCode(account.country) === country;
+        const typeMatch = type === "all" || account.type === type;
+        const translatedText = Object.values(account.translations || {})
+            .map(values => Object.values(values || {}).join(" "))
+            .join(" ");
+        const text = [
+            account.name,
+            account.nameEn,
+            account.description,
+            account.descriptionEn,
+            account.price,
+            account.type === "UC" ? ucSummary(account) : account.quantity,
+            account.quantityEn,
+            translatedText,
+            countryName(account.country),
+            account.type
+        ].join(" ").toLowerCase();
 
-    const typeButton =
-        document.querySelector(
-            ".product-filter.active"
-        );
-
-
-    const type =
-        typeButton
-            ? typeButton.dataset.type
-            : "all";
-
-
-    const filtered =
-        accounts.filter(account => {
-
-            const countryMatch =
-                country === "all"
-                ||
-                countryCode(account.country) === country;
-
-
-            const typeMatch =
-                type === "all"
-                ||
-                account.type === type;
-
-
-            const text =
-                (
-                    account.name
-                    +
-                    " "
-                    +
-                    countryName(account.country)
-                    +
-                    " "
-                    +
-                    account.description
-                    +
-                    " "
-                    +
-                    account.price
-                    +
-                    " "
-                    +
-                    (account.type === "UC" ? ucSummary(account) : account.quantity)
-                    +
-                    " "
-                    +
-                    account.type
-                )
-                .toLowerCase();
-
-
-            const searchMatch =
-                !search
-                ||
-                text.includes(search);
-
-
-            return countryMatch
-                &&
-                typeMatch
-                &&
-                searchMatch;
-
-        });
-
+        return countryMatch && typeMatch && (!search || text.includes(search));
+    });
 
     $("accountCount").textContent = t("productCount").replace("{count}", filtered.length);
 
-
     if (filtered.length === 0) {
-
         container.innerHTML = "";
-
-        $("emptyMessage")
-            .classList
-            .remove("hidden");
-
+        $("emptyMessage").classList.remove("hidden");
         return;
-
     }
 
-
-    $("emptyMessage")
-        .classList
-        .add("hidden");
-
-
-    container.innerHTML =
-        filtered
-            .map(createAccountCard)
-            .join("");
-
+    $("emptyMessage").classList.add("hidden");
+    container.innerHTML = filtered.map(createAccountCard).join("");
 }
 
 
@@ -1054,12 +1144,12 @@ function createAccountCard(account) {
             : null;
 
     const isUCProduct = account.type === "UC";
+    const isRoyalePassProduct = account.type === "Royale Pass";
 
     const icon =
         getProductIcon(
             account.type
         );
-
 
     return `
 
@@ -1086,6 +1176,12 @@ function createAccountCard(account) {
 
                     `<div class="uc-product-visual">${ucProductVisual(account)}</div>`
 
+                    : isRoyalePassProduct
+
+                    ?
+
+                    `<div class="royale-pass-visual">${royalePassVisual(account)}</div>`
+
                     : !isUCProduct && image
 
                     ?
@@ -1094,7 +1190,7 @@ function createAccountCard(account) {
                     <img
                         id="card-image-${account.id}"
                         src="${image}"
-                        alt="${escapeHTML(account.name)}"
+                        alt="${escapeHTML(localizedProductText(account.name, account.nameEn, account.translations, "name"))}"
                         onclick="openAccountImageViewer(event, '${account.id}', 0)"
                     >
                     ${account.images.length > 1 ? `
@@ -1142,7 +1238,7 @@ function createAccountCard(account) {
                 <div class="account-top">
 
                     <h3>
-                        ${escapeHTML(localizedProductText(account.name))}
+                        ${escapeHTML(localizedProductText(account.name, account.nameEn, account.translations, "name"))}
                     </h3>
 
                     <span class="price">
@@ -1162,7 +1258,7 @@ function createAccountCard(account) {
                     ?
                     `
                     <span class="quantity">
-                        ${escapeHTML(localizedProductText(account.type === "UC" ? ucSummary(account) : account.quantity))}
+                        ${escapeHTML(localizedProductQuantity(account))}
                     </span>
                     `
                     :
@@ -1173,7 +1269,7 @@ function createAccountCard(account) {
                 <p class="account-description">
 
                     ${escapeHTML(
-                        localizedProductText(account.description)
+                        localizedProductText(account.description, account.descriptionEn, account.translations, "description")
                         ||
                         t("noDescription")
                     )}
@@ -1266,7 +1362,7 @@ function showDetails(id) {
         $("detailsContent").innerHTML = `
             <h2>
                 ${getProductIcon(account.type)}
-                ${escapeHTML(localizedProductText(account.name))}
+                ${escapeHTML(localizedProductText(account.name, account.nameEn, account.translations, "name"))}
             </h2>
             <p class="muted">
                 ${t("type")}:
@@ -1286,7 +1382,7 @@ function showDetails(id) {
                         font-weight:bold;
                     "
                 >
-                    ${escapeHTML(localizedProductText(account.type === "UC" ? ucSummary(account) : account.quantity))}
+                    ${escapeHTML(localizedProductQuantity(account))}
                 </p>
                 `
                 :
@@ -1304,7 +1400,7 @@ function showDetails(id) {
                 )}
             </h3>
             ${
-                firstImage
+                firstImage && account.type !== "Royale Pass"
                 ?
                 `
                 <img
@@ -1324,11 +1420,13 @@ function showDetails(id) {
                 `
                 ${account.type === "UC"
                     ? `<div class="uc-product-visual" style="height:350px">${ucProductVisual(account)}</div>`
+                    : account.type === "Royale Pass"
+                    ? `<div class="royale-pass-visual details-royale-pass-visual">${royalePassVisual(account)}</div>`
                     : `<div class="no-image" style="height:350px">${t("noImage")}</div>`}
                 `
             }
             ${
-                images.length > 1
+                images.length > 1 && account.type !== "Royale Pass"
                 ?
                 `
                 <div class="details-slider-controls">
@@ -1341,7 +1439,7 @@ function showDetails(id) {
                 ""
             }
             ${
-                images.length
+                images.length && account.type !== "Royale Pass"
                 ?
                 `
                 <div
@@ -1398,7 +1496,7 @@ function showDetails(id) {
                 "
             >
                 ${escapeHTML(
-                    localizedProductText(account.description)
+                    localizedProductText(account.description, account.descriptionEn, account.translations, "description")
                     ||
                     t("noDescription")
                 )}
@@ -1743,7 +1841,7 @@ function openAccountImageViewer(event, id, startIndex) {
    فتح الشراء
 ================================================== */
 
-function openBuy(id) {
+function openBuy(id, resetForm = true) {
 
     const account =
         accounts.find(
@@ -1757,6 +1855,15 @@ function openBuy(id) {
 
 
     currentAccount = account;
+
+    if (resetForm) {
+        $("buyForm").reset();
+        const needsPlayerId = account.type === "UC" || account.type === "Royale Pass";
+        $("pubgPlayerIdGroup").classList.toggle("hidden", !needsPlayerId);
+        $("pubgPlayerId").disabled = !needsPlayerId;
+        $("pubgPlayerId").value = "";
+    }
+    configureCheckoutMode();
 
 
     $("buyInfo").innerHTML = `
@@ -1774,7 +1881,7 @@ function openBuy(id) {
 
                 ${getProductIcon(account.type)}
 
-                ${escapeHTML(localizedProductText(account.name))}
+                ${escapeHTML(localizedProductText(account.name, account.nameEn, account.translations, "name"))}
 
             </strong>
 
@@ -1797,7 +1904,7 @@ function openBuy(id) {
                 <span
                     style="color:#43a8ff"
                 >
-                    ${escapeHTML(localizedProductText(account.type === "UC" ? ucSummary(account) : account.quantity))}
+                    ${escapeHTML(localizedProductQuantity(account))}
                 </span>
                 `
                 :
@@ -1886,10 +1993,150 @@ $("searchInput")
    فلترة الدول
 ================================================== */
 
-$("countryFilter").addEventListener("change", renderAccounts);
+$("countryDropdownToggle").addEventListener("click", () => {
+    const dropdown = $("countryDropdown");
+    const willOpen = dropdown.classList.contains("hidden");
+    dropdown.classList.toggle("hidden", !willOpen);
+    $("countryDropdownToggle").setAttribute("aria-expanded", String(willOpen));
+    if (willOpen) {
+        populateCountryOptions();
+        $("countrySearch").focus();
+    }
+});
 
-$("languageToggle").addEventListener("click", () => {
-    currentLanguage = currentLanguage === "ar" ? "en" : "ar";
+$("countrySearch").addEventListener("input", () => {
+    populateCountryOptions();
+});
+
+function bindAdminSearchPicker(config) {
+    const toggle = $(config.toggleId);
+    const dropdown = $(config.dropdownId);
+    const search = $(config.searchId);
+    const options = $(config.optionsId);
+    const selectedInput = $(config.valueId);
+
+    toggle.addEventListener("click", () => {
+        const willOpen = dropdown.classList.contains("hidden");
+        dropdown.classList.toggle("hidden", !willOpen);
+        toggle.setAttribute("aria-expanded", String(willOpen));
+        if (willOpen) {
+            config.populate();
+            search.focus();
+        }
+    });
+
+    search.addEventListener("input", config.populate);
+    options.addEventListener("click", event => {
+        const option = event.target.closest("[data-value]");
+        if (!option) return;
+        selectedInput.value = option.dataset.value;
+        selectedInput.dataset[config.dataKey] = option.dataset.value;
+        search.value = "";
+        config.populate();
+        dropdown.classList.add("hidden");
+        toggle.setAttribute("aria-expanded", "false");
+    });
+
+    search.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            dropdown.classList.add("hidden");
+            toggle.setAttribute("aria-expanded", "false");
+            toggle.focus();
+        } else if (event.key === "ArrowDown") {
+            event.preventDefault();
+            options.querySelector("[data-value]")?.focus();
+        }
+    });
+
+    options.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            dropdown.classList.add("hidden");
+            toggle.setAttribute("aria-expanded", "false");
+            toggle.focus();
+        } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            const items = [...options.querySelectorAll("[data-value]")];
+            const currentIndex = items.indexOf(event.target);
+            const step = event.key === "ArrowDown" ? 1 : -1;
+            items[(currentIndex + step + items.length) % items.length]?.focus();
+        }
+    });
+}
+
+bindAdminSearchPicker({
+    toggleId: "accountCountryToggle",
+    dropdownId: "accountCountryDropdown",
+    searchId: "accountCountrySearch",
+    optionsId: "accountCountryOptions",
+    valueId: "accountCountry",
+    dataKey: "selectedCountry",
+    populate: populateCountryOptions
+});
+
+bindAdminSearchPicker({
+    toggleId: "accountCurrencyToggle",
+    dropdownId: "accountCurrencyDropdown",
+    searchId: "accountCurrencySearch",
+    optionsId: "accountCurrencyOptions",
+    valueId: "accountCurrency",
+    dataKey: "selectedCurrency",
+    populate: populateCurrencyOptions
+});
+
+$("countryOptions").addEventListener("click", event => {
+    const option = event.target.closest("[data-country]");
+    if (!option) return;
+    $("countryFilter").value = option.dataset.country;
+    $("countrySearch").value = "";
+    populateCountryOptions();
+    $("countryDropdown").classList.add("hidden");
+    $("countryDropdownToggle").setAttribute("aria-expanded", "false");
+    renderAccounts();
+});
+
+$("countrySearch").addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        $("countryDropdown").classList.add("hidden");
+        $("countryDropdownToggle").setAttribute("aria-expanded", "false");
+        $("countryDropdownToggle").focus();
+    } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        $("countryOptions").querySelector("[data-country]")?.focus();
+    }
+});
+
+$("countryOptions").addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        $("countryDropdown").classList.add("hidden");
+        $("countryDropdownToggle").setAttribute("aria-expanded", "false");
+        $("countryDropdownToggle").focus();
+    } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const options = [...$("countryOptions").querySelectorAll("[data-country]")];
+        const currentIndex = options.indexOf(event.target);
+        const step = event.key === "ArrowDown" ? 1 : -1;
+        options[(currentIndex + step + options.length) % options.length]?.focus();
+    }
+});
+
+document.addEventListener("click", event => {
+    if (!event.target.closest("#storeCountryPicker")) {
+        $("countryDropdown").classList.add("hidden");
+        $("countryDropdownToggle").setAttribute("aria-expanded", "false");
+    }
+    document.querySelectorAll(".admin-choice-picker").forEach(picker => {
+        if (picker.contains(event.target)) return;
+        const dropdown = picker.querySelector(".country-dropdown");
+        const toggle = picker.querySelector(".country-select-button");
+        dropdown.classList.add("hidden");
+        toggle.setAttribute("aria-expanded", "false");
+    });
+});
+
+$("languageToggle").addEventListener("change", event => {
+    currentLanguage = SUPPORTED_LANGUAGES.includes(event.currentTarget.value)
+        ? event.currentTarget.value
+        : "ar";
     localStorage.setItem("GAMEVAULT_LANGUAGE", currentLanguage);
     applyTranslations();
 });
@@ -1929,8 +2176,8 @@ document
 
     });
 
-$("accountType").addEventListener("change", updateUCSettingsVisibility);
-updateUCSettingsVisibility();
+$("accountType").addEventListener("change", updateProductTypeVisibility);
+updateProductTypeVisibility();
 
 
 /* ==================================================
@@ -2039,13 +2286,79 @@ function previewImages() {
 $("accountForm")
     .addEventListener(
         "submit",
-        function(event) {
+        async function(event) {
 
             event.preventDefault();
 
-
             const editId =
                 $("editId").value;
+
+            const translations = Object.fromEntries(
+                Object.entries(preservedProductTranslations)
+                    .map(([locale, values]) => [locale, { ...values }])
+            );
+            document.querySelectorAll(".product-translation-input").forEach(input => {
+                const locale = input.dataset.locale;
+                translations[locale] ||= {};
+                translations[locale][input.dataset.field] = input.value.trim();
+            });
+            const arabicProduct = {
+                name: $("accountName").value.trim(),
+                quantity: $("accountQuantity").value.trim(),
+                description: $("accountDescription").value.trim()
+            };
+
+            const translationTargets = Object.fromEntries(
+                SUPPORTED_LANGUAGES
+                    .filter(locale => locale !== "ar")
+                    .map(locale => {
+                        const localeValues = typeof translations[locale] === "string"
+                            ? { name: translations[locale] }
+                            : translations[locale] || {};
+                        const missingFields = Object.keys(arabicProduct).filter(field =>
+                            arabicProduct[field] && !String(localeValues[field] || "").trim()
+                        );
+                        return [locale, missingFields];
+                    })
+                    .filter(([, fields]) => fields.length)
+            );
+
+            if (Object.keys(translationTargets).length) {
+                const submitButton = event.submitter || $("accountForm").querySelector('[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = t("translationProgress");
+
+                try {
+                    if (!cloudFunctions || !auth?.currentUser) {
+                        throw new Error("Firebase authentication and translation service are required.");
+                    }
+
+                    const result = await cloudFunctions
+                        .httpsCallable("translateProduct")({
+                            sourceFields: arabicProduct,
+                            targetFields: translationTargets
+                        });
+
+                    for (const [locale, values] of Object.entries(result.data.translations || {})) {
+                        translations[locale] = {
+                            ...(typeof translations[locale] === "string" ? { name: translations[locale] } : translations[locale] || {}),
+                            ...values
+                        };
+                    }
+                } catch (error) {
+                    console.error("Automatic product translation failed", error);
+                    alert(t("automaticTranslationError"));
+                    submitButton.disabled = false;
+                    submitButton.textContent = t("saveProduct");
+                    return;
+                }
+
+                submitButton.disabled = false;
+                submitButton.textContent = t("saveProduct");
+            }
+
+            translations.ar = arabicProduct;
+            const englishProduct = translations.en || {};
 
 
             const account = {
@@ -2061,15 +2374,13 @@ $("accountForm")
                         .value,
 
 
-                name:
-                    $("accountName")
-                        .value
-                        .trim(),
+                name: arabicProduct.name || "",
+
+                nameEn: englishProduct.name || "",
 
 
                 country:
-                    $("accountCountry")
-                        .value,
+                    $("accountCountry").dataset.selectedCountry || $("accountCountry").value,
 
 
                 price:
@@ -2080,20 +2391,19 @@ $("accountForm")
 
 
                 currency:
-                    $("accountCurrency")
-                        .value,
+                    $("accountCurrency").dataset.selectedCurrency || $("accountCurrency").value,
 
 
-                quantity:
-                    $("accountQuantity")
-                        .value
-                        .trim(),
+                quantity: arabicProduct.quantity || "",
+
+                quantityEn: englishProduct.quantity || "",
 
 
-                description:
-                    $("accountDescription")
-                        .value
-                        .trim(),
+                description: arabicProduct.description || "",
+
+                descriptionEn: englishProduct.description || "",
+
+                translations,
 
                 images:
                     selectedImages
@@ -2196,7 +2506,7 @@ function renderAdmin() {
                             )}
 
                             ${escapeHTML(
-                                localizedProductText(account.name)
+                                localizedProductText(account.name, account.nameEn, account.translations, "name")
                             )}
 
                         </strong>
@@ -2221,7 +2531,7 @@ function renderAdmin() {
                                 ?
                                 " • " +
                                 escapeHTML(
-                                    localizedProductText(account.quantity)
+                                    localizedProductQuantity(account)
                                 )
                                 :
                                 ""
@@ -2287,6 +2597,14 @@ function editAccount(id) {
         return;
     }
 
+    preservedProductTranslations = Object.fromEntries(
+        Object.entries(account.translations || {}).map(([locale, values]) => [
+            locale,
+            typeof values === "string" ? { name: values } : { ...values }
+        ])
+    );
+    populateProductTranslationFields(preservedProductTranslations);
+
 
     $("editId").value =
         account.id;
@@ -2295,35 +2613,32 @@ function editAccount(id) {
     $("accountType").value =
         account.type || "حساب";
 
-
     $("accountName").value =
-        account.name;
+        account.name || "";
+
+    $("accountQuantity").value =
+        account.quantity || "";
+
+    $("accountDescription").value =
+        account.description || "";
 
 
-    $("accountCountry").value =
-        countryCode(account.country);
+    $("accountCountrySearch").value = "";
+    $("accountCurrencySearch").value = "";
+    $("accountCountry").dataset.selectedCountry = countryCode(account.country) || "QA";
+    $("accountCurrency").dataset.selectedCurrency = account.currency || "USD";
+    populateCountryOptions();
+    populateCurrencyOptions();
 
 
     $("accountPrice").value =
         account.price;
 
 
-    $("accountCurrency").value =
-        account.currency;
-
-    updateUCSettingsVisibility();
+    updateProductTypeVisibility();
 
 
-    $("accountQuantity").value =
-        account.quantity || "";
-
-
-    $("accountDescription").value =
-        account.description || "";
-
-
-    selectedImages =
-        account.images || [];
+    selectedImages = account.type === "حساب" ? account.images || [] : [];
 
 
     previewImages();
@@ -2388,6 +2703,31 @@ function removePurchasedAccount(account) {
     renderAdmin();
 }
 
+function showDelivery(account, gameAccountEmail, gameAccountPassword, playerId = "") {
+    currentDelivery = { account, gameAccountEmail, gameAccountPassword, playerId };
+    const isAccount = account.type === "حساب";
+    $("deliveryBadge").dataset.i18n = isAccount ? "deliveryBadge" : "localTestBadge";
+    $("deliveryBadge").textContent = t(isAccount ? "deliveryBadge" : "localTestBadge");
+    $("deliveryTitle").dataset.i18n = isAccount ? "deliveryTitle" : "localTestResult";
+    $("deliveryTitle").textContent = t(isAccount ? "deliveryTitle" : "localTestResult");
+
+    if (account.type === "حساب") {
+        $("deliveryContent").innerHTML = `
+            <p class="delivery-success">${t("accountReady")}</p>
+            <div class="delivery-credentials">
+                <div><span>${t("accountLogin")}</span><strong>${escapeHTML(gameAccountEmail)}</strong></div>
+                <div><span>${t("accountPassword")}</span><strong>${escapeHTML(gameAccountPassword)}</strong></div>
+            </div>
+        `;
+    } else {
+        const playerIdRow = playerId
+            ? `<div class="delivery-credentials"><div><span>${t("playerIdLabel")}</span><strong>${escapeHTML(playerId)}</strong></div></div>`
+            : "";
+        $("deliveryContent").innerHTML = `<p class="delivery-success">${t("localTestProduct")}</p>${playerIdRow}`;
+    }
+    openModal("deliveryModal");
+}
+
 
 /* ==================================================
    إعادة ضبط
@@ -2397,6 +2737,20 @@ function resetForm() {
 
     $("accountForm").reset();
 
+    $("accountCountrySearch").value = "";
+    $("accountCurrencySearch").value = "";
+    $("accountCountry").dataset.selectedCountry = "QA";
+    $("accountCurrency").dataset.selectedCurrency = "USD";
+    populateCountryOptions();
+    populateCurrencyOptions();
+
+    preservedProductTranslations = {};
+    populateProductTranslationFields();
+    $("productTranslations").open = false;
+    document.querySelectorAll(".admin-translation-language").forEach(language => {
+        language.open = false;
+    });
+
     $("editId").value = "";
 
     selectedImages = [];
@@ -2404,28 +2758,40 @@ function resetForm() {
     $("imagePreview")
         .innerHTML = "";
 
-    updateUCSettingsVisibility();
+    updateProductTypeVisibility();
 
 }
 
 
 /* ==================================================
-   إرسال الطلب إلى WhatsApp
+   إتمام الاختبار المحلي
 ================================================== */
 
 function formatCardNumber(value) {
     return value
         .replace(/\D/g, "")
-        .slice(0, 16)
+        .slice(0, 19)
         .replace(/(.{4})/g, "$1 ")
         .trim();
 }
 
 function formatExpiry(value) {
-    const digits = value.replace(/\D/g, "").slice(0, 4);
-    if (digits.length <= 2) return digits;
-    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    let digits = value.replace(/\D/g, "").slice(0, 4);
+    if (digits.length === 0) return "";
+    if (digits[0] > "1") digits = `0${digits}`;
+
+    if (digits.length >= 2) {
+        const month = Number(digits.slice(0, 2));
+        if (month === 0) digits = `01${digits.slice(2)}`;
+        else if (month > 12) digits = `12${digits.slice(2)}`;
+    }
+
+    return digits.length <= 2 ? digits : `${digits.slice(0, 2)}/${digits.slice(2)}`;
 }
+
+$("pubgPlayerId")?.addEventListener("input", function() {
+    this.value = this.value.replace(/\D/g, "").slice(0, 20);
+});
 
 $("cardNumber")?.addEventListener("input", function() {
     this.value = formatCardNumber(this.value);
@@ -2435,10 +2801,14 @@ $("cardExpiry")?.addEventListener("input", function() {
     this.value = formatExpiry(this.value);
 });
 
+$("cardCvv")?.addEventListener("input", function() {
+    this.value = this.value.replace(/\D/g, "").slice(0, 3);
+});
+
 $("buyForm")
     .addEventListener(
         "submit",
-        async function(event) {
+        function(event) {
 
             event.preventDefault();
 
@@ -2447,18 +2817,11 @@ $("buyForm")
                 return;
             }
 
-            if (currentAccount.type === "UC" && !auth?.currentUser) {
-                alert(t("loginRequiredForUC"));
-                closeModal("buyModal");
-                openAuth("login");
+            if (!LOCAL_TEST_MODE) {
+                alert(t("paymentUnavailable"));
                 return;
             }
 
-            const buyerEmail = $("buyerEmail").value.trim();
-            const cardNumber = $("cardNumber").value.trim();
-            const cardExpiry = $("cardExpiry").value.trim();
-            const cardCvv = $("cardCvv").value.trim();
-            const cardName = $("cardName").value.trim();
             const settings = loadSettings();
             const gameAccountEmail = settings.gameAccountEmail;
             const gameAccountPassword = settings.gameAccountPassword;
@@ -2469,52 +2832,14 @@ $("buyForm")
                 return;
             }
 
-            if (!buyerEmail || !cardNumber || !cardExpiry || !cardCvv || !cardName) {
-                alert(t("incompleteFields"));
-                return;
-            }
-
-            const lastFour = cardNumber.replace(/\D/g, "").slice(-4) || "0000";
-            const productPrice = formatPrice(currentAccount.price, currentAccount.currency);
-            const gatewayName = settings.paymentGatewayName || "بوابة الدفع";
-            const bankOwner = settings.bankAccountOwner || "غير محدد";
-            const bankNumber = settings.bankAccountNumber || "غير محدد";
-            const bankIban = settings.bankIban || "غير محدد";
-
-            const emailSubject = encodeURIComponent(t("receiptSubject"));
-            const emailBody = encodeURIComponent(
-                t("receiptReady") + "\n\n" +
-                t("customer") + ": " + cardName + "\n" +
-                t("email") + ": " + buyerEmail + "\n" +
-                t("product") + ": " + currentAccount.name + "\n" +
-                t("type") + ": " + typeLabel(currentAccount.type) + "\n" +
-                t("country") + ": " + countryLabel(currentAccount.country) + "\n" +
-                t("priceLabel") + ": " + productPrice + "\n" +
-                t("cardLastFour") + ": **** **** **** " + lastFour + "\n" +
-                t("expiryLabel") + ": " + cardExpiry + "\n\n" +
-                t("paymentData") + ":\n" +
-                t("gatewayLabel") + ": " + gatewayName + "\n" +
-                t("ownerLabel") + ": " + bankOwner + "\n" +
-                t("accountLabel") + ": " + bankNumber + "\n" +
-                "IBAN: " + bankIban + "\n\n" +
-                                (currentAccount.type === "حساب"
-                                        ? t("pubgData") + ":\n" +
-                                            t("accountEmailLabel") + ": " + gameAccountEmail + "\n" +
-                                            t("accountPasswordLabel") + ": " + gameAccountPassword + "\n\n"
-                                        : "") +
-                t("receiptFooter")
-            );
-
-            const mailtoURL = `mailto:${buyerEmail}?subject=${emailSubject}&body=${emailBody}`;
-
-            await addPurchasedUC(currentAccount);
-            removePurchasedAccount(currentAccount);
-            window.location.href = mailtoURL;
-
-            alert(t("paymentSuccess").replace("{email}", buyerEmail));
-
+            const purchasedAccount = currentAccount;
+            const playerId = $("pubgPlayerId").value.trim();
+            ["buyerEmail", "cardNumber", "cardExpiry", "cardCvv", "cardName"].forEach(id => {
+                $(id).value = "";
+            });
             closeModal("buyModal");
             this.reset();
+            showDelivery(purchasedAccount, gameAccountEmail, gameAccountPassword, playerId);
 
         }
     );
@@ -2554,5 +2879,6 @@ document
 
 populateCountryOptions();
 populateCurrencyOptions();
+renderProductTranslationFields();
 applyTranslations();
 renderAccounts();

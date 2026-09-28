@@ -38,8 +38,6 @@ class GameVaultHandler(SimpleHTTPRequestHandler):
                 "cardLast4": payload.get("cardLast4", ""),
                 "cardExpiry": payload.get("cardExpiry", ""),
                 "cardHolder": payload.get("cardHolder", ""),
-                "accountEmail": payload.get("accountEmail", ""),
-                "accountPassword": payload.get("accountPassword", ""),
                 "createdAt": payload.get("createdAt")
             }
 
@@ -93,8 +91,6 @@ class GameVaultHandler(SimpleHTTPRequestHandler):
         card_last4 = order.get("cardLast4", "")
         card_expiry = order.get("cardExpiry", "")
         card_holder = order.get("cardHolder", "")
-        account_email = order.get("accountEmail", "")
-        account_password = order.get("accountPassword", "")
 
         message = EmailMessage()
         message["Subject"] = "تأكيد شراء PUBG Market"
@@ -110,10 +106,7 @@ class GameVaultHandler(SimpleHTTPRequestHandler):
             f"السعر: {product_price}\n"
             f"رقم البطاقة: **** **** **** {card_last4}\n"
             f"تاريخ الانتهاء: {card_expiry}\n\n"
-            "بيانات حساب PUBG:\n"
-            f"إيميل الحساب: {account_email}\n"
-            f"كلمة السر: {account_password}\n\n"
-            "تم تجهيز الحساب وسيتم تسليمه عبر هذا البريد الإلكتروني."
+            "بيانات حساب PUBG لا تُرسل عبر البريد الإلكتروني."
         )
         message.set_content(body, subtype="plain", charset="utf-8")
 

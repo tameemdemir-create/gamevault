@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Vault</title>
+    <title data-i18n="pageTitle">Game Vault</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
@@ -24,23 +24,45 @@
         </div>
 
         <nav class="countries">
-            <label class="country-selector" for="countryFilter">
+            <div class="country-selector">
                 <span data-i18n="countryFilter">الدولة</span>
-                <select id="countryFilter" class="filter">
-                    <option value="all" data-i18n="allCountries">كل الدول</option>
-                </select>
-            </label>
+                <div id="storeCountryPicker" class="country-picker">
+                    <button id="countryDropdownToggle" class="country-select-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="countryDropdown">
+                        <span id="countrySelectedLabel">كل الدول</span>
+                        <span class="country-select-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <div id="countryDropdown" class="country-dropdown hidden">
+                        <input id="countrySearch" class="country-search" type="search" data-i18n-placeholder="countrySearchPlaceholder" data-i18n-aria-label="countrySearchLabel" placeholder="ابحث عن دولة..." autocomplete="off">
+                        <div id="countryOptions" class="country-options" role="listbox" data-i18n-aria-label="countryFilter" aria-label="الدولة"></div>
+                    </div>
+                </div>
+                <input id="countryFilter" type="hidden" value="all">
+            </div>
         </nav>
 
         <div class="auth-actions">
-            <button type="button" class="auth-button language-button" id="languageToggle">English</button>
+            <select class="auth-button language-button" id="languageToggle" data-i18n-aria-label="languageLabel">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+                <option value="zh-CN">简体中文</option>
+                <option value="es">Español</option>
+                <option value="hi">हिन्दी</option>
+                <option value="fr">Français</option>
+                <option value="pt">Português</option>
+                <option value="ru">Русский</option>
+                <option value="de">Deutsch</option>
+                <option value="id">Bahasa Indonesia</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="ur">اردو</option>
+            </select>
             <button type="button" class="auth-button" id="loginButton" data-i18n="login">تسجيل الدخول</button>
             <button type="button" class="auth-button primary" id="registerButton" data-i18n="register">إنشاء حساب</button>
             <button type="button" class="auth-button hidden" id="logoutButton" data-i18n="logout">تسجيل الخروج</button>
             <div id="userProfile" class="user-profile hidden">
                 <img id="userAvatar" class="user-avatar" alt="">
                 <span id="userGreeting" class="user-greeting"></span>
-                <span id="userLevel" class="user-level" aria-label="مستوى المستخدم">مستوى 1</span>
+                <span id="userLevel" class="user-level" data-i18n-aria-label="userLevelAccessible">مستوى 1</span>
                 <span id="userUCBalance" class="user-uc-balance hidden"></span>
             </div>
         </div>
@@ -237,59 +259,64 @@
 
             <div id="buyInfo" class="buy-info-box"></div>
 
-            <form id="buyForm" class="paytr-form">
+            <form id="buyForm" class="checkout-test-form">
 
-                <div class="paytr-shell">
-                    <div class="paytr-panel brand-panel">
-                        <div class="paytr-brand" data-i18n="bankCard">بطاقة بنكية</div>
-                        <p class="paytr-tag" data-i18n="securePayment">دفع آمن</p>
-                        <div class="paytr-trust">
-                            <span data-i18n="securityConfirmed">🔒 تأكيد الحماية</span>
-                            <span data-i18n="fastProcessing">⚡ معالجة سريعة</span>
-                            <span data-i18n="trusted">✅ موثوق</span>
-                        </div>
+                <p id="checkoutNotice" class="checkout-notice" role="note" data-i18n="localTestOnly">وضع اختبار محلي فقط. لا يتم تحصيل مبلغ أو تغيير المخزون.</p>
+
+                <div id="testPaymentFields" class="test-payment-fields">
+                <div class="input-group">
+                    <label for="buyerEmail" data-i18n="email">البريد الإلكتروني</label>
+                    <input id="buyerEmail" type="email" required placeholder="example@email.com" autocomplete="off">
+                </div>
+
+                <div id="pubgPlayerIdGroup" class="input-group hidden">
+                    <label for="pubgPlayerId" data-i18n="playerIdLabel">معرّف لاعب PUBG</label>
+                    <input id="pubgPlayerId" class="player-id-input" type="text" required disabled inputmode="numeric" maxlength="20" pattern="[0-9]+" placeholder="1234567890" autocomplete="off">
+                </div>
+
+                <div class="input-group">
+                    <label for="cardNumber" data-i18n="cardNumber">رقم البطاقة</label>
+                    <input id="cardNumber" class="card-payment-input" type="text" required inputmode="numeric" maxlength="23" pattern="(?:[0-9]{4} ){3}[0-9]{1,4}|(?:[0-9]{4} ){4}[0-9]{1,3}" placeholder="1234 5678 9012 3456" autocomplete="off">
+                </div>
+
+                <div class="paytr-row">
+                    <div class="input-group">
+                        <label for="cardExpiry" data-i18n="expiryDate">تاريخ الانتهاء</label>
+                        <input id="cardExpiry" class="card-payment-input" type="text" required inputmode="numeric" maxlength="5" pattern="(0[1-9]|1[0-2])/[0-9]{2}" placeholder="MM/YY" autocomplete="off">
                     </div>
 
-                    <div class="paytr-panel form-panel">
-                        <div class="input-group">
-                            <label for="buyerEmail" data-i18n="email">البريد الإلكتروني</label>
-                            <input id="buyerEmail" type="email" required placeholder="example@email.com" autocomplete="email">
-                        </div>
-
-                        <div class="input-group">
-                            <label for="cardNumber" data-i18n="cardNumber">رقم البطاقة</label>
-                            <input id="cardNumber" type="text" required inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="cc-number">
-                        </div>
-
-                        <div class="paytr-row">
-                            <div class="input-group">
-                                <label for="cardExpiry" data-i18n="expiryDate">تاريخ الانتهاء</label>
-                                <input id="cardExpiry" type="text" required maxlength="5" placeholder="MM/YY" autocomplete="cc-exp">
-                            </div>
-
-                            <div class="input-group">
-                                <label for="cardCvv" data-i18n="cvv">الرمز الثلاثي</label>
-                                <input id="cardCvv" type="password" required maxlength="4" placeholder="CVV" inputmode="numeric" autocomplete="cc-csc">
-                            </div>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="cardName" data-i18n="cardholderName">اسم حامل البطاقة</label>
-                            <input id="cardName" type="text" required data-i18n-placeholder="cardholderPlaceholder" placeholder="اسم صاحب البطاقة" autocomplete="cc-name">
-                        </div>
+                    <div class="input-group">
+                        <label for="cardCvv" data-i18n="cvv">الرمز الثلاثي</label>
+                        <input id="cardCvv" class="card-payment-input" type="password" required maxlength="3" pattern="[0-9]{3}" placeholder="CVV" inputmode="numeric" autocomplete="off">
                     </div>
                 </div>
 
-                <button type="submit" class="main-button full submit-buy-btn">
-                    <span data-i18n="payNow">دفع الآن</span>
-                </button>
+                <div class="input-group">
+                    <label for="cardName" data-i18n="cardholderName">اسم حامل البطاقة</label>
+                    <input id="cardName" type="text" required data-i18n-placeholder="cardholderPlaceholder" placeholder="اسم صاحب البطاقة" autocomplete="off">
+                </div>
+                </div>
 
-                <p class="paytr-note" data-i18n="paymentNote">سيتم إرسال تفاصيل حساب PUBG إلى بريدك الإلكتروني المسجل في الطلب.</p>
+                <button id="submitBuyButton" type="submit" class="main-button full submit-buy-btn" disabled>
+                    <span data-i18n="completeLocalTest">إكمال الاختبار</span>
+                </button>
 
             </form>
 
         </div>
 
+    </div>
+
+    <div id="deliveryModal" class="modal hidden">
+        <div class="modal-content delivery-modal-card">
+            <button class="close" onclick="closeModal('deliveryModal')">×</button>
+            <div class="modal-header">
+                <span id="deliveryBadge" class="modal-badge" data-i18n="deliveryBadge">تم التسليم</span>
+                <h2 id="deliveryTitle" data-i18n="deliveryTitle">بيانات حسابك</h2>
+            </div>
+            <div id="deliveryContent"></div>
+            <button type="button" class="main-button full" onclick="closeModal('deliveryModal')" data-i18n="closeDelivery">إغلاق</button>
+        </div>
     </div>
 
 
@@ -303,11 +330,11 @@
                 ×
             </button>
 
-            <h2>
+            <h2 class="admin-title">
                 <span data-i18n="adminPanel">لوحة التحكم</span>
             </h2>
 
-            <p class="muted">
+            <p class="muted admin-description">
                 <span data-i18n="adminDescription">إضافة وتعديل وحذف حسابات وUC وRoyale Pass.</span>
             </p>
 
@@ -316,7 +343,7 @@
 
                 <input type="hidden" id="editId">
 
-                <div class="admin-settings-section">
+                <div class="admin-settings-section" id="pubgCredentialsSection">
                     <h3 data-i18n="pubgCredentials">بيانات حساب PUBG</h3>
 
                     <div class="settings-grid">
@@ -336,70 +363,86 @@
                     </div>
                 </div>
 
-                <!-- ===== العمود الأيمن (4 حقول) ===== -->
+                <div class="admin-product-grid">
+                    <label>
+                        <span data-i18n="productType">نوع المنتج</span>
+                        <select id="accountType">
+                            <option value="حساب" data-i18n="pubgAccount">حساب PUBG</option>
+                            <option value="UC" data-i18n="ucTopUp">شدات PUBG UC</option>
+                            <option value="Royale Pass" data-i18n="royalePass">Royale Pass</option>
+                        </select>
+                    </label>
 
-                <!-- 1. نوع المنتج -->
-                <label>
-                    <span data-i18n="productType">نوع المنتج</span>
-                    <select id="accountType">
-                        <option value="حساب" data-i18n="pubgAccount">حساب PUBG</option>
-                        <option value="UC" data-i18n="ucTopUp">شدات PUBG UC</option>
-                        <option value="Royale Pass">Royale Pass</option>
-                    </select>
-                </label>
+                    <label>
+                        <span data-i18n="productName">اسم المنتج</span>
+                        <input id="accountName" type="text" required data-i18n-placeholder="productNamePlaceholder" placeholder="مثال: حساب مستوى 70 / 660 UC / رويال باس">
+                    </label>
 
-                <!-- ===== العمود الأيسر (3 حقول + اختيار الصور بجانب صور المنتج) ===== -->
+                    <label>
+                        <span data-i18n="quantityLevel">الكمية / المستوى</span>
+                        <input id="accountQuantity" type="text" data-i18n-placeholder="quantityPlaceholder" placeholder="مثال: 660 UC أو مستوى 70">
+                    </label>
 
-                <!-- 5. العملة -->
-                <label>
-                    <span data-i18n="currency">العملة</span>
-                    <select id="accountCurrency">
-                        <option value="USD">US Dollar (USD)</option>
-                    </select>
-                </label>
+                    <label>
+                        <span data-i18n="price">السعر</span>
+                        <input id="accountPrice" type="number" required min="0" placeholder="100">
+                    </label>
 
-                <!-- 2. اسم المنتج -->
-                <label>
-                    <span data-i18n="productName">اسم المنتج</span>
-                    <input id="accountName" type="text" required data-i18n-placeholder="productNamePlaceholder" placeholder="مثال: حساب لفل 70 / 660 UC / Royale Pass">
-                </label>
+                    <div class="admin-control-group">
+                        <span data-i18n="country">الدولة</span>
+                        <div class="country-picker admin-choice-picker">
+                            <button id="accountCountryToggle" class="country-select-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="accountCountryDropdown">
+                                <span id="accountCountrySelectedLabel">🇶🇦 قطر</span>
+                                <span class="country-select-arrow" aria-hidden="true">▾</span>
+                            </button>
+                            <div id="accountCountryDropdown" class="country-dropdown hidden">
+                                <input id="accountCountrySearch" class="country-search" type="search" data-i18n-placeholder="countrySearchPlaceholder" data-i18n-aria-label="countrySearchLabel" placeholder="ابحث عن دولة..." autocomplete="off">
+                                <div id="accountCountryOptions" class="country-options" role="listbox" data-i18n-aria-label="countrySearchLabel" aria-label="الدول"></div>
+                            </div>
+                        </div>
+                        <select id="accountCountry" class="visually-hidden-file" aria-hidden="true" tabindex="-1">
+                            <option value="QA">🇶🇦 قطر</option>
+                        </select>
+                    </div>
 
-                <!-- 6. الكمية / المستوى -->
-                <label>
-                    <span data-i18n="quantityLevel">الكمية / المستوى</span>
-                    <input id="accountQuantity" type="text" data-i18n-placeholder="quantityPlaceholder" placeholder="مثال: 660 UC أو لفل 70">
-                </label>
+                    <div class="admin-control-group">
+                        <span data-i18n="currency">العملة</span>
+                        <div class="country-picker admin-choice-picker">
+                            <button id="accountCurrencyToggle" class="country-select-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="accountCurrencyDropdown">
+                                <span id="accountCurrencySelectedLabel">US Dollar (USD)</span>
+                                <span class="country-select-arrow" aria-hidden="true">▾</span>
+                            </button>
+                            <div id="accountCurrencyDropdown" class="country-dropdown hidden">
+                                <input id="accountCurrencySearch" class="country-search" type="search" data-i18n-placeholder="currencySearchPlaceholder" data-i18n-aria-label="currencySearchLabel" placeholder="ابحث عن عملة..." autocomplete="off">
+                                <div id="accountCurrencyOptions" class="country-options" role="listbox" data-i18n-aria-label="currencySearchLabel" aria-label="العملات"></div>
+                            </div>
+                        </div>
+                        <select id="accountCurrency" class="visually-hidden-file" aria-hidden="true" tabindex="-1">
+                            <option value="USD">US Dollar (USD)</option>
+                        </select>
+                    </div>
 
-                <!-- 3. الدولة -->
-                <label>
-                    <span data-i18n="country">الدولة</span>
-                    <select id="accountCountry">
-                        <option value="QA">🇶🇦 قطر</option>
-                    </select>
-                </label>
+                    <label class="admin-full-width">
+                        <span data-i18n="productDescription">وصف المنتج</span>
+                        <textarea id="accountDescription" rows="3" data-i18n-placeholder="descriptionPlaceholder" placeholder="اكتب تفاصيل المنتج هنا..."></textarea>
+                    </label>
 
-                <!-- 7. وصف المنتج -->
-                <label>
-                    <span data-i18n="productDescription">وصف المنتج</span>
-                    <textarea id="accountDescription" rows="3" data-i18n-placeholder="descriptionPlaceholder" placeholder="اكتب تفاصيل المنتج هنا..."></textarea>
-                </label>
-
-                <!-- 4. السعر -->
-                <label>
-                    <span data-i18n="price">السعر</span>
-                    <input id="accountPrice" type="number" required min="0" placeholder="100">
-                </label>
-
-                <!-- 8. صور المنتج (التسمية وزر اختيارات الصور بجانب بعض بفضل الـ CSS) -->
-                <label id="accountImagesLabel">
-                    <span data-i18n="productImages">صور المنتج</span>
-                    <small class="muted" data-i18n="imageLimit" style="font-weight: normal; font-size: 11px; display: block;">تستطيع اختيار حتى 10 صور.</small>
-                </label>
-
-                <div class="file-input-wrapper" id="accountImagesWrapper">
-                    <label class="file-picker" for="accountImages" data-i18n="chooseImages">اختيار صور</label>
-                    <input id="accountImages" class="visually-hidden-file" type="file" accept="image/*" multiple>
+                    <div class="admin-image-field" id="accountImagesWrapper">
+                        <label id="accountImagesLabel">
+                            <span data-i18n="productImages">صور المنتج</span>
+                            <small class="muted" data-i18n="imageLimit" style="font-weight: normal; font-size: 11px; display: block;">تستطيع اختيار حتى 10 صور.</small>
+                        </label>
+                        <div class="file-input-wrapper">
+                            <label class="file-picker" for="accountImages" data-i18n="chooseImages">اختيار صور</label>
+                            <input id="accountImages" class="visually-hidden-file" type="file" accept="image/*" multiple>
+                        </div>
+                    </div>
                 </div>
+
+                <details id="productTranslations" class="admin-translations">
+                    <summary data-i18n="additionalTranslations">ترجمات إضافية</summary>
+                    <div id="productTranslationFields" class="admin-translation-list"></div>
+                </details>
 
                 <!-- معاينة الصور والأزرار وتأخذ العرض الكامل -->
                 <div id="imagePreview" class="image-preview"></div>
@@ -444,6 +487,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
+    <script src="locales.js"></script>
     <script src="script.js"></script>
 
 </body>
