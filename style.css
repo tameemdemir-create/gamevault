@@ -1518,6 +1518,57 @@ footer strong {
     font-size: 18px;
 }
 
+.admin-password-field {
+    width: 100%;
+}
+
+.modal-content.admin .admin-password-field input {
+    padding-left: 52px;
+}
+
+.admin-password-toggle {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #29415a;
+    border-radius: 9px;
+    background: linear-gradient(145deg, #17283b, #0b1625);
+    color: #8ecaff;
+    transition: color .2s, border-color .2s, box-shadow .2s;
+}
+
+.admin-password-toggle:hover,
+.admin-password-toggle[aria-pressed="true"] {
+    border-color: rgba(83, 223, 145, .75);
+    color: #53df91;
+    box-shadow: 0 0 14px rgba(83, 223, 145, .15);
+}
+
+.admin-password-toggle:focus-visible {
+    outline: 2px solid #53df91;
+    outline-offset: 2px;
+}
+
+.admin-password-toggle svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.admin-password-toggle .eye-closed,
+.admin-password-toggle[aria-pressed="true"] .eye-open {
+    display: none;
+}
+
+.admin-password-toggle[aria-pressed="true"] .eye-closed {
+    display: block;
+}
+
 .forgot-password {
     justify-self: start;
     border: 0;

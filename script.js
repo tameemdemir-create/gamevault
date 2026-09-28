@@ -2,10 +2,9 @@
    إعدادات الموقع
 ================================================== */
 
-const ADMIN_CODE = "24680";
-
 const STORAGE_KEY = "PUBG_MARKET_ACCOUNTS";
 const SETTINGS_KEY = "PUBG_MARKET_SETTINGS";
+const ORDERS_STORAGE_KEY = "GAMEVAULT_LOCAL_ORDERS";
 const LOCAL_TEST_MODE = location.protocol === "file:" || ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
 
 const WHATSAPP_NUMBER = "9620792077942";
@@ -62,12 +61,14 @@ const I18N = {
         openingLogin: "جاري فتح تسجيل الدخول...", saveSettingsSuccess: "تم حفظ إعدادات الدفع وحساب PUBG بنجاح.",
         uploadError: "تعذر رفع المنتجات الحالية إلى Firebase.", saveFirebaseError: "تعذر حفظ البيانات على Firebase. تحقق من قواعد قاعدة البيانات.",
         saveProductSuccess: "تم حفظ المنتج بنجاح!", noAdminProducts: "لا توجد منتجات حاليًا.", imageCount: "صور",
+        customerOrders: "طلبات الشراء التجريبية", noOrdersYet: "لا توجد طلبات بعد.", orderEmail: "بريد المشتري", orderProduct: "المنتج", orderTime: "وقت الطلب",
         translationProgress: "جاري ترجمة المنتج...",
         edit: "تعديل", delete: "حذف", confirmDelete: "هل تريد حذف المنتج {name}؟", incompleteFields: "يرجى إكمال الحقول المطلوبة.",
         missingGameCredentials: "لم يتم إعداد إيميل أو كلمة سر حساب PUBG من لوحة التحكم. يرجى إدخالهما أولًا.",
         missingAccountCredentials: "بيانات حساب PUBG غير مكتملة. أضف الإيميل وكلمة السر من لوحة التحكم أولًا.",
         paymentSuccess: "تم تأكيد الدفع بنجاح.\nستظهر بيانات حساب PUBG داخل الموقع.", notSet: "غير محدد",
-        adminCodePrompt: "اكتب كود الإدارة:", wrongAdminCode: "كود الإدارة غير صحيح.",
+        adminAccessDenied: "هذا الحساب ليس مديرًا. أضف UID التالي إلى admins في Firebase: {uid}",
+        adminAccessError: "تعذر التحقق من صلاحية المدير. تحقق من إعداد Firebase واتصال الإنترنت.",
         greeting: "مرحبًا {name}", previousImage: "الصورة السابقة", nextImage: "الصورة التالية", closeImages: "إغلاق الصور",
         genericError: "حدث خطأ ({code}).", showPassword: "إظهار كلمة السر", hidePassword: "إخفاء كلمة السر",
         receiptSubject: "تأكيد طلب شراء PUBG Market", receiptReady: "تمت معالجة طلبك بنجاح.", customer: "اسم العميل",
@@ -129,12 +130,14 @@ const I18N = {
         openingLogin: "Opening sign-in...", saveSettingsSuccess: "Payment and PUBG account settings saved.",
         uploadError: "Could not upload the current products to Firebase.", saveFirebaseError: "Could not save to Firebase. Check the database rules.",
         saveProductSuccess: "Product saved successfully!", noAdminProducts: "No products yet.", imageCount: "images",
+        customerOrders: "Test orders", noOrdersYet: "No orders yet.", orderEmail: "Buyer email", orderProduct: "Product", orderTime: "Order time",
         translationProgress: "Translating product...",
         edit: "Edit", delete: "Delete", confirmDelete: "Delete product {name}?", incompleteFields: "Please complete the required fields.",
         missingGameCredentials: "PUBG account email or password is not configured in the admin panel. Add them first.",
         missingAccountCredentials: "PUBG account details are incomplete. Add the email and password in the admin panel first.",
         paymentSuccess: "Payment confirmed.\nYour PUBG account details will appear on the website.", notSet: "Not set",
-        adminCodePrompt: "Enter the admin code:", wrongAdminCode: "Incorrect admin code.",
+        adminAccessDenied: "This account is not an admin. Add this UID to admins in Firebase: {uid}",
+        adminAccessError: "Could not verify admin access. Check Firebase setup and your internet connection.",
         greeting: "Hello {name}", previousImage: "Previous image", nextImage: "Next image", closeImages: "Close images",
         genericError: "An error occurred ({code}).", showPassword: "Show password", hidePassword: "Hide password",
         receiptSubject: "PUBG Market purchase confirmation", receiptReady: "Your order was processed successfully.", customer: "Customer",
@@ -251,6 +254,133 @@ function localizedProductQuantity(account) {
     return localizedProductText(account.quantity, account.quantityEn, account.translations, "quantity");
 }
 
+function splitTranslationText(text, maximumBytes = 450) {
+    const chunks = [];
+    let currentChunk = "";
+    for (const token of text.match(/\s+|\S+/gu) || [text]) {
+        if (currentChunk && new TextEncoder().encode(currentChunk + token).length > maximumBytes) {
+            chunks.push(currentChunk.trim());
+            currentChunk = token.trimStart();
+        } else {
+            currentChunk += token;
+        }
+    }
+    if (currentChunk.trim()) chunks.push(currentChunk.trim());
+    return chunks;
+}
+
+async function translateTextWithMyMemory(text, locale) {
+    const translatedChunks = [];
+    for (const chunk of splitTranslationText(text)) {
+        const query = new URLSearchParams({ q: chunk, langpair: `ar|${locale}`, mt: "1" });
+        const response = await fetch(`https://api.mymemory.translated.net/get?${query}`);
+        if (!response.ok) throw new Error(`Translation request failed (${response.status}).`);
+
+        const data = await response.json();
+        const translatedText = data.responseData?.translatedText;
+        if (data.quotaFinished || data.responseStatus !== 200 || !translatedText) {
+            throw new Error(data.responseDetails || "The free translation limit may have been reached.");
+        }
+        translatedChunks.push(translatedText);
+    }
+    return translatedChunks.join(" ");
+}
+
+async function translateProductFields(sourceFields, targetFields) {
+    const translations = {};
+    const jobs = Object.entries(targetFields).flatMap(([locale, fields]) =>
+        fields.map(field => ({ locale, field }))
+    );
+    let nextJob = 0;
+
+    async function runWorker() {
+        while (nextJob < jobs.length) {
+            const job = jobs[nextJob++];
+            try {
+                const translatedText = await translateTextWithMyMemory(sourceFields[job.field], job.locale);
+                translations[job.locale] ||= {};
+                translations[job.locale][job.field] = translatedText;
+            } catch (error) {
+                console.warn(`Could not translate ${job.field} to ${job.locale}.`, error);
+            }
+        }
+    }
+
+    await Promise.all(Array.from({ length: Math.min(3, jobs.length) }, runWorker));
+    return translations;
+}
+
+async function translateProductsForLanguage(locale) {
+    if (locale === "ar") return;
+
+    const fields = ["name", "quantity", "description"];
+    const productsToTranslate = accounts.map(account => {
+        const existingTranslation = typeof account.translations?.[locale] === "string"
+            ? { name: account.translations[locale] }
+            : account.translations?.[locale] || {};
+        const sourceFields = {
+            name: account.name,
+            quantity: account.quantity,
+            description: account.description
+        };
+        const missingFields = fields.filter(field =>
+            sourceFields[field] && !String(existingTranslation[field] || "").trim()
+        );
+        return {
+            account,
+            existingTranslation,
+            sourceFields,
+            missingFields,
+            pendingKey: `${account.id}:${locale}`
+        };
+    }).filter(product => product.missingFields.length && !pendingProductTranslations.has(product.pendingKey));
+
+    let nextProduct = 0;
+    let translatedAny = false;
+
+    async function translateNextProducts() {
+        while (nextProduct < productsToTranslate.length) {
+            const product = productsToTranslate[nextProduct++];
+            pendingProductTranslations.add(product.pendingKey);
+            try {
+                const result = await translateProductFields(product.sourceFields, { [locale]: product.missingFields });
+                const translatedFields = result[locale];
+                if (!translatedFields || Object.keys(translatedFields).length === 0) continue;
+
+                product.account.translations = {
+                    ...(product.account.translations || {}),
+                    [locale]: { ...product.existingTranslation, ...translatedFields }
+                };
+                if (locale === "en") {
+                    product.account.nameEn = product.account.translations.en.name || product.account.nameEn || "";
+                    product.account.quantityEn = product.account.translations.en.quantity || product.account.quantityEn || "";
+                    product.account.descriptionEn = product.account.translations.en.description || product.account.descriptionEn || "";
+                }
+                translatedAny = true;
+
+                if (currentLanguage === locale) {
+                    renderAccounts();
+                    if (currentAccount && !$('detailsModal').classList.contains('hidden')) {
+                        showDetails(currentAccount.id);
+                    } else if (currentAccount && !$('buyModal').classList.contains('hidden')) {
+                        openBuy(currentAccount.id, false);
+                    }
+                }
+            } catch (error) {
+                console.warn(`Could not translate product ${product.account.id} to ${locale}.`, error);
+            } finally {
+                pendingProductTranslations.delete(product.pendingKey);
+            }
+        }
+    }
+
+    await Promise.all(Array.from({ length: Math.min(2, productsToTranslate.length) }, translateNextProducts));
+    if (!translatedAny) return;
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+    saveAccounts();
+}
+
 function applyTranslations() {
     document.documentElement.lang = currentLanguage;
     document.documentElement.dir = RTL_LANGUAGES.has(currentLanguage) ? "rtl" : "ltr";
@@ -269,6 +399,8 @@ function applyTranslations() {
     $("authSubmit").textContent = authMode === "login" ? t("login") : t("register");
     $("authSwitch").textContent = authMode === "login" ? t("createAccountPrompt") : `${t("register")} / ${t("login")}`;
     $("passwordToggle").setAttribute("aria-label", $("authPassword").type === "text" ? t("hidePassword") : t("showPassword"));
+    $("authPasswordConfirmToggle").setAttribute("aria-label", $("authPasswordConfirm").type === "text" ? t("hidePassword") : t("showPassword"));
+    $("gameAccountPasswordToggle").setAttribute("aria-label", $("gameAccountPassword").type === "text" ? t("hidePassword") : t("showPassword"));
     populateCountryOptions();
     populateCurrencyOptions();
     renderAccounts();
@@ -370,6 +502,62 @@ const DEFAULT_SETTINGS = {
     gameAccountPassword: LOCAL_TEST_MODE ? "demo-only-password" : ""
 };
 
+function buildDemoTranslations(translationRows) {
+    const fieldNames = ["name", "quantity", "description"];
+    return Object.fromEntries(Object.entries(translationRows).map(([locale, values]) => [
+        locale,
+        Object.fromEntries(fieldNames.map((field, index) => [field, values[index]]))
+    ]));
+}
+
+const LOCAL_DEMO_TRANSLATIONS = {
+    account: buildDemoTranslations({
+        ar: ["حساب PUBG تجريبي", "المستوى 70", "حساب تجريبي لاختبار تفاصيل المنتج والشراء المحلي."],
+        en: ["Demo PUBG account", "Level 70", "Sample account for testing product details and local checkout."],
+        "zh-CN": ["PUBG 账号示例", "70级", "用于测试商品详情和本地结账的示例账号。"],
+        es: ["Cuenta PUBG de prueba", "Nivel 70", "Cuenta de muestra para probar los detalles y la compra local."],
+        hi: ["डेमो PUBG खाता", "लेवल 70", "उत्पाद विवरण और स्थानीय खरीदारी जाँचने के लिए नमूना खाता।"],
+        fr: ["Compte PUBG de démonstration", "Niveau 70", "Compte exemple pour tester les détails et l’achat local."],
+        pt: ["Conta PUBG de demonstração", "Nível 70", "Conta de exemplo para testar detalhes e compra local."],
+        ru: ["Демо-аккаунт PUBG", "Уровень 70", "Пример аккаунта для проверки товара и локальной покупки."],
+        de: ["PUBG-Demokonto", "Level 70", "Beispielkonto zum Testen von Produktdetails und lokalem Kauf."],
+        id: ["Akun PUBG demo", "Level 70", "Akun contoh untuk menguji detail produk dan pembelian lokal."],
+        ja: ["PUBGデモアカウント", "レベル70", "商品詳細とローカル購入をテストするサンプルアカウント。"],
+        ko: ["PUBG 데모 계정", "레벨 70", "상품 정보와 로컬 구매 테스트용 샘플 계정입니다."],
+        ur: ["PUBG کا ڈیمو اکاؤنٹ", "لیول 70", "پروڈکٹ کی تفصیلات اور مقامی خریداری جانچنے کے لیے نمونہ اکاؤنٹ۔"]
+    }),
+    uc: buildDemoTranslations({
+        ar: ["باقة شدات تجريبية", "660 UC", "باقة تجريبية لاختبار الشراء المحلي."],
+        en: ["Demo UC package", "660 UC", "Sample UC package for testing local checkout."],
+        "zh-CN": ["UC 示例套餐", "660 UC", "用于测试本地结账的 UC 示例套餐。"],
+        es: ["Paquete UC de prueba", "660 UC", "Paquete UC de muestra para probar la compra local."],
+        hi: ["डेमो UC पैकेज", "660 UC", "स्थानीय खरीदारी जाँचने के लिए नमूना UC पैकेज।"],
+        fr: ["Pack UC de démonstration", "660 UC", "Pack UC exemple pour tester l’achat local."],
+        pt: ["Pacote UC de demonstração", "660 UC", "Pacote UC de exemplo para testar a compra local."],
+        ru: ["Демо-пакет UC", "660 UC", "Пример пакета UC для проверки локальной покупки."],
+        de: ["UC-Demopaket", "660 UC", "Beispielpaket zum Testen des lokalen Kaufs."],
+        id: ["Paket UC demo", "660 UC", "Paket UC contoh untuk menguji pembelian lokal."],
+        ja: ["UCデモパック", "660 UC", "ローカル購入をテストするためのUCサンプルパック。"],
+        ko: ["UC 데모 패키지", "660 UC", "로컬 구매 테스트용 UC 샘플 패키지입니다."],
+        ur: ["UC کا ڈیمو پیکج", "660 UC", "مقامی خریداری جانچنے کے لیے نمونہ UC پیکج۔"]
+    }),
+    royale: buildDemoTranslations({
+        ar: ["رويال باس تجريبي", "30 يومًا", "منتج تجريبي لاختبار بطاقة الرويال باس والشراء المحلي."],
+        en: ["Demo Royale Pass", "30 days", "Sample product for testing the Royale Pass card and local checkout."],
+        "zh-CN": ["Royale Pass 示例", "30天", "用于测试 Royale Pass 卡片和本地结账的示例商品。"],
+        es: ["Royale Pass de prueba", "30 días", "Producto de muestra para probar la tarjeta Royale Pass y la compra local."],
+        hi: ["डेमो Royale Pass", "30 दिन", "Royale Pass कार्ड और स्थानीय खरीदारी जाँचने के लिए नमूना उत्पाद।"],
+        fr: ["Royale Pass de démonstration", "30 jours", "Produit exemple pour tester la carte Royale Pass et l’achat local."],
+        pt: ["Royale Pass de demonstração", "30 dias", "Produto de exemplo para testar o cartão Royale Pass e a compra local."],
+        ru: ["Демо Royale Pass", "30 дней", "Пример товара для проверки карточки Royale Pass и локальной покупки."],
+        de: ["Royale-Pass-Demo", "30 Tage", "Beispielprodukt zum Testen der Royale-Pass-Karte und des lokalen Kaufs."],
+        id: ["Royale Pass demo", "30 hari", "Produk contoh untuk menguji kartu Royale Pass dan pembelian lokal."],
+        ja: ["Royale Passデモ", "30日間", "Royale Passカードとローカル購入をテストするサンプル商品。"],
+        ko: ["Royale Pass 데모", "30일", "Royale Pass 카드와 로컬 구매 테스트용 샘플 상품입니다."],
+        ur: ["Royale Pass ڈیمو", "30 دن", "Royale Pass کارڈ اور مقامی خریداری جانچنے کے لیے نمونہ پروڈکٹ۔"]
+    })
+};
+
 const LOCAL_DEMO_ACCOUNTS = [
     {
         id: "local-demo-account",
@@ -380,10 +568,7 @@ const LOCAL_DEMO_ACCOUNTS = [
         quantityEn: "Level 70",
         description: "حساب تجريبي لاختبار تفاصيل المنتج والشراء المحلي.",
         descriptionEn: "Sample account for testing product details and local checkout.",
-        translations: {
-            ar: { name: "حساب PUBG تجريبي", quantity: "المستوى 70", description: "حساب تجريبي لاختبار تفاصيل المنتج والشراء المحلي." },
-            en: { name: "Demo PUBG account", quantity: "Level 70", description: "Sample account for testing product details and local checkout." }
-        },
+        translations: LOCAL_DEMO_TRANSLATIONS.account,
         country: "QA",
         price: 25,
         currency: "USD",
@@ -398,10 +583,7 @@ const LOCAL_DEMO_ACCOUNTS = [
         quantityEn: "660 UC",
         description: "باقة تجريبية لاختبار الشراء المحلي.",
         descriptionEn: "Sample package for testing local checkout.",
-        translations: {
-            ar: { name: "باقة شدات تجريبية", quantity: "660 UC", description: "باقة تجريبية لاختبار الشراء المحلي." },
-            en: { name: "Demo UC package", quantity: "660 UC", description: "Sample package for testing local checkout." }
-        },
+        translations: LOCAL_DEMO_TRANSLATIONS.uc,
         country: "QA",
         price: 5,
         currency: "USD",
@@ -416,10 +598,7 @@ const LOCAL_DEMO_ACCOUNTS = [
         quantityEn: "30 days",
         description: "منتج تجريبي لاختبار بطاقة الرويال باس والشراء المحلي.",
         descriptionEn: "Sample product for testing the Royale Pass card and local checkout.",
-        translations: {
-            ar: { name: "رويال باس تجريبي", quantity: "30 يومًا", description: "منتج تجريبي لاختبار بطاقة الرويال باس والشراء المحلي." },
-            en: { name: "Demo Royale Pass", quantity: "30 days", description: "Sample product for testing the Royale Pass card and local checkout." }
-        },
+        translations: LOCAL_DEMO_TRANSLATIONS.royale,
         country: "QA",
         price: 8,
         currency: "USD",
@@ -453,7 +632,6 @@ let registrationInProgress = false;
 
 let remoteAccounts = null;
 let remoteProfiles = null;
-let cloudFunctions = null;
 const profileCache = new Map();
 const loadedProfiles = new Set();
 
@@ -463,7 +641,6 @@ if (firebaseReady) {
         remoteAccounts = firebase.database().ref("products");
         remoteProfiles = firebase.database().ref("profiles");
         auth = firebase.auth();
-        cloudFunctions = firebase.functions();
     } catch (error) {
         console.error("Firebase initialization failed", error);
     }
@@ -474,6 +651,7 @@ let currentDelivery = null;
 let selectedPayment = "تحويل بنكي";
 let selectedImages = [];
 let savedProductTranslations = {};
+const pendingProductTranslations = new Set();
 
 let accounts = [];
 
@@ -542,6 +720,26 @@ function loadAccounts() {
     } else if (LOCAL_TEST_MODE) {
         localAccounts = normalizeAccounts(LOCAL_DEMO_ACCOUNTS);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(localAccounts));
+    }
+
+    if (LOCAL_TEST_MODE) {
+        const demoProducts = new Map(LOCAL_DEMO_ACCOUNTS.map(product => [product.id, product]));
+        let addedDemoTranslations = false;
+        localAccounts = localAccounts.map(account => {
+            const demoProduct = demoProducts.get(account.id);
+            const sourceMatchesDemo = demoProduct && ["name", "quantity", "description"]
+                .every(field => (account[field] || "") === (demoProduct[field] || ""));
+            if (!sourceMatchesDemo) return account;
+
+            addedDemoTranslations = true;
+            return {
+                ...account,
+                translations: { ...demoProduct.translations, ...(account.translations || {}) }
+            };
+        });
+        if (addedDemoTranslations) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(localAccounts));
+        }
     }
 
     accounts = localAccounts;
@@ -669,6 +867,10 @@ function closeModal(id) {
 
 function openAuth(mode) {
     authMode = mode;
+    $("authPassword").type = "password";
+    $("authPasswordConfirm").type = "password";
+    $("passwordToggle").setAttribute("aria-pressed", "false");
+    $("authPasswordConfirmToggle").setAttribute("aria-pressed", "false");
     $("authTitle").textContent = mode === "login" ? t("login") : t("register");
     $("authNameGroup").classList.toggle("hidden", mode === "login");
     $("authPhotoGroup").classList.toggle("hidden", mode === "login");
@@ -904,8 +1106,24 @@ $("passwordToggle").addEventListener("click", () => {
     const password = $("authPassword");
     const isVisible = password.type === "text";
     password.type = isVisible ? "password" : "text";
-    $("passwordToggle").textContent = isVisible ? "◉" : "○";
+    $("passwordToggle").setAttribute("aria-pressed", String(!isVisible));
     $("passwordToggle").setAttribute("aria-label", isVisible ? t("showPassword") : t("hidePassword"));
+});
+
+$("authPasswordConfirmToggle").addEventListener("click", () => {
+    const password = $("authPasswordConfirm");
+    const isVisible = password.type === "text";
+    password.type = isVisible ? "password" : "text";
+    $("authPasswordConfirmToggle").setAttribute("aria-pressed", String(!isVisible));
+    $("authPasswordConfirmToggle").setAttribute("aria-label", t(isVisible ? "showPassword" : "hidePassword"));
+});
+
+$("gameAccountPasswordToggle").addEventListener("click", () => {
+    const password = $("gameAccountPassword");
+    const isVisible = password.type === "text";
+    password.type = isVisible ? "password" : "text";
+    $("gameAccountPasswordToggle").setAttribute("aria-pressed", String(!isVisible));
+    $("gameAccountPasswordToggle").setAttribute("aria-label", t(isVisible ? "showPassword" : "hidePassword"));
 });
 
 function resizeImageToDataUrl(file) {
@@ -1106,30 +1324,23 @@ function getProductIcon(type) {
     if (type === "Royale Pass") {
         return "";
     }
-
     return "";
-
 }
-
-
-/* ==================================================
-   فلترة وعرض المنتجات
-================================================== */
 
 function renderAccounts() {
     const container = $("accountsContainer");
     const search = $("searchInput").value.trim().toLowerCase();
     const country = $("countryFilter")?.value || "all";
-    const typeButton = document.querySelector(".product-filter.active");
-    const type = typeButton ? typeButton.dataset.type : "all";
+    const activeTypeButton = document.querySelector(".product-filter.active");
+    const selectedType = activeTypeButton ? activeTypeButton.dataset.type : "all";
 
-    const filtered = accounts.filter(account => {
-        const countryMatch = country === "all" || countryCode(account.country) === country;
-        const typeMatch = type === "all" || account.type === type;
+    const filteredAccounts = accounts.filter(account => {
+        const countryMatches = country === "all" || countryCode(account.country) === country;
+        const typeMatches = selectedType === "all" || account.type === selectedType;
         const translatedText = Object.values(account.translations || {})
             .map(values => Object.values(values || {}).join(" "))
             .join(" ");
-        const text = [
+        const searchableText = [
             account.name,
             account.nameEn,
             account.description,
@@ -1142,19 +1353,19 @@ function renderAccounts() {
             account.type
         ].join(" ").toLowerCase();
 
-        return countryMatch && typeMatch && (!search || text.includes(search));
+        return countryMatches && typeMatches && (!search || searchableText.includes(search));
     });
 
-    $("accountCount").textContent = t("productCount").replace("{count}", filtered.length);
+    $("accountCount").textContent = t("productCount").replace("{count}", filteredAccounts.length);
 
-    if (filtered.length === 0) {
+    if (filteredAccounts.length === 0) {
         container.innerHTML = "";
         $("emptyMessage").classList.remove("hidden");
         return;
     }
 
     $("emptyMessage").classList.add("hidden");
-    container.innerHTML = filtered.map(createAccountCard).join("");
+    container.innerHTML = filteredAccounts.map(createAccountCard).join("");
 }
 
 
@@ -1977,18 +2188,6 @@ $("searchButton")
                     .trim();
 
 
-            if (value === ADMIN_CODE) {
-
-                openAdmin();
-
-                $("searchInput")
-                    .value = "";
-
-                return;
-
-            }
-
-
             renderAccounts();
 
         }
@@ -2167,6 +2366,7 @@ $("languageToggle").addEventListener("change", event => {
         : "ar";
     localStorage.setItem("GAMEVAULT_LANGUAGE", currentLanguage);
     applyTranslations();
+    translateProductsForLanguage(currentLanguage);
 });
 
 
@@ -2212,7 +2412,7 @@ updateProductTypeVisibility();
    لوحة الإدارة
 ================================================== */
 
-function openAdmin() {
+async function openAdmin() {
 
     if (LOCAL_TEST_MODE) {
         renderAdmin();
@@ -2220,22 +2420,24 @@ function openAdmin() {
         return;
     }
 
-    const code =
-        prompt(t("adminCodePrompt"));
-
-
-    if (code === ADMIN_CODE) {
-
-        renderAdmin();
-
-        openModal("adminModal");
-
+    const user = auth?.currentUser;
+    if (!user || !remoteProfiles) {
+        openAuth("login");
+        return;
     }
 
-    else if (code !== null) {
+    try {
+        const adminSnapshot = await firebase.database().ref(`admins/${user.uid}`).once("value");
+        if (adminSnapshot.val() !== true) {
+            alert(t("adminAccessDenied").replace("{uid}", user.uid));
+            return;
+        }
 
-        alert(t("wrongAdminCode"));
-
+        renderAdmin();
+        openModal("adminModal");
+    } catch (error) {
+        console.error("Admin role check failed", error);
+        alert(t("adminAccessError"));
     }
 
 }
@@ -2358,17 +2560,8 @@ $("accountForm")
                 submitButton.textContent = t("translationProgress");
 
                 try {
-                    if (!cloudFunctions || !auth?.currentUser) {
-                        throw new Error("Firebase authentication and translation service are required.");
-                    }
-
-                    const result = await cloudFunctions
-                        .httpsCallable("translateProduct")({
-                            sourceFields: arabicProduct,
-                            targetFields: translationTargets
-                        });
-
-                    for (const [locale, values] of Object.entries(result.data.translations || {})) {
+                    const result = await translateProductFields(arabicProduct, translationTargets);
+                    for (const [locale, values] of Object.entries(result)) {
                         translations[locale] = {
                             ...(typeof translations[locale] === "string" ? { name: translations[locale] } : translations[locale] || {}),
                             ...values
@@ -2498,6 +2691,7 @@ function renderAdmin() {
 
     const container =
         $("adminAccounts");
+    renderAdminOrders();
 
     container.onclick = event => {
         const button = event.target.closest("[data-admin-action]");
@@ -2601,6 +2795,34 @@ function renderAdmin() {
             )
             .join("");
 
+}
+
+function renderAdminOrders() {
+    const container = $("adminOrders");
+    if (!container) return;
+
+    let orders = [];
+    try {
+        orders = JSON.parse(localStorage.getItem(ORDERS_STORAGE_KEY) || "[]");
+    } catch {
+        orders = [];
+    }
+
+    if (!Array.isArray(orders) || orders.length === 0) {
+        container.innerHTML = `<p class="muted">${t("noOrdersYet")}</p>`;
+        return;
+    }
+
+    container.innerHTML = orders.map(order => `
+        <div class="admin-account">
+            <div>
+                <strong>${escapeHTML(order.productName)} · ${escapeHTML(formatPrice(order.price, order.currency))}</strong>
+                <p>${t("orderEmail")}: ${escapeHTML(order.email)}</p>
+                ${order.playerId ? `<p>${t("playerIdLabel")}: ${escapeHTML(order.playerId)}</p>` : ""}
+                <p>${t("orderTime")}: ${escapeHTML(new Date(order.createdAt).toLocaleString(currentLanguage))}</p>
+            </div>
+        </div>
+    `).join("");
 }
 
 
@@ -2796,7 +3018,7 @@ function resetForm() {
 function formatCardNumber(value) {
     return value
         .replace(/\D/g, "")
-        .slice(0, 19)
+        .slice(0, 16)
         .replace(/(.{4})/g, "$1 ")
         .trim();
 }
@@ -2859,7 +3081,26 @@ $("buyForm")
             }
 
             const purchasedAccount = currentAccount;
+            const buyerEmail = $("buyerEmail").value.trim();
             const playerId = $("pubgPlayerId").value.trim();
+            const needsPlayerId = purchasedAccount.type === "UC" || purchasedAccount.type === "Royale Pass";
+            let orders = [];
+            try {
+                orders = JSON.parse(localStorage.getItem(ORDERS_STORAGE_KEY) || "[]");
+            } catch {
+                orders = [];
+            }
+            orders.unshift({
+                id: createID(),
+                email: buyerEmail,
+                playerId: needsPlayerId ? playerId : "",
+                productId: purchasedAccount.id,
+                productName: localizedProductText(purchasedAccount.name, purchasedAccount.nameEn, purchasedAccount.translations, "name"),
+                price: purchasedAccount.price,
+                currency: purchasedAccount.currency,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
             ["buyerEmail", "cardNumber", "cardExpiry", "cardCvv", "cardName"].forEach(id => {
                 $(id).value = "";
             });
