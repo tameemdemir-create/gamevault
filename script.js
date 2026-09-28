@@ -899,6 +899,8 @@ function authErrorMessage(error) {
         "auth/wrong-password": "authWrongPassword",
         "auth/operation-not-allowed": "authOperationNotAllowed",
         "auth/unauthorized-domain": "authUnauthorizedDomain",
+        "auth/unauthorized-continue-uri": "authUnauthorizedDomain",
+        "auth/invalid-continue-uri": "authUnauthorizedDomain",
         "auth/invalid-api-key": "authInvalidApiKey",
         "auth/network-request-failed": "authNetworkError",
         "auth/user-not-found": "authUserNotFound"

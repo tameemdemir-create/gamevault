@@ -4,9 +4,11 @@
 
 ## التفعيل
 
-1. في Firebase Console فعّل تسجيل الدخول بالبريد وكلمة المرور.
-2. أنشئ حساب Firebase بعنوان `tameemdemir@gmail.com`، ثم تحقق من البريد وسجّل الدخول به إلى الموقع.
-3. انشر قواعد قاعدة البيانات من مجلد المشروع باستخدام Firebase CLI:
+1. في Firebase Console افتح **Authentication > Sign-in method** وفعّل **Email/Password**.
+2. افتح **Authentication > Settings > Authorized domains** وأضف `tameemdemir-create.github.io`. هذا هو النطاق المستخدم لرابط تأكيد البريد وإعادة تعيين كلمة السر على GitHub Pages؛ أضف أيضًا أي نطاق مخصص يستضيف الموقع.
+3. من **Authentication > Templates** افحص قوالب **Email address verification** و **Password reset** وتأكد من صحة نص الرسائل واسم المرسل، ثم افحص مجلدي البريد العشوائي والتحديثات عند التجربة.
+4. أنشئ حساب Firebase بعنوان `tameemdemir@gmail.com`، ثم تحقق من البريد وسجّل الدخول به إلى الموقع.
+5. انشر قواعد قاعدة البيانات من مجلد المشروع باستخدام Firebase CLI:
 
    ```powershell
    firebase deploy --only database --project gamevault-5458b
