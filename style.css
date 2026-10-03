@@ -14,57 +14,6 @@ body {
     font-family: Tahoma, Arial, sans-serif;
     background:
         radial-gradient(
-            circle at top left,
-            rgba(60, 170, 255, 0.15),
-            transparent 35%
-        ),
-        #050b14;
-    color: white;
-    min-height: 100vh;
-}
-
-
-/* ================= الهيدر ================= */
-
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    align-items: center;
-    padding: 15px 5%;
-    background: rgba(5, 11, 20, 0.92);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid #1b2a3e;
-}
-
-.auth-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.auth-button {
-    padding: 9px 13px;
-    border: 1px solid #25364d;
-    border-radius: 9px;
-    background: transparent;
-    color: #d8e2ef;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.auth-button.primary {
-    border-color: #53df91;
-    background: #53df91;
-    color: #03120b;
-    font-weight: bold;
-}
-
-.user-greeting {
-    color: #53df91;
     font-size: 13px;
     max-width: 150px;
     overflow: hidden;
@@ -1257,61 +1206,10 @@ body {
     background: #081424;
 }
 
-.payment-section {
-    margin-top: 8px;
-}
-
-.payment-section h3 {
-    font-size: 14px;
-    color: #cbd5e1;
-    margin-bottom: 10px;
-}
-
-.payment-methods {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.payment {
-    padding: 12px;
-    background: #06111e;
-    border: 1px solid #1b2a3e;
-    color: #94a3b8;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.payment:hover {
-    border-color: #43a8ff;
-    color: #ffffff;
-}
-
-.payment.active {
-    border-color: #53df91;
-    background: rgba(83, 223, 145, 0.1);
-    color: #53df91;
-}
-
 .checkout-test-form {
     display: flex;
     flex-direction: column;
     gap: 18px;
-}
-
-.test-payment-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.paytr-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
 }
 
 .checkout-notice {
@@ -1325,12 +1223,6 @@ body {
 }
 
 .player-id-input {
-    direction: ltr;
-    text-align: left;
-    font-variant-numeric: tabular-nums;
-}
-
-.card-payment-input {
     direction: ltr;
     text-align: left;
     font-variant-numeric: tabular-nums;

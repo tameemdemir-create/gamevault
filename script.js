@@ -511,10 +511,6 @@ function populateCurrencyOptions() {
 }
 
 const DEFAULT_SETTINGS = {
-    paymentGatewayName: "بوابة الدفع",
-    bankAccountOwner: "",
-    bankAccountNumber: "",
-    bankIban: "",
     gameAccountEmail: LOCAL_TEST_MODE ? "demo@gamevault.invalid" : "",
     gameAccountPassword: LOCAL_TEST_MODE ? "demo-only-password" : ""
 };
@@ -667,7 +663,6 @@ if (firebaseReady) {
 
 let currentAccount = null;
 let currentDelivery = null;
-let selectedPayment = "تحويل بنكي";
 let selectedImages = [];
 let savedProductTranslations = {};
 const pendingProductTranslations = new Set();
@@ -838,10 +833,6 @@ function saveSettings(settings) {
 
 function populateSettingsFields() {
     const settings = loadSettings();
-    $("paymentGatewayName") && ($("paymentGatewayName").value = settings.paymentGatewayName || "");
-    $("bankAccountOwner") && ($("bankAccountOwner").value = settings.bankAccountOwner || "");
-    $("bankAccountNumber") && ($("bankAccountNumber").value = settings.bankAccountNumber || "");
-    $("bankIban") && ($("bankIban").value = settings.bankIban || "");
     $("gameAccountEmail") && ($("gameAccountEmail").value = settings.gameAccountEmail || "");
     $("gameAccountPassword") && ($("gameAccountPassword").value = settings.gameAccountPassword || "");
 }
@@ -850,20 +841,6 @@ $("saveGameCredentialsButton")?.addEventListener("click", function() {
     const settings = loadSettings();
     settings.gameAccountEmail = $("gameAccountEmail").value.trim();
     settings.gameAccountPassword = $("gameAccountPassword").value.trim();
-    saveSettings(settings);
-    alert(t("saveSettingsSuccess"));
-});
-
-$("saveSettingsButton")?.addEventListener("click", function() {
-    const settings = {
-        paymentGatewayName: $("paymentGatewayName").value.trim(),
-        bankAccountOwner: $("bankAccountOwner").value.trim(),
-        bankAccountNumber: $("bankAccountNumber").value.trim(),
-        bankIban: $("bankIban").value.trim(),
-        gameAccountEmail: $("gameAccountEmail").value.trim(),
-        gameAccountPassword: $("gameAccountPassword").value.trim()
-    };
-
     saveSettings(settings);
     alert(t("saveSettingsSuccess"));
 });
