@@ -274,7 +274,6 @@
 
                 <p id="checkoutNotice" class="checkout-notice" role="note" data-i18n="localTestOnly">وضع اختبار محلي فقط. لا يتم تحصيل مبلغ أو تغيير المخزون.</p>
 
-                <div id="testPaymentFields" class="test-payment-fields">
                 <div class="input-group">
                     <label for="buyerEmail" data-i18n="email">البريد الإلكتروني</label>
                     <input id="buyerEmail" type="email" required placeholder="example@email.com" autocomplete="off">
@@ -285,31 +284,10 @@
                     <input id="pubgPlayerId" class="player-id-input" type="text" required disabled inputmode="numeric" maxlength="20" pattern="[0-9]+" placeholder="1234567890" autocomplete="off">
                 </div>
 
-                <div class="input-group">
-                    <label for="cardNumber" data-i18n="cardNumber">رقم البطاقة</label>
-                    <input id="cardNumber" class="card-payment-input" type="text" required inputmode="numeric" maxlength="19" pattern="(?:[0-9]{4} ){3}[0-9]{4}" placeholder="1234 5678 9012 3456" autocomplete="off">
-                </div>
-
-                <div class="paytr-row">
-                    <div class="input-group">
-                        <label for="cardExpiry" data-i18n="expiryDate">تاريخ الانتهاء</label>
-                        <input id="cardExpiry" class="card-payment-input" type="text" required inputmode="numeric" maxlength="5" pattern="(0[1-9]|1[0-2])/[0-9]{2}" placeholder="MM/YY" autocomplete="off">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="cardCvv" data-i18n="cvv">الرمز الثلاثي</label>
-                        <input id="cardCvv" class="card-payment-input" type="password" required maxlength="3" pattern="[0-9]{3}" placeholder="CVV" inputmode="numeric" autocomplete="off">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label for="cardName" data-i18n="cardholderName">اسم حامل البطاقة</label>
-                    <input id="cardName" type="text" required data-i18n-placeholder="cardholderPlaceholder" placeholder="اسم صاحب البطاقة" autocomplete="off">
-                </div>
-                </div>
+                <p id="checkoutStatus" class="auth-message" role="status" aria-live="polite"></p>
 
                 <button id="submitBuyButton" type="submit" class="main-button full submit-buy-btn" disabled>
-                    <span data-i18n="completeLocalTest">إكمال الاختبار</span>
+                    <span data-i18n="payWithPayPal">المتابعة إلى PayPal</span>
                 </button>
 
             </form>
@@ -509,6 +487,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
     <script src="locales.js"></script>
     <script src="script.js"></script>
 

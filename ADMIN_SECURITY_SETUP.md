@@ -19,3 +19,26 @@
 ملف `database.rules.json` يسمح للزوار بقراءة المنتجات، ويقصر تعديلها على هذا البريد بعد التحقق منه. كل مستخدم يستطيع قراءة وتعديل ملفه الشخصي فقط. تأكد من استخدام حساب المدير الصحيح قبل نشر القواعد.
 
 وضع `localhost` يبقى مفتوحًا للتجربة ولا يتصل بقاعدة Firebase الحية.
+
+## ربط PayPal Sandbox
+
+الدفع المضاف يعمل في وضع Sandbox فقط، ولا يخصم أموالًا حقيقية. يتطلب نشر Cloud Functions تفعيل خطة Blaze في Firebase؛ قد تُحتسب رسوم حسب الاستخدام.
+
+1. من PayPal Developer Dashboard أنشئ تطبيقًا ضمن **Sandbox** وخذ **Client ID** و **Secret** للتطبيق. لا تستخدم بيانات Live للاختبار.
+2. احفظ القيم كأسرار Firebase؛ ستطلب الطرفية القيمة مباشرة، فاكتبها هناك ولا تضعها في ملفات المشروع أو المحادثة:
+
+   ```powershell
+   firebase functions:secrets:set PAYPAL_CLIENT_ID --project gamevault-5458b
+   firebase functions:secrets:set PAYPAL_CLIENT_SECRET --project gamevault-5458b
+   ```
+
+3. PayPal لا يدعم JOD كعملة دفع في التكامل الحالي. غيّر سعر المنتج وعملته يدويًا إلى عملة مدعومة مثل USD من لوحة الإدارة؛ لا يُحوّل الموقع السعر تلقائيًا.
+4. انشر دوال الدفع وقواعد الطلبات:
+
+   ```powershell
+   firebase deploy --only functions:createPayPalOrder,functions:capturePayPalOrder,database --project gamevault-5458b
+   ```
+
+5. انشر `index.html` و `script.js` المحدثين على GitHub Pages. اختبر باستخدام حساب مشتري Sandbox؛ لن يتم تحصيل مبلغ حقيقي.
+
+تُحفظ الطلبات المدفوعة في Realtime Database تحت `orders`، ويمكن للمدير الموثّق فقط قراءتها. الدفع لا يسلّم حساب PUBG أو يشحن UC تلقائيًا؛ يجب تنفيذ التسليم يدويًا من تفاصيل الطلب إلى أن تضاف آلية تسليم منفصلة.

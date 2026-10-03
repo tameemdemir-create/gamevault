@@ -7,6 +7,11 @@ const SETTINGS_KEY = "PUBG_MARKET_SETTINGS";
 const ORDERS_STORAGE_KEY = "GAMEVAULT_LOCAL_ORDERS";
 const LOCAL_TEST_MODE = location.protocol === "file:" || ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
 const ADMIN_EMAIL = "tameemdemir@gmail.com";
+const PAYPAL_CURRENCIES = new Set([
+    "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "ILS", "JPY",
+    "MYR", "MXN", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF",
+    "THB", "TWD", "USD"
+]);
 
 const WHATSAPP_NUMBER = "9620792077942";
 const USER_LEVEL_THRESHOLDS = { 1: 0, 2: 5000, 3: 20000, 4: 70000, 5: 150000 };
@@ -40,8 +45,12 @@ const I18N = {
         invalidPhoto: "تعذر قراءة الصورة. اختر صورة أخرى.",
         createAccountPrompt: "ليس لديك حساب؟ إنشاء حساب",
         namePlaceholder: "اكتب اسمك", passwordPlaceholder: "6 أحرف على الأقل", orderConfirmation: "تأكيد الطلب",
-        purchaseOrder: "طلب شراء", localTestOnly: "اختبار محلي فقط. بيانات البطاقة لا تُرسل ولا تُحفظ ولا يُخصم مال؛ المخزون المحدود ينقص محلياً في هذا المتصفح فقط.",
-        paymentUnavailable: "الشراء غير متاح حتى ربط بوابة دفع حقيقية.", completeLocalTest: "إكمال الاختبار",
+        purchaseOrder: "طلب شراء", localTestOnly: "اختبار محلي فقط. لا يتم تحصيل مال؛ المخزون المحدود يتغير في هذا المتصفح فقط.",
+        paypalSandboxNotice: "دفع PayPal تجريبي. لا تستخدم أموالًا أو حسابات حقيقية؛ التحصيل عبر Sandbox فقط.",
+        paymentUnavailable: "الشراء غير متاح حتى ربط بوابة دفع حقيقية.", completeLocalTest: "إكمال الاختبار", payWithPayPal: "المتابعة إلى PayPal",
+        paypalCurrencyUnsupported: "PayPal لا يدعم عملة {currency}. عدّل عملة المنتج إلى عملة مدعومة مثل USD.",
+        paypalUnavailable: "تعذر بدء دفع PayPal. تحقق من إعدادات الخادم وحاول مرة أخرى.", paypalCancelled: "تم إلغاء الدفع ولم يتم خصم المبلغ.",
+        paypalPaid: "تم تأكيد الدفع التجريبي. رقم الطلب: {orderId}. سيظهر الطلب لدى الإدارة للتسليم.", paypalRedirecting: "جاري فتح PayPal...",
         localTestProduct: "اكتمل الاختبار محلياً. لم يُخصم مال؛ المخزون المحدود يُحدّث في هذا المتصفح فقط.",
         localTestBadge: "اختبار محلي", localTestResult: "نتيجة الاختبار",
         cardNumber: "رقم البطاقة", expiryDate: "تاريخ الانتهاء", cvv: "الرمز الثلاثي", cardholderName: "اسم حامل البطاقة",
@@ -62,7 +71,7 @@ const I18N = {
         openingLogin: "جاري فتح تسجيل الدخول...", saveSettingsSuccess: "تم حفظ إعدادات الدفع وحساب PUBG بنجاح.",
         uploadError: "تعذر رفع المنتجات الحالية إلى Firebase.", saveFirebaseError: "تعذر حفظ البيانات على Firebase. تحقق من قواعد قاعدة البيانات.",
         saveProductSuccess: "تم حفظ المنتج بنجاح!", noAdminProducts: "لا توجد منتجات حاليًا.", imageCount: "صور",
-        customerOrders: "طلبات الشراء التجريبية", noOrdersYet: "لا توجد طلبات بعد.", orderEmail: "بريد المشتري", orderProduct: "المنتج", orderTime: "وقت الطلب",
+        customerOrders: "طلبات الشراء", noOrdersYet: "لا توجد طلبات بعد.", orderEmail: "بريد المشتري", orderProduct: "المنتج", orderTime: "وقت الطلب", orderPaymentStatus: "حالة الدفع",
         translationProgress: "جاري ترجمة المنتج...",
         edit: "تعديل", delete: "حذف", confirmDelete: "هل تريد حذف المنتج {name}؟", incompleteFields: "يرجى إكمال الحقول المطلوبة.",
         missingGameCredentials: "لم يتم إعداد إيميل أو كلمة سر حساب PUBG من لوحة التحكم. يرجى إدخالهما أولًا.",
@@ -110,8 +119,12 @@ const I18N = {
         invalidPhoto: "Could not read the image. Choose another photo.",
         createAccountPrompt: "No account? Create one",
         namePlaceholder: "Enter your name", passwordPlaceholder: "At least 6 characters", orderConfirmation: "Order confirmation",
-        purchaseOrder: "Purchase order", localTestOnly: "Local test only. Card details are not sent or saved and no money is charged; limited stock decreases only in this browser.",
-        paymentUnavailable: "Purchases are disabled until a real payment gateway is connected.", completeLocalTest: "Complete local test",
+        purchaseOrder: "Purchase order", localTestOnly: "Local test only. No money is charged; limited stock changes only in this browser.",
+        paypalSandboxNotice: "PayPal test checkout. Do not use real money or accounts; payments run in Sandbox only.",
+        paymentUnavailable: "Purchases are disabled until a real payment gateway is connected.", completeLocalTest: "Complete local test", payWithPayPal: "Continue to PayPal",
+        paypalCurrencyUnsupported: "PayPal does not support {currency}. Change the product to a supported currency such as USD.",
+        paypalUnavailable: "Could not start PayPal checkout. Check server setup and try again.", paypalCancelled: "Payment cancelled. No money was charged.",
+        paypalPaid: "Sandbox payment confirmed. Order: {orderId}. The order is recorded for fulfillment.", paypalRedirecting: "Opening PayPal...",
         localTestProduct: "Local test complete. No money was charged; any limited stock is updated only in this browser.",
         localTestBadge: "Local test", localTestResult: "Test result",
         cardNumber: "Card number", expiryDate: "Expiry date", cvv: "CVV", cardholderName: "Cardholder name",
@@ -132,7 +145,7 @@ const I18N = {
         openingLogin: "Opening sign-in...", saveSettingsSuccess: "Payment and PUBG account settings saved.",
         uploadError: "Could not upload the current products to Firebase.", saveFirebaseError: "Could not save to Firebase. Check the database rules.",
         saveProductSuccess: "Product saved successfully!", noAdminProducts: "No products yet.", imageCount: "images",
-        customerOrders: "Test orders", noOrdersYet: "No orders yet.", orderEmail: "Buyer email", orderProduct: "Product", orderTime: "Order time",
+        customerOrders: "Customer orders", noOrdersYet: "No orders yet.", orderEmail: "Buyer email", orderProduct: "Product", orderTime: "Order time", orderPaymentStatus: "Payment status",
         translationProgress: "Translating product...",
         edit: "Edit", delete: "Delete", confirmDelete: "Delete product {name}?", incompleteFields: "Please complete the required fields.",
         missingGameCredentials: "PUBG account email or password is not configured in the admin panel. Add them first.",
@@ -636,6 +649,7 @@ let registrationInProgress = false;
 
 let remoteAccounts = null;
 let remoteProfiles = null;
+let remoteOrders = null;
 const profileCache = new Map();
 const loadedProfiles = new Set();
 
@@ -644,6 +658,7 @@ if (firebaseReady) {
         firebase.initializeApp(FIREBASE_CONFIG);
         remoteAccounts = firebase.database().ref("products");
         remoteProfiles = firebase.database().ref("profiles");
+        remoteOrders = firebase.database().ref("orders");
         auth = firebase.auth();
     } catch (error) {
         console.error("Firebase initialization failed", error);
@@ -866,22 +881,52 @@ function $(id) {
 }
 
 function configureCheckoutMode() {
-    const noticeKey = LOCAL_TEST_MODE ? "localTestOnly" : "paymentUnavailable";
-    const buttonKey = LOCAL_TEST_MODE ? "completeLocalTest" : "paymentUnavailable";
+    const noticeKey = LOCAL_TEST_MODE ? "localTestOnly" : "paypalSandboxNotice";
+    const buttonKey = LOCAL_TEST_MODE ? "completeLocalTest" : "payWithPayPal";
     const notice = $("checkoutNotice");
     const buttonLabel = $("submitBuyButton").querySelector("span");
 
     notice.dataset.i18n = noticeKey;
     notice.textContent = t(noticeKey);
-    $("testPaymentFields").classList.toggle("hidden", !LOCAL_TEST_MODE);
     buttonLabel.dataset.i18n = buttonKey;
     buttonLabel.textContent = t(buttonKey);
-    $("submitBuyButton").disabled = !LOCAL_TEST_MODE;
+    $("submitBuyButton").disabled = !LOCAL_TEST_MODE && (!firebaseReady || !firebase.functions);
         if (LOCAL_TEST_MODE && !auth) {
             updateAuthUI(null);
             $("localAdminButton").classList.remove("hidden");
             $("localAdminButton").addEventListener("click", openAdmin);
         }
+}
+
+function cleanPayPalReturnUrl() {
+    const url = new URL(location.href);
+    ["paypalOrder", "paypalCancelled", "token", "PayerID"].forEach(key => url.searchParams.delete(key));
+    history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+}
+
+async function handlePayPalReturn() {
+    const params = new URLSearchParams(location.search);
+    if (params.get("paypalCancelled") === "1") {
+        cleanPayPalReturnUrl();
+        alert(t("paypalCancelled"));
+        return;
+    }
+
+    const orderKey = params.get("paypalOrder");
+    const paypalOrderId = params.get("token");
+    if (!orderKey || !paypalOrderId) return;
+
+    cleanPayPalReturnUrl();
+    try {
+        const capturePayPalOrder = firebase.app().functions("us-central1").httpsCallable("capturePayPalOrder");
+        const result = await capturePayPalOrder({ orderKey, paypalOrderId });
+        if (result.data?.status !== "PAID") throw new Error(t("paypalUnavailable"));
+        alert(t("paypalPaid").replace("{orderId}", result.data.orderId));
+        renderAccounts();
+    } catch (error) {
+        console.error("PayPal capture failed", error);
+        alert(error.message || t("paypalUnavailable"));
+    }
 }
 
 function openModal(id) {
@@ -2145,6 +2190,7 @@ function openBuy(id, resetForm = true) {
 
     if (resetForm) {
         $("buyForm").reset();
+        $("checkoutStatus").textContent = "";
         const needsPlayerId = account.type === "UC" || account.type === "Royale Pass";
         $("pubgPlayerIdGroup").classList.toggle("hidden", !needsPlayerId);
         $("pubgPlayerId").disabled = !needsPlayerId;
@@ -2847,7 +2893,7 @@ function renderAdmin() {
 
 }
 
-function renderAdminOrders() {
+async function renderAdminOrders() {
     const container = $("adminOrders");
     if (!container) return;
 
@@ -2858,17 +2904,29 @@ function renderAdminOrders() {
         orders = [];
     }
 
+    if (remoteOrders) {
+        try {
+            const snapshot = await remoteOrders.once("value");
+            const remote = Object.values(snapshot.val() || {});
+            orders = [...remote, ...orders];
+        } catch (error) {
+            console.error("Could not load PayPal orders", error);
+        }
+    }
+
     if (!Array.isArray(orders) || orders.length === 0) {
         container.innerHTML = `<p class="muted">${t("noOrdersYet")}</p>`;
         return;
     }
 
+    orders.sort((first, second) => Number(second.paidAt || second.createdAt || 0) - Number(first.paidAt || first.createdAt || 0));
     container.innerHTML = orders.map(order => `
         <div class="admin-account">
             <div>
-                <strong>${escapeHTML(order.productName)} · ${escapeHTML(formatPrice(order.price, order.currency))}</strong>
-                <p>${t("orderEmail")}: ${escapeHTML(order.email)}</p>
+                <strong>${escapeHTML(order.productName)} · ${escapeHTML(formatPrice(order.amount ?? order.price, order.currency))}</strong>
+                <p>${t("orderEmail")}: ${escapeHTML(order.buyerEmail || order.email)}</p>
                 ${order.playerId ? `<p>${t("playerIdLabel")}: ${escapeHTML(order.playerId)}</p>` : ""}
+                ${order.status ? `<p>${t("orderPaymentStatus")}: ${escapeHTML(order.status)}</p>` : ""}
                 <p>${t("orderTime")}: ${escapeHTML(new Date(order.createdAt).toLocaleString(currentLanguage))}</p>
             </div>
         </div>
@@ -3067,42 +3125,8 @@ function resetForm() {
    إتمام الاختبار المحلي
 ================================================== */
 
-function formatCardNumber(value) {
-    return value
-        .replace(/\D/g, "")
-        .slice(0, 16)
-        .replace(/(.{4})/g, "$1 ")
-        .trim();
-}
-
-function formatExpiry(value) {
-    let digits = value.replace(/\D/g, "").slice(0, 4);
-    if (digits.length === 0) return "";
-    if (digits[0] > "1") digits = `0${digits}`;
-
-    if (digits.length >= 2) {
-        const month = Number(digits.slice(0, 2));
-        if (month === 0) digits = `01${digits.slice(2)}`;
-        else if (month > 12) digits = `12${digits.slice(2)}`;
-    }
-
-    return digits.length <= 2 ? digits : `${digits.slice(0, 2)}/${digits.slice(2)}`;
-}
-
 $("pubgPlayerId")?.addEventListener("input", function() {
     this.value = this.value.replace(/\D/g, "").slice(0, 20);
-});
-
-$("cardNumber")?.addEventListener("input", function() {
-    this.value = formatCardNumber(this.value);
-});
-
-$("cardExpiry")?.addEventListener("input", function() {
-    this.value = formatExpiry(this.value);
-});
-
-$("cardCvv")?.addEventListener("input", function() {
-    this.value = this.value.replace(/\D/g, "").slice(0, 3);
 });
 
 $("buyForm")
@@ -3117,8 +3141,43 @@ $("buyForm")
                 return;
             }
 
+            const purchasedAccount = currentAccount;
+            const buyerEmail = $("buyerEmail").value.trim();
+            const playerId = $("pubgPlayerId").value.trim();
+            const needsPlayerId = purchasedAccount.type === "UC" || purchasedAccount.type === "Royale Pass";
+
             if (!LOCAL_TEST_MODE) {
-                alert(t("paymentUnavailable"));
+                if (!firebaseReady || !firebase.functions) {
+                    $("checkoutStatus").textContent = t("paypalUnavailable");
+                    return;
+                }
+                if (!PAYPAL_CURRENCIES.has(String(purchasedAccount.currency || "").toUpperCase())) {
+                    $("checkoutStatus").textContent = t("paypalCurrencyUnsupported")
+                        .replace("{currency}", purchasedAccount.currency || "");
+                    return;
+                }
+                if (isOutOfStock(purchasedAccount)) {
+                    $("checkoutStatus").textContent = t("outOfStock");
+                    return;
+                }
+
+                const submitButton = $("submitBuyButton");
+                submitButton.disabled = true;
+                $("checkoutStatus").textContent = t("paypalRedirecting");
+                try {
+                    const createPayPalOrder = firebase.app().functions("us-central1").httpsCallable("createPayPalOrder");
+                    const result = await createPayPalOrder({
+                        productId: String(purchasedAccount.id),
+                        buyerEmail,
+                        playerId: needsPlayerId ? playerId : ""
+                    });
+                    if (!result.data?.approvalUrl) throw new Error(t("paypalUnavailable"));
+                    location.assign(result.data.approvalUrl);
+                } catch (error) {
+                    console.error("Could not create PayPal order", error);
+                    $("checkoutStatus").textContent = error.message || t("paypalUnavailable");
+                    submitButton.disabled = false;
+                }
                 return;
             }
 
@@ -3139,10 +3198,6 @@ $("buyForm")
                 return;
             }
 
-            const purchasedAccount = currentAccount;
-            const buyerEmail = $("buyerEmail").value.trim();
-            const playerId = $("pubgPlayerId").value.trim();
-            const needsPlayerId = purchasedAccount.type === "UC" || purchasedAccount.type === "Royale Pass";
             let orders = [];
             try {
                 orders = JSON.parse(localStorage.getItem(ORDERS_STORAGE_KEY) || "[]");
@@ -3168,15 +3223,14 @@ $("buyForm")
                 if (!$("adminModal").classList.contains("hidden")) renderAdmin();
             }
             if (purchasedAccount.type === "UC") await addPurchasedUC(purchasedAccount);
-            ["buyerEmail", "cardNumber", "cardExpiry", "cardCvv", "cardName"].forEach(id => {
-                $(id).value = "";
-            });
             closeModal("buyModal");
             this.reset();
             showDelivery(purchasedAccount, gameAccountEmail, gameAccountPassword, playerId);
 
         }
     );
+
+void handlePayPalReturn();
 
 
 /* ==================================================
