@@ -279,6 +279,11 @@
                     <input id="buyerEmail" type="email" required placeholder="example@email.com" autocomplete="off">
                 </div>
 
+                <div class="input-group">
+                    <label for="productAccessCode">كود المنتج</label>
+                    <input id="productAccessCode" type="text" required placeholder="أدخل الكود المخصص لهذا المنتج" autocomplete="off">
+                </div>
+
                 <div id="pubgPlayerIdGroup" class="input-group hidden">
                     <label for="pubgPlayerId" data-i18n="playerIdLabel">معرّف لاعب PUBG</label>
                     <input id="pubgPlayerId" class="player-id-input" type="text" required disabled inputmode="numeric" maxlength="20" pattern="[0-9]+" placeholder="1234567890" autocomplete="off">
@@ -286,8 +291,8 @@
 
                 <p id="checkoutStatus" class="auth-message" role="status" aria-live="polite"></p>
 
-                <button id="submitBuyButton" type="submit" class="main-button full submit-buy-btn" disabled>
-                    <span data-i18n="payWithPayPal">المتابعة إلى PayPal</span>
+                <button id="submitBuyButton" type="submit" class="main-button full submit-buy-btn">
+                    <span>إظهار الحساب</span>
                 </button>
 
             </form>
@@ -421,6 +426,11 @@
                             <option value="USD">US Dollar (USD)</option>
                         </select>
                     </div>
+
+                    <label class="admin-full-width">
+                        <span>كود المنتج</span>
+                        <input id="accountAccessCode" type="text" placeholder="اكتب كود المنتج الذي يعطيه البائع للزبون" autocomplete="off">
+                    </label>
 
                     <label class="admin-full-width">
                         <span data-i18n="productDescription">وصف المنتج</span>

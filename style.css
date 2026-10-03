@@ -13,12 +13,77 @@ html {
 body {
     font-family: Tahoma, Arial, sans-serif;
     background:
-        radial-gradient(
+        radial-gradient(circle at top, rgba(67, 168, 255, 0.15), transparent 32%),
+        linear-gradient(180deg, #07111d 0%, #0b1626 32%, #091421 100%);
+    color: #edf6ff;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 5%;
+    border-bottom: 1px solid rgba(83, 223, 145, 0.12);
+    background: rgba(7, 17, 29, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.auth-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.auth-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #1f3249;
+    background: rgba(10, 22, 36, 0.9);
+    color: #e8f3ff;
     font-size: 13px;
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+.auth-button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(83, 223, 145, 0.6);
+    box-shadow: 0 8px 18px rgba(83, 223, 145, 0.08);
+}
+
+.auth-button.primary {
+    background: linear-gradient(135deg, #53df91, #28bb73);
+    border-color: transparent;
+    color: #04150e;
 }
 
 .user-profile {
@@ -27,10 +92,20 @@ body {
     gap: 8px;
     max-width: 260px;
     flex-wrap: wrap;
+    padding: 8px 10px;
+    border-radius: 14px;
+    background: rgba(12, 23, 35, 0.7);
+    border: 1px solid rgba(83, 223, 145, 0.18);
 }
 
 .user-profile .admin-dashboard-button {
     padding: 7px 10px;
+    font-size: 12px;
+}
+
+.user-greeting {
+    color: #edf6ff;
+    font-weight: 700;
     font-size: 12px;
 }
 

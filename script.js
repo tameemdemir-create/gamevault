@@ -858,21 +858,20 @@ function $(id) {
 }
 
 function configureCheckoutMode() {
-    const noticeKey = LOCAL_TEST_MODE ? "localTestOnly" : "paypalSandboxNotice";
-    const buttonKey = LOCAL_TEST_MODE ? "completeLocalTest" : "payWithPayPal";
     const notice = $("checkoutNotice");
     const buttonLabel = $("submitBuyButton").querySelector("span");
 
-    notice.dataset.i18n = noticeKey;
-    notice.textContent = t(noticeKey);
-    buttonLabel.dataset.i18n = buttonKey;
-    buttonLabel.textContent = t(buttonKey);
-    $("submitBuyButton").disabled = !LOCAL_TEST_MODE && (!firebaseReady || !firebase.functions);
-        if (LOCAL_TEST_MODE && !auth) {
-            updateAuthUI(null);
-            $("localAdminButton").classList.remove("hidden");
-            $("localAdminButton").addEventListener("click", openAdmin);
-        }
+    notice.dataset.i18n = "localTestOnly";
+    notice.textContent = "للطلب: اكتب الكود المخصص لهذا المنتج ثم اضغط على إظهار الحساب. يتم التوصيل عبر واتساب.";
+    buttonLabel.dataset.i18n = "completeLocalTest";
+    buttonLabel.textContent = "إظهار الحساب";
+    $("submitBuyButton").disabled = false;
+
+    if (LOCAL_TEST_MODE && !auth) {
+        updateAuthUI(null);
+        $("localAdminButton").classList.remove("hidden");
+        $("localAdminButton").addEventListener("click", openAdmin);
+    }
 }
 
 function cleanPayPalReturnUrl() {
@@ -2173,8 +2172,6 @@ function openBuy(id, resetForm = true) {
         $("pubgPlayerId").disabled = !needsPlayerId;
         $("pubgPlayerId").value = "";
     }
-    configureCheckoutMode();
-
 
     $("buyInfo").innerHTML = `
 
@@ -2238,8 +2235,21 @@ function openBuy(id, resetForm = true) {
 
         </div>
 
+        <div style="margin-top:12px; padding:12px 14px; border:1px solid rgba(83,223,145,.25); border-radius:12px; background:rgba(83,223,145,.06); color:#dff9eb; font-size:13px; line-height:1.7;">
+            <strong style="display:block; margin-bottom:6px; color:#53df91;">طلب عبر واتساب</strong>
+            اكتب الكود الذي يخص هذا المنتج فقط، ثم اضغط <strong>إظهار الحساب</strong> للحصول على بيانات الحساب.
+            <br>
+            <a href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`السلام عليكم، أريد شراء ${localizedProductText(account.name, account.nameEn, account.translations, "name")}.`) }" target="_blank" rel="noopener noreferrer" style="display:inline-block; margin-top:10px; color:#4dd9ff; font-weight:bold; text-decoration:none;">
+                إرسال طلب عبر واتساب
+            </a>
+        </div>
+
     `;
 
+    const submitButton = $("submitBuyButton");
+    if (submitButton) {
+        submitButton.querySelector("span").textContent = "إظهار الحساب";
+    }
 
     openModal("buyModal");
 
@@ -2688,6 +2698,8 @@ $("accountForm")
 
                 descriptionEn: englishProduct.description || "",
 
+                accessCode: $("accountAccessCode").value.trim(),
+
                 stock: ["UC", "Royale Pass"].includes($("accountType").value)
                     ? normalizeStock($("accountStock").value)
                     : null,
@@ -2840,6 +2852,8 @@ function renderAdmin() {
 
                             ${stockSummary(account) ? " • " + escapeHTML(stockSummary(account)) : ""}
 
+                            ${account.accessCode ? " • كود: " + escapeHTML(account.accessCode) : ""}
+
                             •
                             ${(account.images || []).length}
                             ${t("imageCount")}
@@ -2965,6 +2979,7 @@ function editAccount(id) {
     $("accountPrice").value =
         account.price;
 
+    $("accountAccessCode").value = account.accessCode || "";
 
     updateProductTypeVisibility();
 
@@ -3120,41 +3135,28 @@ $("buyForm")
 
             const purchasedAccount = currentAccount;
             const buyerEmail = $("buyerEmail").value.trim();
+            const productCode = $("productAccessCode").value.trim();
             const playerId = $("pubgPlayerId").value.trim();
             const needsPlayerId = purchasedAccount.type === "UC" || purchasedAccount.type === "Royale Pass";
 
-            if (!LOCAL_TEST_MODE) {
-                if (!firebaseReady || !firebase.functions) {
-                    $("checkoutStatus").textContent = t("paypalUnavailable");
-                    return;
-                }
-                if (!PAYPAL_CURRENCIES.has(String(purchasedAccount.currency || "").toUpperCase())) {
-                    $("checkoutStatus").textContent = t("paypalCurrencyUnsupported")
-                        .replace("{currency}", purchasedAccount.currency || "");
-                    return;
-                }
-                if (isOutOfStock(purchasedAccount)) {
-                    $("checkoutStatus").textContent = t("outOfStock");
-                    return;
-                }
+            if (!buyerEmail) {
+                $("checkoutStatus").textContent = "يرجى إدخال البريد الإلكتروني.";
+                return;
+            }
 
-                const submitButton = $("submitBuyButton");
-                submitButton.disabled = true;
-                $("checkoutStatus").textContent = t("paypalRedirecting");
-                try {
-                    const createPayPalOrder = firebase.app().functions("us-central1").httpsCallable("createPayPalOrder");
-                    const result = await createPayPalOrder({
-                        productId: String(purchasedAccount.id),
-                        buyerEmail,
-                        playerId: needsPlayerId ? playerId : ""
-                    });
-                    if (!result.data?.approvalUrl) throw new Error(t("paypalUnavailable"));
-                    location.assign(result.data.approvalUrl);
-                } catch (error) {
-                    console.error("Could not create PayPal order", error);
-                    $("checkoutStatus").textContent = error.message || t("paypalUnavailable");
-                    submitButton.disabled = false;
-                }
+            if (!productCode) {
+                $("checkoutStatus").textContent = "يرجى إدخال كود المنتج.";
+                return;
+            }
+
+            const savedCode = String(purchasedAccount.accessCode || "").trim();
+            if (!savedCode) {
+                $("checkoutStatus").textContent = "هذا المنتج لا يحتوي على كود مخصص بعد. تواصل عبر واتساب للحصول على الكود.";
+                return;
+            }
+
+            if (productCode !== savedCode) {
+                $("checkoutStatus").textContent = "الكود غير صحيح. تأكد من الكود الذي أعطاك إياه البائع.";
                 return;
             }
 
@@ -3187,8 +3189,10 @@ $("buyForm")
                 playerId: needsPlayerId ? playerId : "",
                 productId: purchasedAccount.id,
                 productName: localizedProductText(purchasedAccount.name, purchasedAccount.nameEn, purchasedAccount.translations, "name"),
+                productCode,
                 price: purchasedAccount.price,
                 currency: purchasedAccount.currency,
+                status: "تم إظهار الحساب عبر الكود",
                 createdAt: new Date().toISOString()
             });
             localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
@@ -3203,7 +3207,6 @@ $("buyForm")
             closeModal("buyModal");
             this.reset();
             showDelivery(purchasedAccount, gameAccountEmail, gameAccountPassword, playerId);
-
         }
     );
 
