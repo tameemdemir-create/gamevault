@@ -30,7 +30,7 @@ const I18N = {
         currencySearchLabel: "البحث عن عملة", currencySearchPlaceholder: "ابحث عن عملة...",
         allCountries: "كل الدول", login: "تسجيل الدخول", register: "إنشاء حساب", logout: "تسجيل الخروج",
         authName: "الاسم", email: "البريد الإلكتروني", password: "كلمة السر", forgotPassword: "نسيت كلمة السر؟",
-        invalidEmail: "اكتب بريدًا إلكترونيًا صحيحًا.", authEmailInUse: "هذا البريد مستخدم من قبل.", authInvalidEmail: "البريد الإلكتروني غير صالح.", authWeakPassword: "كلمة السر يجب أن تكون 6 أحرف على الأقل.", authWrongPassword: "البريد أو كلمة السر غير صحيحة.", authOperationNotAllowed: "يجب تفعيل طريقة الدخول من Firebase.", authUnauthorizedDomain: "تعذر تسجيل الدخول من هذا الرابط.", authInvalidApiKey: "مفتاح Firebase غير صحيح.", authNetworkError: "تعذر الاتصال بالإنترنت، حاول مرة أخرى.", authUserNotFound: "لا يوجد حساب بهذا البريد وكلمة السر.",
+        invalidEmail: "اكتب بريدًا إلكترونيًا صحيحًا.", authEmailInUse: "هذا البريد مستخدم من قبل.", authInvalidEmail: "البريد الإلكتروني غير صالح.", authWeakPassword: "كلمة السر يجب أن تكون 6 أحرف على الأقل.", authWrongPassword: "البريد أو كلمة السر غير صحيحة.", authOperationNotAllowed: "يجب تفعيل طريقة الدخول من Firebase.", authUnauthorizedDomain: "تعذر تسجيل الدخول من هذا الرابط.", authInvalidApiKey: "مفتاح Firebase غير صحيح.", authNetworkError: "تعذر الاتصال بالإنترنت، حاول مرة أخرى.", authUserNotFound: "لا يوجد حساب بهذا البريد وكلمة السر.", authTooManyRequests: "تم إيقاف المحاولات مؤقتًا لكثرتها. انتظر قليلًا ثم أعد المحاولة.", authEmailQuotaExceeded: "وصل Firebase إلى حد إرسال الرسائل. تحقق من إعدادات البريد أو أعد المحاولة لاحقًا.",
         disposableEmail: "هذا النوع من الإيميلات المؤقتة غير مسموح.", verifyEmailSent: "تم إنشاء الحساب. افتح رابط التأكيد في بريدك الإلكتروني قبل تسجيل الدخول.", emailNotVerified: "أكد بريدك الإلكتروني أولًا من الرابط المرسل إليه.", resendVerification: "إعادة إرسال رسالة التأكيد", verificationSent: "تم إرسال رسالة تأكيد جديدة. افحص بريدك الإلكتروني.", verificationWait: "يمكنك إعادة الإرسال بعد {minutes}:{seconds}.",
         loginRequiredForUC: "يجب تسجيل الدخول حتى تضاف الشدات إلى رصيدك.",
         confirmPassword: "تأكيد كلمة السر", confirmPasswordPlaceholder: "أعد كتابة كلمة السر", passwordsDoNotMatch: "كلمتا السر غير متطابقتين.",
@@ -40,9 +40,9 @@ const I18N = {
         invalidPhoto: "تعذر قراءة الصورة. اختر صورة أخرى.",
         createAccountPrompt: "ليس لديك حساب؟ إنشاء حساب",
         namePlaceholder: "اكتب اسمك", passwordPlaceholder: "6 أحرف على الأقل", orderConfirmation: "تأكيد الطلب",
-        purchaseOrder: "طلب شراء", localTestOnly: "وضع اختبار محلي فقط. استخدم بيانات تجريبية؛ لن تُرسل بيانات البطاقة أو تُحفظ، ولن يُخصم مبلغ أو يتغير المخزون.",
+        purchaseOrder: "طلب شراء", localTestOnly: "اختبار محلي فقط. بيانات البطاقة لا تُرسل ولا تُحفظ ولا يُخصم مال؛ المخزون المحدود ينقص محلياً في هذا المتصفح فقط.",
         paymentUnavailable: "الشراء غير متاح حتى ربط بوابة دفع حقيقية.", completeLocalTest: "إكمال الاختبار",
-        localTestProduct: "اكتمل الاختبار محليًا. لم يتم تحصيل مبلغ أو تغيير المخزون.",
+        localTestProduct: "اكتمل الاختبار محلياً. لم يُخصم مال؛ المخزون المحدود يُحدّث في هذا المتصفح فقط.",
         localTestBadge: "اختبار محلي", localTestResult: "نتيجة الاختبار",
         cardNumber: "رقم البطاقة", expiryDate: "تاريخ الانتهاء", cvv: "الرمز الثلاثي", cardholderName: "اسم حامل البطاقة",
         playerIdLabel: "معرّف لاعب PUBG", userLevelAccessible: "مستوى المستخدم",
@@ -84,7 +84,8 @@ const I18N = {
         baseUC: "الشدات الأساسية", baseUCPlaceholder: "600", ucLevel: "مستوى المكافأة",
         levelOne: "المستوى 1 (+60)", levelTwo: "المستوى 2 (+150)", levelThree: "المستوى 3 (+250)", levelFour: "المستوى 4 (+400)", levelFive: "المستوى 5 (+600)",
         details: "التفاصيل", buy: "شراء", noImage: "لا توجد صورة", noDescription: "لا يوجد وصف لهذا المنتج.",
-        type: "النوع", country: "الدولة", buyVia: "شراء", footerText: "حسابات PUBG • شدات UC • رويال باس — كل الدول والعملات"
+        type: "النوع", country: "الدولة", buyVia: "شراء", footerText: "حسابات PUBG • شدات UC • رويال باس — كل الدول والعملات",
+        stockLimit: "المخزون (اتركه فارغاً ليكون غير محدود)", stockRemaining: "المتبقي: {count}", stockUnlimited: "مخزون غير محدود", outOfStock: "نفدت الكمية"
         ,ucBalance: "رصيد UC: {count}", userLevel: "مستوى {level}"
         ,deliveryBadge: "تم التسليم", deliveryTitle: "بيانات حسابك", accountReady: "تم تجهيز حساب PUBG الخاص بك.",
         accountLogin: "إيميل الحساب", accountPassword: "كلمة السر", closeDelivery: "إغلاق", ucAdded: "تمت إضافة {count} UC إلى رصيدك."
@@ -99,7 +100,7 @@ const I18N = {
         currencySearchLabel: "Search currencies", currencySearchPlaceholder: "Search currencies...",
         allCountries: "All countries", login: "Log in", register: "Create account", logout: "Log out",
         authName: "Name", email: "Email", password: "Password", forgotPassword: "Forgot password?",
-        invalidEmail: "Enter a valid email address.", authEmailInUse: "This email is already in use.", authInvalidEmail: "The email address is invalid.", authWeakPassword: "The password must be at least 6 characters.", authWrongPassword: "The email or password is incorrect.", authOperationNotAllowed: "Enable this sign-in method in Firebase.", authUnauthorizedDomain: "Sign-in is not allowed from this URL.", authInvalidApiKey: "The Firebase API key is invalid.", authNetworkError: "Network error. Please try again.", authUserNotFound: "No account was found with this email and password.",
+        invalidEmail: "Enter a valid email address.", authEmailInUse: "This email is already in use.", authInvalidEmail: "The email address is invalid.", authWeakPassword: "The password must be at least 6 characters.", authWrongPassword: "The email or password is incorrect.", authOperationNotAllowed: "Enable this sign-in method in Firebase.", authUnauthorizedDomain: "Sign-in is not allowed from this URL.", authInvalidApiKey: "The Firebase API key is invalid.", authNetworkError: "Network error. Please try again.", authUserNotFound: "No account was found with this email and password.", authTooManyRequests: "Too many attempts. Wait a while before trying again.", authEmailQuotaExceeded: "Firebase has reached its email-sending limit. Check email settings or try again later.",
         disposableEmail: "Temporary email addresses are not allowed.", verifyEmailSent: "Account created. Open the verification link in your email before signing in.", emailNotVerified: "Verify your email first using the link we sent.", resendVerification: "Resend verification email", verificationSent: "A new verification email was sent. Check your inbox.", verificationWait: "You can resend after {minutes}:{seconds}.",
         loginRequiredForUC: "You must sign in so the UC can be added to your balance.",
         confirmPassword: "Confirm password", confirmPasswordPlaceholder: "Re-enter your password", passwordsDoNotMatch: "The passwords do not match.",
@@ -109,9 +110,9 @@ const I18N = {
         invalidPhoto: "Could not read the image. Choose another photo.",
         createAccountPrompt: "No account? Create one",
         namePlaceholder: "Enter your name", passwordPlaceholder: "At least 6 characters", orderConfirmation: "Order confirmation",
-        purchaseOrder: "Purchase order", localTestOnly: "Local test mode only. Use test details; card data is not sent or saved, and no money is charged or inventory changed.",
+        purchaseOrder: "Purchase order", localTestOnly: "Local test only. Card details are not sent or saved and no money is charged; limited stock decreases only in this browser.",
         paymentUnavailable: "Purchases are disabled until a real payment gateway is connected.", completeLocalTest: "Complete local test",
-        localTestProduct: "Local test complete. No money was charged and inventory was unchanged.",
+        localTestProduct: "Local test complete. No money was charged; any limited stock is updated only in this browser.",
         localTestBadge: "Local test", localTestResult: "Test result",
         cardNumber: "Card number", expiryDate: "Expiry date", cvv: "CVV", cardholderName: "Cardholder name",
         playerIdLabel: "PUBG player ID", userLevelAccessible: "User level",
@@ -153,7 +154,8 @@ const I18N = {
         baseUC: "Base UC", baseUCPlaceholder: "600", ucLevel: "Bonus level",
         levelOne: "Level 1 (+60)", levelTwo: "Level 2 (+150)", levelThree: "Level 3 (+250)", levelFour: "Level 4 (+400)", levelFive: "Level 5 (+600)",
         details: "Details", buy: "Buy", noImage: "No image", noDescription: "No description for this product.",
-        type: "Type", country: "Country", buyVia: "Buy", footerText: "PUBG accounts • UC • Royale Pass — all countries and currencies"
+        type: "Type", country: "Country", buyVia: "Buy", footerText: "PUBG accounts • UC • Royale Pass — all countries and currencies",
+        stockLimit: "Stock limit (blank = unlimited)", stockRemaining: "Remaining: {count}", stockUnlimited: "Unlimited stock", outOfStock: "Out of stock"
         ,ucBalance: "UC balance: {count}", userLevel: "Lv. {level}"
         ,deliveryBadge: "Delivered", deliveryTitle: "Your account details", accountReady: "Your PUBG account is ready.",
         accountLogin: "Account email", accountPassword: "Password", closeDelivery: "Close", ucAdded: "{count} UC was added to your balance."
@@ -204,6 +206,7 @@ function updateProductTypeVisibility() {
     const selectedType = $("accountType").value;
     const isAccount = selectedType === "حساب";
     const hidesImages = selectedType === "UC" || selectedType === "Royale Pass";
+    $("accountStockGroup").classList.toggle("hidden", !hidesImages);
     $("pubgCredentialsSection").classList.toggle("hidden", !isAccount);
     $("accountImagesWrapper").classList.toggle("hidden", hidesImages);
     $("imagePreview").classList.toggle("hidden", hidesImages);
@@ -660,10 +663,35 @@ function normalizeAccounts(result) {
     return (Array.isArray(result) ? result : Object.values(result || {}))
         .map(account => ({
             ...account,
+            id: account.id === undefined || account.id === null || account.id === "" ? createID() : String(account.id),
             type: account.type || "حساب",
             quantity: account.quantity || "",
+            stock: normalizeStock(account.stock),
             images: Array.isArray(account.images) ? account.images : []
         }));
+}
+
+function normalizeStock(stock) {
+    if (stock === null || stock === undefined || stock === "") return null;
+    const value = Number(stock);
+    return Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
+function hasLimitedStock(account) {
+    return (account.type === "UC" || account.type === "Royale Pass")
+        && Number.isSafeInteger(account.stock)
+        && account.stock >= 0;
+}
+
+function isOutOfStock(account) {
+    return hasLimitedStock(account) && account.stock === 0;
+}
+
+function stockSummary(account) {
+    if (account.type !== "UC" && account.type !== "Royale Pass") return "";
+    if (!hasLimitedStock(account)) return t("stockUnlimited");
+    if (account.stock === 0) return t("outOfStock");
+    return t("stockRemaining").replace("{count}", new Intl.NumberFormat(currentLanguage).format(account.stock));
 }
 
 function getUCDetails(account) {
@@ -903,7 +931,9 @@ function authErrorMessage(error) {
         "auth/invalid-continue-uri": "authUnauthorizedDomain",
         "auth/invalid-api-key": "authInvalidApiKey",
         "auth/network-request-failed": "authNetworkError",
-        "auth/user-not-found": "authUserNotFound"
+        "auth/user-not-found": "authUserNotFound",
+        "auth/too-many-requests": "authTooManyRequests",
+        "auth/quota-exceeded": "authEmailQuotaExceeded"
     };
     const message = t(messageKeys[error.code] || "genericError");
     return message.replace("{code}", error.code || "unknown");
@@ -1015,6 +1045,7 @@ async function addPurchasedUC(account) {
     const updated = { ...profile, ucBalance: Number(profile.ucBalance) || 0 };
     updated.ucBalance += details.total;
     await saveUserProfile(user, updated);
+    updateAuthUI(user);
 }
 
 async function loadUserProfile(user) {
@@ -1198,8 +1229,11 @@ $("resendVerification").addEventListener("click", async () => {
     try {
         registrationInProgress = true;
         const result = await auth.signInWithEmailAndPassword(email, password);
-        await result.user.sendEmailVerification();
-        await auth.signOut();
+        try {
+            await result.user.sendEmailVerification();
+        } finally {
+            await auth.signOut();
+        }
         startVerificationCooldown(email);
         $("authMessage").textContent = t("verificationSent");
     } catch (error) {
@@ -1240,10 +1274,12 @@ $("authForm").addEventListener("submit", async event => {
         return;
     }
 
+    let createdUser = null;
     try {
         if (authMode === "register") {
             registrationInProgress = true;
             const result = await auth.createUserWithEmailAndPassword(email, password);
+            createdUser = result.user;
             const profile = {};
             if (name) {
                 profile.displayName = name;
@@ -1281,6 +1317,15 @@ $("authForm").addEventListener("submit", async event => {
             $("authEmail").value = email;
             $("authMessage").textContent = t("emailExistsLogin");
             return;
+        }
+        if (createdUser) {
+            if (auth.currentUser?.uid === createdUser.uid) {
+                await auth.signOut().catch(signOutError => {
+                    console.error("Could not sign out after verification email failure", signOutError);
+                });
+            }
+            $("resendVerification").classList.remove("hidden");
+            updateVerificationCooldown(email);
         }
         $("authMessage").textContent = authErrorMessage(error);
     } finally {
@@ -1499,6 +1544,8 @@ function createAccountCard(account) {
                 }
 
 
+                ${stockSummary(account) ? `<p class="stock-status${isOutOfStock(account) ? " sold-out" : ""}">${escapeHTML(stockSummary(account))}</p>` : ""}
+
                 <p class="account-description">
 
                     ${escapeHTML(
@@ -1521,6 +1568,7 @@ function createAccountCard(account) {
 
                     <button
                         class="buy"
+                        ${isOutOfStock(account) ? "disabled" : ""}
                         onclick="openBuy('${account.id}')"
                     >
                         ${t("buy")}
@@ -1578,7 +1626,6 @@ function showDetails(id) {
         return;
     }
 
-
     currentAccount = account;
 
 
@@ -1621,6 +1668,7 @@ function showDetails(id) {
                 :
                 ""
             }
+            ${stockSummary(account) ? `<p class="stock-status${isOutOfStock(account) ? " sold-out" : ""}">${escapeHTML(stockSummary(account))}</p>` : ""}
             <h3
                 style="
                     color:#53df91;
@@ -1736,6 +1784,7 @@ function showDetails(id) {
             </p>
             <button
                 class="main-button full"
+                ${isOutOfStock(account) ? "disabled" : ""}
                 onclick="
                     closeModal('detailsModal');
                     openBuy('${account.id}');
@@ -2086,6 +2135,11 @@ function openBuy(id, resetForm = true) {
         return;
     }
 
+    if (isOutOfStock(account)) {
+        alert(t("outOfStock"));
+        return;
+    }
+
 
     currentAccount = account;
 
@@ -2156,6 +2210,8 @@ function openBuy(id, resetForm = true) {
                 )}
 
             </strong>
+
+            ${stockSummary(account) ? `<br><span class="stock-status${isOutOfStock(account) ? " sold-out" : ""}">${escapeHTML(stockSummary(account))}</span>` : ""}
 
         </div>
 
@@ -2609,6 +2665,10 @@ $("accountForm")
 
                 descriptionEn: englishProduct.description || "",
 
+                stock: ["UC", "Royale Pass"].includes($("accountType").value)
+                    ? normalizeStock($("accountStock").value)
+                    : null,
+
                 translations,
 
                 images:
@@ -2621,7 +2681,7 @@ $("accountForm")
 
                 const old =
                     accounts.find(
-                        a => a.id === editId
+                        a => String(a.id) === String(editId)
                     );
 
 
@@ -2640,7 +2700,7 @@ $("accountForm")
                 accounts =
                     accounts.map(
                         a =>
-                            a.id === editId
+                            String(a.id) === String(editId)
                                 ? account
                                 : a
                     );
@@ -2755,6 +2815,8 @@ function renderAdmin() {
                                 ""
                             }
 
+                            ${stockSummary(account) ? " • " + escapeHTML(stockSummary(account)) : ""}
+
                             •
                             ${(account.images || []).length}
                             ${t("imageCount")}
@@ -2850,6 +2912,8 @@ function editAccount(id) {
 
     $("accountQuantity").value =
         account.quantity || "";
+
+    $("accountStock").value = hasLimitedStock(account) ? account.stock : "";
 
     $("accountDescription").value =
         account.description || "";
@@ -3044,7 +3108,7 @@ $("cardCvv")?.addEventListener("input", function() {
 $("buyForm")
     .addEventListener(
         "submit",
-        function(event) {
+        async function(event) {
 
             event.preventDefault();
 
@@ -3055,6 +3119,13 @@ $("buyForm")
 
             if (!LOCAL_TEST_MODE) {
                 alert(t("paymentUnavailable"));
+                return;
+            }
+
+            if (isOutOfStock(currentAccount)) {
+                alert(t("outOfStock"));
+                closeModal("buyModal");
+                renderAccounts();
                 return;
             }
 
@@ -3089,6 +3160,14 @@ $("buyForm")
                 createdAt: new Date().toISOString()
             });
             localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+            const product = accounts.find(account => String(account.id) === String(purchasedAccount.id));
+            if (product && hasLimitedStock(product)) {
+                product.stock -= 1;
+                saveAccounts();
+                renderAccounts();
+                if (!$("adminModal").classList.contains("hidden")) renderAdmin();
+            }
+            if (purchasedAccount.type === "UC") await addPurchasedUC(purchasedAccount);
             ["buyerEmail", "cardNumber", "cardExpiry", "cardCvv", "cardName"].forEach(id => {
                 $(id).value = "";
             });

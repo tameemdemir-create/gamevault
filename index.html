@@ -400,6 +400,11 @@
                         <input id="accountQuantity" type="text" data-i18n-placeholder="quantityPlaceholder" placeholder="مثال: 660 UC أو مستوى 70">
                     </label>
 
+                    <label id="accountStockGroup" class="hidden">
+                        <span data-i18n="stockLimit">المخزون (اتركه فارغاً ليكون غير محدود)</span>
+                        <input id="accountStock" type="number" min="0" step="1" inputmode="numeric">
+                    </label>
+
                     <label>
                         <span data-i18n="price">السعر</span>
                         <input id="accountPrice" type="number" required min="0" placeholder="100">

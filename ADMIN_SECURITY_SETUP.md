@@ -5,10 +5,12 @@
 ## التفعيل
 
 1. في Firebase Console افتح **Authentication > Sign-in method** وفعّل **Email/Password**.
-2. افتح **Authentication > Settings > Authorized domains** وأضف `tameemdemir-create.github.io`. هذا هو النطاق المستخدم لرابط تأكيد البريد وإعادة تعيين كلمة السر على GitHub Pages؛ أضف أيضًا أي نطاق مخصص يستضيف الموقع.
-3. من **Authentication > Templates** افحص قوالب **Email address verification** و **Password reset** وتأكد من صحة نص الرسائل واسم المرسل، ثم افحص مجلدي البريد العشوائي والتحديثات عند التجربة.
-4. أنشئ حساب Firebase بعنوان `tameemdemir@gmail.com`، ثم تحقق من البريد وسجّل الدخول به إلى الموقع.
-5. انشر قواعد قاعدة البيانات من مجلد المشروع باستخدام Firebase CLI:
+2. افتح **Authentication > Settings > Authorized domains** وأضف `tameemdemir-create.github.io`، وأضف أي نطاق مخصص يستضيف الموقع. يجب أن يكون نطاق الموقع الذي تفتحه مسموحًا، وليس نطاق `firebaseapp.com` وحده.
+3. من **Authentication > Templates** راجع قالبَي **Email address verification** و **Password reset**، وتأكد من اسم المرسل ورابط الإجراء/النطاق. أرسل الرسائل إلى صندوق بريد تملكه للتجربة.
+4. افحص مجلد Spam/Junk وPromotions، وتأكد من كتابة البريد دون خطأ. Firebase لا يرسل رسالة تغيير كلمة السر إذا لم يكن البريد مرتبطًا بحساب؛ ومع حماية تعداد الحسابات قد تعرض الواجهة رسالة نجاح عامة في الحالتين.
+5. إذا لم تصل الرسائل رغم ذلك، افتح **Authentication > Users** وتأكد أن الحساب أُنشئ، ثم راجع حد إرسال البريد وحالة Firebase Authentication للمشروع. أخطاء التكرار أو بلوغ الحد تظهر الآن برسالة أوضح في الموقع.
+6. أنشئ حساب Firebase بعنوان `tameemdemir@gmail.com`، ثم تحقق من البريد وسجّل الدخول به إلى الموقع.
+7. انشر قواعد قاعدة البيانات من مجلد المشروع باستخدام Firebase CLI:
 
    ```powershell
    firebase deploy --only database --project gamevault-5458b

@@ -860,6 +860,17 @@ body {
     font-weight: bold;
 }
 
+.stock-status {
+    margin: 8px 0 0;
+    color: #53df91;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.stock-status.sold-out {
+    color: #ff7d7d;
+}
+
 .account-description {
     color: #8493a8;
     line-height: 1.8;
@@ -887,6 +898,12 @@ body {
     color: #03120b;
     border: 0;
     font-weight: bold;
+}
+
+.card-buttons button:disabled,
+.main-button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
 }
 
 
