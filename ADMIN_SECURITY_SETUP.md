@@ -26,27 +26,8 @@
 
 وضع `localhost` يبقى مفتوحًا للتجربة ولا يتصل بقاعدة Firebase الحية.
 
-## ربط PayPal Sandbox
+## الدفع وتسليم المنتجات
 
-الدفع يعمل افتراضيًا في وضع Sandbox ولا يخصم أموالًا حقيقية. يتحول إلى Live فقط عند ضبط `PAYPAL_ENVIRONMENT=live` وإضافة مفاتيح Live لحساب تجاري مؤهل. يتطلب نشر Cloud Functions تفعيل خطة Blaze في Firebase؛ قد تُحتسب رسوم حسب الاستخدام.
+لا توجد بوابات دفع إلكترونية في الموقع. يتفق العميل والبائع على الدفع خارج الموقع؛ لا تعطّل خيار **تفعيل الكود للزبون** إلا بعد تأكيد الدفع، ثم أعطِ العميل الكود. إذا عُطّل الكود لاحقًا، يبقى محفوظًا ومربوطًا بالمنتج لكن لا يمكن استخدامه.
 
-1. من PayPal Developer Dashboard أنشئ تطبيقًا ضمن **Sandbox** وخذ **Client ID** و **Secret** للتطبيق. لا تستخدم بيانات Live للاختبار.
-2. احفظ Client ID وSecret كأسرار Firebase؛ ستطلب الطرفية القيمة مباشرة، فاكتبها هناك ولا تضعها في GitHub أو المحادثة:
-
-   ```powershell
-   firebase functions:secrets:set PAYPAL_CLIENT_ID --project gamevault-5458b
-   firebase functions:secrets:set PAYPAL_CLIENT_SECRET --project gamevault-5458b
-   ```
-
-3. الوضع الافتراضي `sandbox`. عند اختبار الدفع استخدم مفاتيح Sandbox وحساب مشتري Sandbox.
-4. لتفعيل Live بعد التأكد من أهلية حساب PayPal التجاري، أضف `PAYPAL_ENVIRONMENT=live` إلى ملف `functions/.env.gamevault-5458b` محليًا فقط، ثم استبدل الأسرار بمفاتيح Live. ملف البيئة مستثنى من Git؛ لا ترفعه أبدًا.
-5. PayPal لا يدعم JOD كعملة دفع في التكامل الحالي. غيّر سعر المنتج وعملته يدويًا إلى عملة مدعومة مثل USD من لوحة الإدارة؛ لا يُحوّل الموقع السعر تلقائيًا.
-6. انشر دوال الدفع:
-
-   ```powershell
-   firebase deploy --only functions:createPayPalOrder,functions:capturePayPalOrder --project gamevault-5458b
-   ```
-
-7. اختبر باستخدام حساب مشتري Sandbox؛ لن يتم تحصيل مبلغ حقيقي.
-
-تُحفظ الطلبات المدفوعة في Realtime Database تحت `orders`، ويمكن للمدير الموثّق فقط قراءتها. الدفع لا يسلّم حساب PUBG أو يشحن UC تلقائيًا؛ يجب تنفيذ التسليم يدويًا من تفاصيل الطلب إلى أن تضاف آلية تسليم منفصلة.
+رسائل تأكيد البريد وإعادة تعيين كلمة السر تستخدم رابط المتابعة `https://tameemdemir-create.github.io/gamevault/`. يجب أن يكون النطاق `tameemdemir-create.github.io` ضمن **Authentication > Settings > Authorized domains** في Firebase؛ أما وصول الرسالة فيعتمد أيضًا على قوالب البريد وحدود الإرسال ومجلد الرسائل غير المرغوب فيها.

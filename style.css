@@ -1301,16 +1301,6 @@ button {
     gap: 18px;
 }
 
-.checkout-notice {
-    margin: 0;
-    padding: 12px 14px;
-    border: 1px solid #b7791f;
-    background: rgba(183, 121, 31, 0.12);
-    color: #f6c66b;
-    font-size: 13px;
-    line-height: 1.6;
-}
-
 .player-id-input {
     direction: ltr;
     text-align: left;

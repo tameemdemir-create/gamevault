@@ -12,22 +12,22 @@ const AUTH_ACTION_SETTINGS = {
     url: "https://tameemdemir-create.github.io/gamevault/",
     handleCodeInApp: false
 };
-const PAYPAL_CURRENCIES = new Set([
-    "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "ILS", "JPY",
-    "MYR", "MXN", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF",
-    "THB", "TWD", "USD"
-]);
-
-const WHATSAPP_NUMBER = "9620792077942";
+const WHATSAPP_NUMBER = "97470614812";
 const USER_LEVEL_THRESHOLDS = { 1: 0, 2: 5000, 3: 20000, 4: 70000, 5: 150000 };
 
-const COUNTRY_CODES = `AF AL DZ AS AD AO AI AQ AG AR AM AW AU AT AZ BS BH BD BB BY BE BZ BJ BM BT BO BQ BA BW BV BR IO BN BG BF BI CV KH CM CA KY CF TD CL CN CX CC CO KM CG CD CK CR CI HR CU CW CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FK FO FJ FI FR GF PF TF GA GM GE DE GH GI GR GL GD GP GU GT GG GN GW GY HT HM VA HN HK HU IS IN ID IR IQ IE IM IL IT JM JP JE JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MQ MR MU YT MX FM MD MC MN ME MS MA MZ MM NA NR NP NL NC NZ NI NE NG NU NF MK MP NO OM PK PW PS PA PG PY PE PH PN PL PT PR QA RE RO RU RW BL SH KN LC MF PM VC WS SM ST SA SN RS SC SL SG SX SK SI SB SO ZA GS SS ES LK SD SR SJ SE CH SY TW TJ TZ TH TL TG TK TO TT TN TR TM TC TV UG UA AE GB US UM UY UZ VU VE VN VG VI WF EH YE ZM ZW` .split(" ");
+const COUNTRY_CODES = ["QA", "JO", "TR"];
+const COUNTRY_CURRENCIES = { QA: "QAR", JO: "JOD", TR: "TRY" };
 
 const COUNTRY_ALIASES = {
     "قطر": "QA",
     "الأردن": "JO",
     "تركيا": "TR"
 };
+
+function currencyForCountry(country) {
+    return COUNTRY_CURRENCIES[countryCode(country).toUpperCase()] || COUNTRY_CURRENCIES.QA;
+}
+
 
 const I18N = {
     ar: {
@@ -37,10 +37,9 @@ const I18N = {
         products: "منتجات PUBG", productCount: "{count} منتج", all: "الكل", accounts: "حسابات",
         uc: "شدات UC", ucProductLabel: "شدات", ucDeliveryPromise: "شدات تصل خلال 3 دقائق.", royalePass: "رويال باس", noProducts: "لا توجد منتجات",
         noProductsDescription: "لم يتم العثور على منتجات مطابقة للبحث.", countryFilter: "الدولة", countrySearchLabel: "البحث عن دولة", countrySearchPlaceholder: "ابحث عن دولة...",
-        currencySearchLabel: "البحث عن عملة", currencySearchPlaceholder: "ابحث عن عملة...",
         allCountries: "كل الدول", login: "تسجيل الدخول", register: "إنشاء حساب", logout: "تسجيل الخروج",
         authName: "الاسم", email: "البريد الإلكتروني", password: "كلمة السر", forgotPassword: "نسيت كلمة السر؟",
-        invalidEmail: "اكتب بريدًا إلكترونيًا صحيحًا.", authEmailInUse: "هذا البريد مستخدم من قبل.", authInvalidEmail: "البريد الإلكتروني غير صالح.", authWeakPassword: "كلمة السر يجب أن تكون 6 أحرف على الأقل.", authWrongPassword: "البريد أو كلمة السر غير صحيحة.", authOperationNotAllowed: "يجب تفعيل طريقة الدخول من Firebase.", authUnauthorizedDomain: "تعذر تسجيل الدخول من هذا الرابط.", authInvalidApiKey: "مفتاح Firebase غير صحيح.", authNetworkError: "تعذر الاتصال بالإنترنت، حاول مرة أخرى.", authUserNotFound: "لا يوجد حساب بهذا البريد وكلمة السر.", authTooManyRequests: "تم إيقاف المحاولات مؤقتًا لكثرتها. انتظر قليلًا ثم أعد المحاولة.", authEmailQuotaExceeded: "وصل Firebase إلى حد إرسال الرسائل. تحقق من إعدادات البريد أو أعد المحاولة لاحقًا.",
+        invalidEmail: "اكتب بريدًا إلكترونيًا صحيحًا.", authEmailInUse: "هذا البريد مستخدم من قبل.", authInvalidEmail: "البريد الإلكتروني غير صالح.", authWeakPassword: "كلمة السر يجب أن تكون 6 أحرف على الأقل.", authWrongPassword: "البريد أو كلمة السر غير صحيحة.", authOperationNotAllowed: "يجب تفعيل طريقة الدخول من Firebase.", authUnauthorizedDomain: "تعذر تسجيل الدخول من هذا الرابط.", authUnauthorizedContinueUrl: "نطاق رابط البريد غير مسموح. أضف tameemdemir-create.github.io إلى النطاقات المسموحة في Firebase Authentication.", authInvalidApiKey: "مفتاح Firebase غير صحيح.", authNetworkError: "تعذر الاتصال بالإنترنت، حاول مرة أخرى.", authUserNotFound: "لا يوجد حساب بهذا البريد وكلمة السر.", authTooManyRequests: "تم إيقاف المحاولات مؤقتًا لكثرتها. انتظر قليلًا ثم أعد المحاولة.", authEmailQuotaExceeded: "وصل Firebase إلى حد إرسال الرسائل. تحقق من إعدادات البريد أو أعد المحاولة لاحقًا.",
         disposableEmail: "هذا النوع من الإيميلات المؤقتة غير مسموح.", verifyEmailSent: "تم إنشاء الحساب. افتح رابط التأكيد في بريدك الإلكتروني قبل تسجيل الدخول.", emailNotVerified: "أكد بريدك الإلكتروني أولًا من الرابط المرسل إليه.", resendVerification: "إعادة إرسال رسالة التأكيد", verificationSent: "تم إرسال رسالة تأكيد جديدة. افحص بريدك الإلكتروني.", verificationWait: "يمكنك إعادة الإرسال بعد {minutes}:{seconds}.",
         loginRequiredForUC: "يجب تسجيل الدخول حتى تضاف الشدات إلى رصيدك.",
         confirmPassword: "تأكيد كلمة السر", confirmPasswordPlaceholder: "أعد كتابة كلمة السر", passwordsDoNotMatch: "كلمتا السر غير متطابقتين.",
@@ -50,55 +49,40 @@ const I18N = {
         invalidPhoto: "تعذر قراءة الصورة. اختر صورة أخرى.",
         createAccountPrompt: "ليس لديك حساب؟ إنشاء حساب",
         namePlaceholder: "اكتب اسمك", passwordPlaceholder: "6 أحرف على الأقل", orderConfirmation: "تأكيد الطلب",
-        purchaseOrder: "طلب شراء", localTestOnly: "اختبار محلي فقط. لا يتم تحصيل مال؛ المخزون المحدود يتغير في هذا المتصفح فقط.",
-        paypalSandboxNotice: "دفع PayPal تجريبي. لا تستخدم أموالًا أو حسابات حقيقية؛ التحصيل عبر Sandbox فقط.",
-        paymentUnavailable: "الشراء غير متاح حتى ربط بوابة دفع حقيقية.", completeLocalTest: "إكمال الاختبار", payWithPayPal: "المتابعة إلى PayPal",
-        paypalCurrencyUnsupported: "PayPal لا يدعم عملة {currency}. عدّل عملة المنتج إلى عملة مدعومة مثل USD.",
-        paypalUnavailable: "تعذر بدء دفع PayPal. تحقق من إعدادات الخادم وحاول مرة أخرى.", paypalCancelled: "تم إلغاء الدفع ولم يتم خصم المبلغ.",
-        paypalPaid: "تم تأكيد الدفع التجريبي. رقم الطلب: {orderId}. سيظهر الطلب لدى الإدارة للتسليم.", paypalRedirecting: "جاري فتح PayPal...",
-        localTestProduct: "اكتمل الاختبار محلياً. لم يُخصم مال؛ المخزون المحدود يُحدّث في هذا المتصفح فقط.",
-        localTestBadge: "اختبار محلي", localTestResult: "نتيجة الاختبار",
-        cardNumber: "رقم البطاقة", expiryDate: "تاريخ الانتهاء", cvv: "الرمز الثلاثي", cardholderName: "اسم حامل البطاقة",
+        purchaseOrder: "طلب شراء",
+        revealProduct: "إظهار المنتج",
+        deliveryCodeVerified: "تم التحقق من كود المنتج بنجاح. أكمل التسليم مع البائع.",
         playerIdLabel: "معرّف لاعب PUBG", userLevelAccessible: "مستوى المستخدم",
         adminPanel: "لوحة التحكم",
-        adminDescription: "إضافة وتعديل وحذف حسابات وUC والرويال باس.", paymentSettings: "إعدادات الدفع وحساب PUBG",
+        adminDescription: "إضافة وتعديل وحذف حسابات وUC والرويال باس.",
         saveSettings: "حفظ الإعدادات", productType: "نوع المنتج", pubgAccount: "حساب PUBG", ucTopUp: "شدات PUBG UC",
-        currency: "العملة", currencySearchLabel: "البحث عن عملة", currencySearchPlaceholder: "ابحث عن عملة...",
         productName: "اسم المنتج", quantityLevel: "الكمية / المستوى",
         productDescription: "وصف المنتج",
         price: "السعر", productImages: "صور المنتج", imageLimit: "تستطيع اختيار حتى 10 صور.", saveProduct: "حفظ المنتج",
         newProduct: "منتج جديد", existingProducts: "المنتجات الموجودة",
-        gatewayPlaceholder: "اسم البوابة أو الحساب البنكي", ownerPlaceholder: "اسم صاحب الحساب",
-        accountNumberPlaceholder: "123456789", productNamePlaceholder: "مثال: حساب مستوى 70 / 660 UC / رويال باس",
+        productNamePlaceholder: "مثال: حساب مستوى 70 / 660 UC / رويال باس",
         quantityPlaceholder: "مثال: 660 UC أو مستوى 70", descriptionPlaceholder: "اكتب تفاصيل المنتج هنا...",
         firebaseConfig: "إعدادات Firebase غير مكتملة.", enterEmail: "اكتب بريدك الإلكتروني أولًا.",
         resetSent: "تم إرسال رابط تغيير كلمة السر إلى بريدك الإلكتروني.", openBrowser: "افتح الرابط في Chrome أو Edge خارج معاينة VS Code.",
-        openingLogin: "جاري فتح تسجيل الدخول...", saveSettingsSuccess: "تم حفظ إعدادات الدفع وحساب PUBG بنجاح.",
+        openingLogin: "جاري فتح تسجيل الدخول...", saveSettingsSuccess: "تم حفظ بيانات حساب PUBG بنجاح.",
         uploadError: "تعذر رفع المنتجات الحالية إلى Firebase.", saveFirebaseError: "تعذر حفظ البيانات على Firebase. تحقق من قواعد قاعدة البيانات.",
         saveProductSuccess: "تم حفظ المنتج بنجاح!", noAdminProducts: "لا توجد منتجات حاليًا.", imageCount: "صور",
-        customerOrders: "طلبات الشراء", noOrdersYet: "لا توجد طلبات بعد.", orderEmail: "بريد المشتري", orderProduct: "المنتج", orderTime: "وقت الطلب", orderPaymentStatus: "حالة الدفع",
+        customerOrders: "طلبات الشراء", noOrdersYet: "لا توجد طلبات بعد.", orderEmail: "بريد المشتري", orderProduct: "المنتج", orderTime: "وقت الطلب", orderStatus: "الحالة",
         translationProgress: "جاري ترجمة المنتج...",
         edit: "تعديل", delete: "حذف", confirmDelete: "هل تريد حذف المنتج {name}؟", incompleteFields: "يرجى إكمال الحقول المطلوبة.",
         missingGameCredentials: "لم يتم إعداد إيميل أو كلمة سر حساب PUBG من لوحة التحكم. يرجى إدخالهما أولًا.",
         missingAccountCredentials: "بيانات حساب PUBG غير مكتملة. أضف الإيميل وكلمة السر من لوحة التحكم أولًا.",
-        paymentSuccess: "تم تأكيد الدفع بنجاح.\nستظهر بيانات حساب PUBG داخل الموقع.", notSet: "غير محدد",
+        notSet: "غير محدد",
         adminAccessDenied: "هذا الحساب غير مخوّل لفتح لوحة التحكم.",
         adminAccessError: "تعذر التحقق من صلاحية المدير. تحقق من إعداد Firebase واتصال الإنترنت.",
         greeting: "مرحبًا {name}", previousImage: "الصورة السابقة", nextImage: "الصورة التالية", closeImages: "إغلاق الصور",
-        genericError: "حدث خطأ ({code}).", showPassword: "إظهار كلمة السر", hidePassword: "إخفاء كلمة السر",
-        receiptSubject: "تأكيد طلب شراء PUBG Market", receiptReady: "تمت معالجة طلبك بنجاح.", customer: "اسم العميل",
-        product: "المنتج", priceLabel: "السعر", cardLastFour: "رقم البطاقة", expiryLabel: "تاريخ الانتهاء",
-        paymentData: "بيانات الدفع", gatewayLabel: "اسم البوابة", ownerLabel: "اسم صاحب الحساب", accountLabel: "رقم الحساب",
-        pubgData: "بيانات حساب PUBG", accountEmailLabel: "إيميل الحساب", accountPasswordLabel: "كلمة السر",
-        receiptFooter: "بيانات حساب PUBG لا تُرسل عبر البريد الإلكتروني.",
-        gatewayName: "اسم البوابة / الحساب البنكي", bankOwner: "اسم صاحب الحساب البنكي", bankAccountNumber: "رقم الحساب البنكي",
-        iban: "IBAN", gameEmail: "إيميل حساب PUBG", gamePassword: "كلمة سر حساب PUBG", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "اسم صاحب البطاقة",
+        genericError: "حدث خطأ ({code}).", showPassword: "إظهار كلمة السر", hidePassword: "إخفاء كلمة السر", gameEmail: "إيميل حساب PUBG", gamePassword: "كلمة سر حساب PUBG", gameEmailPlaceholder: "pubg@example.com",
         pubgCredentials: "بيانات حساب PUBG", saveCredentials: "حفظ بيانات الحساب",
         enterUCAmount: "اكتب عدد الشدات في خانة الكمية", ucPackage: "باقة شدات PUBG",
         baseUC: "الشدات الأساسية", baseUCPlaceholder: "600", ucLevel: "مستوى المكافأة",
         levelOne: "المستوى 1 (+60)", levelTwo: "المستوى 2 (+150)", levelThree: "المستوى 3 (+250)", levelFour: "المستوى 4 (+400)", levelFive: "المستوى 5 (+600)",
         details: "التفاصيل", buy: "شراء", noImage: "لا توجد صورة", noDescription: "لا يوجد وصف لهذا المنتج.",
-        type: "النوع", country: "الدولة", buyVia: "شراء", footerText: "حسابات PUBG • شدات UC • رويال باس — كل الدول والعملات",
+        type: "النوع", country: "الدولة", buyVia: "شراء", footerText: "حسابات PUBG • شدات UC • رويال باس — قطر والأردن وتركيا",
         stockLimit: "المخزون (اتركه فارغاً ليكون غير محدود)", stockRemaining: "المتبقي: {count}", stockUnlimited: "مخزون غير محدود", outOfStock: "نفدت الكمية"
         ,ucBalance: "رصيد UC: {count}", userLevel: "مستوى {level}"
         ,deliveryBadge: "تم التسليم", deliveryTitle: "بيانات حسابك", accountReady: "تم تجهيز حساب PUBG الخاص بك.",
@@ -112,10 +96,9 @@ const I18N = {
         products: "PUBG products", productCount: "{count} products", all: "All", accounts: "Accounts",
         uc: "UC top-ups", ucProductLabel: "UC top-up", ucDeliveryPromise: "UC delivered within 3 minutes.", royalePass: "Royale Pass", noProducts: "No products",
         noProductsDescription: "No products match your search.", countryFilter: "Country", countrySearchLabel: "Search countries", countrySearchPlaceholder: "Search countries...",
-        currencySearchLabel: "Search currencies", currencySearchPlaceholder: "Search currencies...",
         allCountries: "All countries", login: "Log in", register: "Create account", logout: "Log out",
         authName: "Name", email: "Email", password: "Password", forgotPassword: "Forgot password?",
-        invalidEmail: "Enter a valid email address.", authEmailInUse: "This email is already in use.", authInvalidEmail: "The email address is invalid.", authWeakPassword: "The password must be at least 6 characters.", authWrongPassword: "The email or password is incorrect.", authOperationNotAllowed: "Enable this sign-in method in Firebase.", authUnauthorizedDomain: "Sign-in is not allowed from this URL.", authInvalidApiKey: "The Firebase API key is invalid.", authNetworkError: "Network error. Please try again.", authUserNotFound: "No account was found with this email and password.", authTooManyRequests: "Too many attempts. Wait a while before trying again.", authEmailQuotaExceeded: "Firebase has reached its email-sending limit. Check email settings or try again later.",
+        invalidEmail: "Enter a valid email address.", authEmailInUse: "This email is already in use.", authInvalidEmail: "The email address is invalid.", authWeakPassword: "The password must be at least 6 characters.", authWrongPassword: "The email or password is incorrect.", authOperationNotAllowed: "Enable this sign-in method in Firebase.", authUnauthorizedDomain: "Sign-in is not allowed from this URL.", authUnauthorizedContinueUrl: "The email link domain is not authorized. Add tameemdemir-create.github.io to Firebase Authentication's authorized domains.", authInvalidApiKey: "The Firebase API key is invalid.", authNetworkError: "Network error. Please try again.", authUserNotFound: "No account was found with this email and password.", authTooManyRequests: "Too many attempts. Wait a while before trying again.", authEmailQuotaExceeded: "Firebase has reached its email-sending limit. Check email settings or try again later.",
         disposableEmail: "Temporary email addresses are not allowed.", verifyEmailSent: "Account created. Open the verification link in your email before signing in.", emailNotVerified: "Verify your email first using the link we sent.", resendVerification: "Resend verification email", verificationSent: "A new verification email was sent. Check your inbox.", verificationWait: "You can resend after {minutes}:{seconds}.",
         loginRequiredForUC: "You must sign in so the UC can be added to your balance.",
         confirmPassword: "Confirm password", confirmPasswordPlaceholder: "Re-enter your password", passwordsDoNotMatch: "The passwords do not match.",
@@ -125,55 +108,40 @@ const I18N = {
         invalidPhoto: "Could not read the image. Choose another photo.",
         createAccountPrompt: "No account? Create one",
         namePlaceholder: "Enter your name", passwordPlaceholder: "At least 6 characters", orderConfirmation: "Order confirmation",
-        purchaseOrder: "Purchase order", localTestOnly: "Local test only. No money is charged; limited stock changes only in this browser.",
-        paypalSandboxNotice: "PayPal test checkout. Do not use real money or accounts; payments run in Sandbox only.",
-        paymentUnavailable: "Purchases are disabled until a real payment gateway is connected.", completeLocalTest: "Complete local test", payWithPayPal: "Continue to PayPal",
-        paypalCurrencyUnsupported: "PayPal does not support {currency}. Change the product to a supported currency such as USD.",
-        paypalUnavailable: "Could not start PayPal checkout. Check server setup and try again.", paypalCancelled: "Payment cancelled. No money was charged.",
-        paypalPaid: "Sandbox payment confirmed. Order: {orderId}. The order is recorded for fulfillment.", paypalRedirecting: "Opening PayPal...",
-        localTestProduct: "Local test complete. No money was charged; any limited stock is updated only in this browser.",
-        localTestBadge: "Local test", localTestResult: "Test result",
-        cardNumber: "Card number", expiryDate: "Expiry date", cvv: "CVV", cardholderName: "Cardholder name",
+        purchaseOrder: "Purchase order",
+        revealProduct: "Show product",
+        deliveryCodeVerified: "Product code verified. Complete delivery with the seller.",
         playerIdLabel: "PUBG player ID", userLevelAccessible: "User level",
         adminPanel: "Admin panel",
-        adminDescription: "Add, edit, and delete PUBG accounts, UC, and Royale Pass.", paymentSettings: "Payment and PUBG account settings",
+        adminDescription: "Add, edit, and delete PUBG accounts, UC, and Royale Pass.",
         saveSettings: "Save settings", productType: "Product type", pubgAccount: "PUBG account", ucTopUp: "PUBG UC top-up",
-        currency: "Currency", currencySearchLabel: "Search currencies", currencySearchPlaceholder: "Search currencies...",
         productName: "Product name", quantityLevel: "Quantity / level",
         productDescription: "Product description",
         price: "Price", productImages: "Product images", imageLimit: "You can select up to 10 images.", saveProduct: "Save product",
         newProduct: "New product", existingProducts: "Existing products",
-        gatewayPlaceholder: "Gateway or bank account name", ownerPlaceholder: "Account owner name",
-        accountNumberPlaceholder: "123456789", productNamePlaceholder: "Example: Level 70 account / 660 UC / Royale Pass",
+        productNamePlaceholder: "Example: Level 70 account / 660 UC / Royale Pass",
         quantityPlaceholder: "Example: 660 UC or level 70", descriptionPlaceholder: "Enter product details...",
         firebaseConfig: "Firebase settings are incomplete.", enterEmail: "Enter your email first.",
         resetSent: "A password reset link was sent to your email.", openBrowser: "Open this link in Chrome or Edge outside the VS Code preview.",
-        openingLogin: "Opening sign-in...", saveSettingsSuccess: "Payment and PUBG account settings saved.",
+        openingLogin: "Opening sign-in...", saveSettingsSuccess: "PUBG account details saved.",
         uploadError: "Could not upload the current products to Firebase.", saveFirebaseError: "Could not save to Firebase. Check the database rules.",
         saveProductSuccess: "Product saved successfully!", noAdminProducts: "No products yet.", imageCount: "images",
-        customerOrders: "Customer orders", noOrdersYet: "No orders yet.", orderEmail: "Buyer email", orderProduct: "Product", orderTime: "Order time", orderPaymentStatus: "Payment status",
+        customerOrders: "Customer orders", noOrdersYet: "No orders yet.", orderEmail: "Buyer email", orderProduct: "Product", orderTime: "Order time", orderStatus: "Status",
         translationProgress: "Translating product...",
         edit: "Edit", delete: "Delete", confirmDelete: "Delete product {name}?", incompleteFields: "Please complete the required fields.",
         missingGameCredentials: "PUBG account email or password is not configured in the admin panel. Add them first.",
         missingAccountCredentials: "PUBG account details are incomplete. Add the email and password in the admin panel first.",
-        paymentSuccess: "Payment confirmed.\nYour PUBG account details will appear on the website.", notSet: "Not set",
+        notSet: "Not set",
         adminAccessDenied: "This account is not authorized to open the admin panel.",
         adminAccessError: "Could not verify admin access. Check Firebase setup and your internet connection.",
         greeting: "Hello {name}", previousImage: "Previous image", nextImage: "Next image", closeImages: "Close images",
-        genericError: "An error occurred ({code}).", showPassword: "Show password", hidePassword: "Hide password",
-        receiptSubject: "PUBG Market purchase confirmation", receiptReady: "Your order was processed successfully.", customer: "Customer",
-        product: "Product", priceLabel: "Price", cardLastFour: "Card number", expiryLabel: "Expiry date",
-        paymentData: "Payment details", gatewayLabel: "Gateway name", ownerLabel: "Account owner", accountLabel: "Account number",
-        pubgData: "PUBG account details", accountEmailLabel: "Account email", accountPasswordLabel: "Password",
-        receiptFooter: "PUBG account details are not sent by email.",
-        gatewayName: "Gateway / bank account name", bankOwner: "Bank account owner", bankAccountNumber: "Bank account number",
-        iban: "IBAN", gameEmail: "PUBG account email", gamePassword: "PUBG account password", ibanPlaceholder: "SA...", gameEmailPlaceholder: "pubg@example.com", cardholderPlaceholder: "Cardholder name",
+        genericError: "An error occurred ({code}).", showPassword: "Show password", hidePassword: "Hide password", gameEmail: "PUBG account email", gamePassword: "PUBG account password", gameEmailPlaceholder: "pubg@example.com",
         pubgCredentials: "PUBG account credentials", saveCredentials: "Save account details",
         enterUCAmount: "Enter the UC amount in the quantity field", ucPackage: "PUBG UC package",
         baseUC: "Base UC", baseUCPlaceholder: "600", ucLevel: "Bonus level",
         levelOne: "Level 1 (+60)", levelTwo: "Level 2 (+150)", levelThree: "Level 3 (+250)", levelFour: "Level 4 (+400)", levelFive: "Level 5 (+600)",
         details: "Details", buy: "Buy", noImage: "No image", noDescription: "No description for this product.",
-        type: "Type", country: "Country", buyVia: "Buy", footerText: "PUBG accounts • UC • Royale Pass — all countries and currencies",
+        type: "Type", country: "Country", buyVia: "Buy", footerText: "PUBG accounts • UC • Royale Pass — Qatar, Jordan, and Turkey",
         stockLimit: "Stock limit (blank = unlimited)", stockRemaining: "Remaining: {count}", stockUnlimited: "Unlimited stock", outOfStock: "Out of stock"
         ,ucBalance: "UC balance: {count}", userLevel: "Lv. {level}"
         ,deliveryBadge: "Delivered", deliveryTitle: "Your account details", accountReady: "Your PUBG account is ready.",
@@ -428,7 +396,6 @@ function applyTranslations() {
     $("authPasswordConfirmToggle").setAttribute("aria-label", $("authPasswordConfirm").type === "text" ? t("hidePassword") : t("showPassword"));
     $("gameAccountPasswordToggle").setAttribute("aria-label", $("gameAccountPassword").type === "text" ? t("hidePassword") : t("showPassword"));
     populateCountryOptions();
-    populateCurrencyOptions();
     renderAccounts();
     if (currentAccount && !$('detailsModal').classList.contains('hidden')) {
         showDetails(currentAccount.id);
@@ -483,40 +450,6 @@ function populateCountryOptions() {
     accountSelect.dataset.selectedCountry = COUNTRY_CODES.includes(selectedAccount) ? selectedAccount : "QA";
     accountSelect.value = accountSelect.dataset.selectedCountry;
     $("accountCountrySelectedLabel").textContent = countryLabel(accountSelect.dataset.selectedCountry);
-}
-
-function populateCurrencyOptions() {
-    const select = $("accountCurrency");
-    const pickerOptions = $("accountCurrencyOptions");
-    if (!select || !pickerOptions) return;
-    const selected = select.dataset.selectedCurrency || select.value || "USD";
-    const currencies = typeof Intl.supportedValuesOf === "function"
-        ? Intl.supportedValuesOf("currency")
-        : ["USD", "EUR", "GBP", "QAR", "JOD", "TRY"];
-    const options = currencies.map(code => {
-        let name = code;
-        try {
-            name = new Intl.DisplayNames([currentLanguage], { type: "currency" }).of(code) || code;
-        } catch { /* Keep the ISO code when the browser lacks a localized name. */ }
-        return { code, name };
-    });
-    const search = $("accountCurrencySearch")?.value.trim().toLocaleLowerCase(currentLanguage) || "";
-    const matches = options.filter(({ code, name }) =>
-        !search || `${name} ${code}`.toLocaleLowerCase(currentLanguage).includes(search)
-    );
-    const selectedCurrency = currencies.includes(selected) ? selected : "USD";
-    select.dataset.selectedCurrency = selectedCurrency;
-    pickerOptions.innerHTML = matches
-        .map(({ code, name }) => `<button class="country-option" type="button" role="option" aria-selected="${code === selectedCurrency}" data-value="${code}">${escapeHTML(name)} (${code})</button>`)
-        .join("");
-    select.innerHTML = options
-        .map(({ code, name }) => `<option value="${code}">${escapeHTML(name)} (${code})</option>`)
-        .join("");
-    select.value = selectedCurrency;
-    const selectedOption = options.find(option => option.code === selectedCurrency);
-    $("accountCurrencySelectedLabel").textContent = selectedOption
-        ? `${selectedOption.name} (${selectedOption.code})`
-        : selectedCurrency;
 }
 
 const DEFAULT_SETTINGS = {
@@ -593,7 +526,7 @@ const LOCAL_DEMO_ACCOUNTS = [
         translations: LOCAL_DEMO_TRANSLATIONS.account,
         country: "QA",
         price: 25,
-        currency: "USD",
+        currency: "QAR",
         images: []
     },
     {
@@ -608,7 +541,7 @@ const LOCAL_DEMO_ACCOUNTS = [
         translations: LOCAL_DEMO_TRANSLATIONS.uc,
         country: "QA",
         price: 5,
-        currency: "USD",
+        currency: "QAR",
         images: []
     },
     {
@@ -623,7 +556,7 @@ const LOCAL_DEMO_ACCOUNTS = [
         translations: LOCAL_DEMO_TRANSLATIONS.royale,
         country: "QA",
         price: 8,
-        currency: "USD",
+        currency: "QAR",
         images: []
     }
 ];
@@ -655,7 +588,6 @@ let registrationInProgress = false;
 let remoteAccounts = null;
 let remoteProductCodes = null;
 let remoteProfiles = null;
-let remoteOrders = null;
 let adminProductCodes = {};
 let adminProductCodesLoaded = false;
 let adminProductCodesLoadPromise = null;
@@ -671,7 +603,6 @@ if (firebaseReady) {
         remoteAccounts = firebase.database().ref("products");
         remoteProductCodes = firebase.database().ref("productCodes");
         remoteProfiles = firebase.database().ref("profiles");
-        remoteOrders = firebase.database().ref("orders");
         auth = firebase.auth();
     } catch (error) {
         console.error("Firebase initialization failed", error);
@@ -1038,7 +969,7 @@ function configureCheckoutMode() {
     const buttonLabel = $("submitBuyButton").querySelector("span");
 
     $("copyrightYear").textContent = new Date().getFullYear();
-    buttonLabel.dataset.i18n = "completeLocalTest";
+    buttonLabel.dataset.i18n = "revealProduct";
     buttonLabel.textContent = "إظهار الحساب";
     $("submitBuyButton").disabled = false;
 
@@ -1046,37 +977,6 @@ function configureCheckoutMode() {
         updateAuthUI(null);
         $("localAdminButton").classList.remove("hidden");
         $("localAdminButton").addEventListener("click", openAdmin);
-    }
-}
-
-function cleanPayPalReturnUrl() {
-    const url = new URL(location.href);
-    ["paypalOrder", "paypalCancelled", "token", "PayerID"].forEach(key => url.searchParams.delete(key));
-    history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
-}
-
-async function handlePayPalReturn() {
-    const params = new URLSearchParams(location.search);
-    if (params.get("paypalCancelled") === "1") {
-        cleanPayPalReturnUrl();
-        alert(t("paypalCancelled"));
-        return;
-    }
-
-    const orderKey = params.get("paypalOrder");
-    const paypalOrderId = params.get("token");
-    if (!orderKey || !paypalOrderId) return;
-
-    cleanPayPalReturnUrl();
-    try {
-        const capturePayPalOrder = firebase.app().functions("us-central1").httpsCallable("capturePayPalOrder");
-        const result = await capturePayPalOrder({ orderKey, paypalOrderId });
-        if (result.data?.status !== "PAID") throw new Error(t("paypalUnavailable"));
-        alert(t("paypalPaid").replace("{orderId}", result.data.orderId));
-        renderAccounts();
-    } catch (error) {
-        console.error("PayPal capture failed", error);
-        alert(error.message || t("paypalUnavailable"));
     }
 }
 
@@ -1123,8 +1023,8 @@ function authErrorMessage(error) {
         "auth/wrong-password": "authWrongPassword",
         "auth/operation-not-allowed": "authOperationNotAllowed",
         "auth/unauthorized-domain": "authUnauthorizedDomain",
-        "auth/unauthorized-continue-uri": "authUnauthorizedDomain",
-        "auth/invalid-continue-uri": "authUnauthorizedDomain",
+        "auth/unauthorized-continue-uri": "authUnauthorizedContinueUrl",
+        "auth/invalid-continue-uri": "authUnauthorizedContinueUrl",
         "auth/invalid-api-key": "authInvalidApiKey",
         "auth/network-request-failed": "authNetworkError",
         "auth/user-not-found": "authUserNotFound",
@@ -1541,14 +1441,17 @@ $("authForm").addEventListener("submit", async event => {
 });
 
 function formatPrice(price, currency) {
+    const supportedCurrency = Object.values(COUNTRY_CURRENCIES).includes(currency)
+        ? currency
+        : COUNTRY_CURRENCIES.QA;
     try {
         return new Intl.NumberFormat(currentLanguage, {
             style: "currency",
-            currency: currency || "USD",
+            currency: supportedCurrency,
             maximumFractionDigits: 2
         }).format(Number(price) || 0);
     } catch {
-        return `${Number(price) || 0} ${currency || "USD"}`;
+        return `${Number(price) || 0} ${supportedCurrency}`;
     }
 }
 
@@ -1581,7 +1484,9 @@ function renderAccounts() {
     const selectedType = activeTypeButton ? activeTypeButton.dataset.type : "all";
 
     const filteredAccounts = accounts.filter(account => {
-        const countryMatches = country === "all" || countryCode(account.country) === country;
+        const accountCountry = countryCode(account.country).toUpperCase();
+        const countryMatches = COUNTRY_CODES.includes(accountCountry) &&
+            (country === "all" || accountCountry === country);
         const typeMatches = selectedType === "all" || account.type === selectedType;
         const translatedText = Object.values(account.translations || {})
             .map(values => Object.values(values || {}).join(" "))
@@ -1730,7 +1635,7 @@ function createAccountCard(account) {
 
                         ${formatPrice(
                             account.price,
-                            account.currency
+                            currencyForCountry(account.country)
                         )}
 
                     </span>
@@ -1884,7 +1789,7 @@ function showDetails(id) {
             >
                 ${formatPrice(
                     account.price,
-                    account.currency
+                    currencyForCountry(account.country)
                 )}
             </h3>
             ${
@@ -2043,7 +1948,7 @@ function showDetails(id) {
 
             ${formatPrice(
                 account.price,
-                account.currency
+                currencyForCountry(account.country)
             )}
 
         </h3>
@@ -2412,7 +2317,7 @@ function openBuy(id, resetForm = true) {
 
                 ${formatPrice(
                     account.price,
-                    account.currency
+                    currencyForCountry(account.country)
                 )}
 
             </strong>
@@ -2567,16 +2472,6 @@ bindAdminSearchPicker({
     valueId: "accountCountry",
     dataKey: "selectedCountry",
     populate: populateCountryOptions
-});
-
-bindAdminSearchPicker({
-    toggleId: "accountCurrencyToggle",
-    dropdownId: "accountCurrencyDropdown",
-    searchId: "accountCurrencySearch",
-    optionsId: "accountCurrencyOptions",
-    valueId: "accountCurrency",
-    dataKey: "selectedCurrency",
-    populate: populateCurrencyOptions
 });
 
 $("countryOptions").addEventListener("click", event => {
@@ -2878,8 +2773,7 @@ $("accountForm")
                     ),
 
 
-                currency:
-                    $("accountCurrency").dataset.selectedCurrency || $("accountCurrency").value,
+                currency: currencyForCountry($("accountCountry").dataset.selectedCountry || $("accountCountry").value),
 
 
                 quantity: productQuantity,
@@ -3028,7 +2922,7 @@ function renderAdmin() {
                             •
                             ${formatPrice(
                                 account.price,
-                                account.currency
+                                currencyForCountry(account.country)
                             )}
 
                             ${stockSummary(account) ? " • " + escapeHTML(stockSummary(account)) : ""}
@@ -3080,16 +2974,6 @@ async function renderAdminOrders() {
         orders = [];
     }
 
-    if (remoteOrders) {
-        try {
-            const snapshot = await remoteOrders.once("value");
-            const remote = Object.values(snapshot.val() || {});
-            orders = [...remote, ...orders];
-        } catch (error) {
-            console.error("Could not load PayPal orders", error);
-        }
-    }
-
     if (!Array.isArray(orders) || orders.length === 0) {
         container.innerHTML = `<p class="muted">${t("noOrdersYet")}</p>`;
         return;
@@ -3102,7 +2986,7 @@ async function renderAdminOrders() {
                 <strong>${escapeHTML(order.productName)} · ${escapeHTML(formatPrice(order.amount ?? order.price, order.currency))}</strong>
                 <p>${t("orderEmail")}: ${escapeHTML(order.buyerEmail || order.email)}</p>
                 ${order.playerId ? `<p>${t("playerIdLabel")}: ${escapeHTML(order.playerId)}</p>` : ""}
-                ${order.status ? `<p>${t("orderPaymentStatus")}: ${escapeHTML(order.status)}</p>` : ""}
+                ${order.status ? `<p>${t("orderStatus")}: ${escapeHTML(order.status)}</p>` : ""}
                 <p>${t("orderTime")}: ${escapeHTML(new Date(order.createdAt).toLocaleString(currentLanguage))}</p>
             </div>
         </div>
@@ -3151,11 +3035,8 @@ function editAccount(id) {
 
 
     $("accountCountrySearch").value = "";
-    $("accountCurrencySearch").value = "";
     $("accountCountry").dataset.selectedCountry = countryCode(account.country) || "QA";
-    $("accountCurrency").dataset.selectedCurrency = account.currency || "USD";
     populateCountryOptions();
-    populateCurrencyOptions();
 
 
     $("accountPrice").value =
@@ -3262,7 +3143,7 @@ function showDelivery(account, gameAccountEmail, gameAccountPassword, playerId =
         const playerIdRow = playerId
             ? `<div class="delivery-credentials"><div><span>${t("playerIdLabel")}</span><strong>${escapeHTML(playerId)}</strong></div></div>`
             : "";
-        $("deliveryContent").innerHTML = `<p class="delivery-success">${t("localTestProduct")}</p>${playerIdRow}`;
+        $("deliveryContent").innerHTML = `<p class="delivery-success">${t("deliveryCodeVerified")}</p>${playerIdRow}`;
     }
     openModal("deliveryModal");
 }
@@ -3277,11 +3158,8 @@ function resetForm() {
     $("accountForm").reset();
 
     $("accountCountrySearch").value = "";
-    $("accountCurrencySearch").value = "";
     $("accountCountry").dataset.selectedCountry = "QA";
-    $("accountCurrency").dataset.selectedCurrency = "USD";
     populateCountryOptions();
-    populateCurrencyOptions();
 
     savedProductTranslations = {};
 
@@ -3419,7 +3297,7 @@ $("buyForm")
                 productId: purchasedAccount.id,
                 productName: localizedProductText(purchasedAccount.name, purchasedAccount.nameEn, purchasedAccount.translations, "name"),
                 price: purchasedAccount.price,
-                currency: purchasedAccount.currency,
+                currency: currencyForCountry(purchasedAccount.country),
                 status: "تم إظهار الحساب عبر الكود",
                 createdAt: new Date().toISOString()
             });
@@ -3437,9 +3315,6 @@ $("buyForm")
             showDelivery(purchasedAccount, gameAccountEmail, gameAccountPassword, playerId);
         }
     );
-
-void handlePayPalReturn();
-
 
 /* ==================================================
    إغلاق النوافذ بالخارج
@@ -3474,6 +3349,5 @@ document
 ================================================== */
 
 populateCountryOptions();
-populateCurrencyOptions();
 applyTranslations();
 renderAccounts();
