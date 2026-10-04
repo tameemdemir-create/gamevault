@@ -98,6 +98,7 @@ const I18N = {
         ,ucBalance: "رصيد UC: {count}", userLevel: "مستوى {level}"
         ,deliveryBadge: "تم التسليم", deliveryTitle: "بيانات حسابك", accountReady: "تم تجهيز حساب PUBG الخاص بك.",
         accountLogin: "إيميل الحساب", accountPassword: "كلمة السر", closeDelivery: "إغلاق", ucAdded: "تمت إضافة {count} UC إلى رصيدك."
+        ,enableProductCode: "تفعيل الكود للزبون", accessCodeStatus: "حالة الكود", accessCodeEnabled: "مفعّل", accessCodeOff: "معطّل", accessCodeDisabled: "الكود معطّل حالياً. تواصل مع البائع بعد إتمام الدفع.", accessCodeInvalid: "الكود غير صحيح.", accessCodesLoadError: "تعذر تحميل أكواد المنتجات الخاصة. انشر قواعد Firebase المحدّثة ثم حاول مجدداً.", accessCodeVerificationUnavailable: "تعذر التحقق من الكود الآن. حاول لاحقاً.", accessCodeRateLimited: "محاولات كثيرة. انتظر قليلاً ثم أعد المحاولة."
     },
     en: {
         pageTitle: "Game Vault", languageLabel: "Language", badge: "PUBG MARKET", storeSubtitle: "PUBG store", heroTitle: "Everything you need", heroTitleAccent: "for PUBG",
@@ -172,6 +173,7 @@ const I18N = {
         ,ucBalance: "UC balance: {count}", userLevel: "Lv. {level}"
         ,deliveryBadge: "Delivered", deliveryTitle: "Your account details", accountReady: "Your PUBG account is ready.",
         accountLogin: "Account email", accountPassword: "Password", closeDelivery: "Close", ucAdded: "{count} UC was added to your balance."
+        ,enableProductCode: "Enable code for customer", accessCodeStatus: "Code status", accessCodeEnabled: "Enabled", accessCodeOff: "Disabled", accessCodeDisabled: "This code is currently disabled. Contact the seller after completing payment.", accessCodeInvalid: "The code is incorrect.", accessCodesLoadError: "Could not load private product codes. Publish the updated Firebase rules and try again.", accessCodeVerificationUnavailable: "Could not verify the code right now. Please try again later.", accessCodeRateLimited: "Too many attempts. Wait a while and try again."
     }
 };
 
@@ -219,7 +221,6 @@ function updateProductTypeVisibility() {
     const selectedType = $("accountType").value;
     const isAccount = selectedType === "حساب";
     const hidesImages = selectedType === "UC" || selectedType === "Royale Pass";
-    $("accountStockGroup").classList.toggle("hidden", !hidesImages);
     $("pubgCredentialsSection").classList.toggle("hidden", !isAccount);
     $("accountImagesWrapper").classList.toggle("hidden", hidesImages);
     $("imagePreview").classList.toggle("hidden", hidesImages);
@@ -394,8 +395,11 @@ async function translateProductsForLanguage(locale) {
     await Promise.all(Array.from({ length: Math.min(2, productsToTranslate.length) }, translateNextProducts));
     if (!translatedAny) return;
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
-    saveAccounts();
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(LOCAL_TEST_MODE ? accounts : publicAccounts(accounts))
+    );
+    await saveAccounts();
 }
 
 function applyTranslations() {
@@ -644,8 +648,15 @@ let selectedAuthImage = "";
 let registrationInProgress = false;
 
 let remoteAccounts = null;
+let remoteProductCodes = null;
 let remoteProfiles = null;
 let remoteOrders = null;
+let adminProductCodes = {};
+let adminProductCodesLoaded = false;
+let adminProductCodesLoadPromise = null;
+let remoteProductsLoaded = false;
+let remoteCodeMigrationNeeded = false;
+const legacyProductCodes = {};
 const profileCache = new Map();
 const loadedProfiles = new Set();
 
@@ -653,6 +664,7 @@ if (firebaseReady) {
     try {
         firebase.initializeApp(FIREBASE_CONFIG);
         remoteAccounts = firebase.database().ref("products");
+        remoteProductCodes = firebase.database().ref("productCodes");
         remoteProfiles = firebase.database().ref("profiles");
         remoteOrders = firebase.database().ref("orders");
         auth = firebase.auth();
@@ -677,6 +689,7 @@ function normalizeAccounts(result) {
             type: account.type || "حساب",
             quantity: account.quantity || "",
             stock: normalizeStock(account.stock),
+            accessCodeEnabled: account.accessCodeEnabled === true,
             images: Array.isArray(account.images) ? account.images : []
         }));
 }
@@ -687,9 +700,122 @@ function normalizeStock(stock) {
     return Number.isSafeInteger(value) && value >= 0 ? value : null;
 }
 
+function isAdminUser(user) {
+    return Boolean(user?.emailVerified && user.email?.trim().toLowerCase() === ADMIN_EMAIL);
+}
+
+function publicAccount(account) {
+    const { accessCode, accessCodeEnabled, ...product } = account;
+    return product;
+}
+
+function publicAccounts(products) {
+    return products.map(publicAccount);
+}
+
+function withAdminProductCodes(products) {
+    if (LOCAL_TEST_MODE) return products;
+    if (!adminProductCodesLoaded) return products.map(publicAccount);
+    return products.map(account => ({
+        ...publicAccount(account),
+        accessCode: adminProductCodes[account.id]?.code || "",
+        accessCodeEnabled: adminProductCodes[account.id]?.enabled === true
+    }));
+}
+
+function collectLegacyProductCodes(products, captureCodes = false) {
+    const entries = Array.isArray(products) ? products : Object.values(products || {});
+    let foundPrivateFields = false;
+    for (const product of entries) {
+        if (!product || typeof product !== "object") continue;
+        if (Object.hasOwn(product, "accessCode") || Object.hasOwn(product, "accessCodeEnabled")) {
+            foundPrivateFields = true;
+        }
+        const code = String(product.accessCode || "").trim();
+        if (captureCodes && code && product.id !== undefined && product.id !== null) {
+            legacyProductCodes[String(product.id)] = {
+                code,
+                enabled: product.accessCodeEnabled === true
+            };
+        }
+    }
+    return foundPrivateFields;
+}
+
+async function saveRemoteAccounts(products) {
+    if (!remoteAccounts) return;
+    if (isAdminUser(auth?.currentUser) && remoteProductCodes) {
+        const codes = Object.fromEntries(
+            products
+                .filter(account => String(account.accessCode || "").trim())
+                .map(account => [String(account.id), {
+                    code: String(account.accessCode).trim(),
+                    enabled: account.accessCodeEnabled === true
+                }])
+        );
+        await firebase.database().ref().update({
+            products: publicAccounts(products),
+            productCodes: codes
+        });
+        adminProductCodes = codes;
+        adminProductCodesLoaded = true;
+        for (const productId of Object.keys(legacyProductCodes)) delete legacyProductCodes[productId];
+        remoteCodeMigrationNeeded = false;
+        return;
+    }
+    await remoteAccounts.set(publicAccounts(products));
+}
+
+async function loadAdminProductCodes(user) {
+    if (!remoteProductCodes || !isAdminUser(user)) return false;
+    if (adminProductCodesLoadPromise) return adminProductCodesLoadPromise;
+    if (adminProductCodesLoaded) return true;
+
+    adminProductCodesLoadPromise = (async () => {
+        try {
+            const [snapshot, productsSnapshot] = await Promise.all([
+                remoteProductCodes.once("value"),
+                remoteAccounts.once("value")
+            ]);
+            if (!isAdminUser(auth?.currentUser) || auth.currentUser.uid !== user.uid) return false;
+            adminProductCodes = snapshot.val() || {};
+            if (productsSnapshot.exists()) {
+                const remoteValue = productsSnapshot.val();
+                remoteCodeMigrationNeeded = collectLegacyProductCodes(remoteValue, true);
+                remoteProductsLoaded = true;
+                accounts = normalizeAccounts(remoteValue);
+            }
+            for (const account of accounts) {
+                const legacyCode = legacyProductCodes[account.id];
+                if (legacyCode && !adminProductCodes[account.id]) {
+                    adminProductCodes[account.id] = legacyCode;
+                }
+            }
+            adminProductCodesLoaded = true;
+            accounts = withAdminProductCodes(accounts);
+
+            if (remoteProductsLoaded && remoteCodeMigrationNeeded) {
+                await saveRemoteAccounts(accounts);
+            } else {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(publicAccounts(accounts)));
+            }
+            renderAccounts();
+            if (!$("adminModal").classList.contains("hidden")) renderAdmin();
+            return true;
+        } catch (error) {
+            adminProductCodesLoaded = false;
+            console.error("Could not load private product codes", error);
+            alert(t("accessCodesLoadError"));
+            return false;
+        } finally {
+            adminProductCodesLoadPromise = null;
+        }
+    })();
+    return adminProductCodesLoadPromise;
+}
+
 function hasLimitedStock(account) {
-    return (account.type === "UC" || account.type === "Royale Pass")
-        && Number.isSafeInteger(account.stock)
+    return Number.isSafeInteger(account.stock)
         && account.stock >= 0;
 }
 
@@ -698,7 +824,6 @@ function isOutOfStock(account) {
 }
 
 function stockSummary(account) {
-    if (account.type !== "UC" && account.type !== "Royale Pass") return "";
     if (!hasLimitedStock(account)) return t("stockUnlimited");
     if (account.stock === 0) return t("outOfStock");
     return t("stockRemaining").replace("{count}", new Intl.NumberFormat(currentLanguage).format(account.stock));
@@ -708,7 +833,7 @@ function getUCDetails(account) {
     if (account.type !== "UC") {
         return null;
     }
-    const base = Number.parseInt(String(account.quantity).replace(/[^0-9]/g, ""), 10) || 0;
+    const base = Number.parseInt(String(account.quantity || account.name).replace(/[^0-9]/g, ""), 10) || 0;
     return { base, total: base };
 }
 
@@ -761,6 +886,12 @@ function loadAccounts() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(localAccounts));
     }
 
+    if (!LOCAL_TEST_MODE) {
+        remoteCodeMigrationNeeded = collectLegacyProductCodes(localAccounts) || remoteCodeMigrationNeeded;
+        localAccounts = localAccounts.map(publicAccount);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(localAccounts));
+    }
+
     if (LOCAL_TEST_MODE) {
         const demoProducts = new Map(LOCAL_DEMO_ACCOUNTS.map(product => [product.id, product]));
         let addedDemoTranslations = false;
@@ -786,31 +917,72 @@ function loadAccounts() {
 
     if (remoteAccounts) {
         let isInitialRemoteSnapshot = true;
-        remoteAccounts.on("value", snapshot => {
+        remoteAccounts.on("value", async snapshot => {
             if (isInitialRemoteSnapshot) {
                 isInitialRemoteSnapshot = false;
                 if (!snapshot.exists() && localAccounts.length) {
-                    remoteAccounts.set(localAccounts).catch(() => {
-                        alert(t("uploadError"));
-                    });
+                    remoteProductsLoaded = true;
+                    if (isAdminUser(auth?.currentUser) && !adminProductCodesLoaded) {
+                        if (!await loadAdminProductCodes(auth.currentUser)) return;
+                    }
+                    accounts = withAdminProductCodes(localAccounts);
+                    renderAccounts();
+                    if (isAdminUser(auth?.currentUser)) {
+                        try {
+                            await saveRemoteAccounts(accounts);
+                        } catch (error) {
+                            console.error("Could not upload products and private codes", error);
+                            alert(t("uploadError"));
+                        }
+                    }
                     return;
                 }
             }
 
-            accounts = normalizeAccounts(snapshot.val());
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+            const remoteValue = snapshot.val();
+            remoteCodeMigrationNeeded = collectLegacyProductCodes(remoteValue, isAdminUser(auth?.currentUser)) || remoteCodeMigrationNeeded;
+            remoteProductsLoaded = true;
+            const remoteAccountsValue = normalizeAccounts(remoteValue);
+            if (adminProductCodesLoaded) {
+                for (const account of remoteAccountsValue) {
+                    const legacyCode = legacyProductCodes[account.id];
+                    if (legacyCode && !adminProductCodes[account.id]) {
+                        adminProductCodes[account.id] = legacyCode;
+                    }
+                }
+            }
+            accounts = withAdminProductCodes(remoteAccountsValue);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(publicAccounts(accounts)));
             renderAccounts();
+
+            if (isAdminUser(auth?.currentUser) && adminProductCodesLoaded && remoteCodeMigrationNeeded) {
+                try {
+                    await saveRemoteAccounts(accounts);
+                    accounts = withAdminProductCodes(accounts);
+                    renderAccounts();
+                } catch (error) {
+                    console.error("Could not migrate public product codes", error);
+                    alert(t("saveFirebaseError"));
+                }
+            }
         });
     }
 }
 
-function saveAccounts() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+async function saveAccounts() {
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(LOCAL_TEST_MODE ? accounts : publicAccounts(accounts))
+    );
 
-    if (remoteAccounts) {
-        remoteAccounts.set(accounts).catch(() => {
-            alert(t("saveFirebaseError"));
-        });
+    if (!remoteAccounts) return true;
+    try {
+        await saveRemoteAccounts(accounts);
+        return true;
+    } catch (error) {
+        console.error("Could not save products and private codes to Firebase", error);
+        alert(t("saveFirebaseError"));
+        return false;
     }
 }
 
@@ -858,11 +1030,9 @@ function $(id) {
 }
 
 function configureCheckoutMode() {
-    const notice = $("checkoutNotice");
     const buttonLabel = $("submitBuyButton").querySelector("span");
 
-    notice.dataset.i18n = "localTestOnly";
-    notice.textContent = "للطلب: اكتب الكود المخصص لهذا المنتج ثم اضغط على إظهار الحساب. يتم التوصيل عبر واتساب.";
+    $("copyrightYear").textContent = new Date().getFullYear();
     buttonLabel.dataset.i18n = "completeLocalTest";
     buttonLabel.textContent = "إظهار الحساب";
     $("submitBuyButton").disabled = false;
@@ -1094,7 +1264,7 @@ function updateAuthUI(user) {
     $("registerButton").classList.toggle("hidden", LOCAL_TEST_MODE || Boolean(user));
     $("logoutButton").classList.toggle("hidden", !user);
     $("userProfile").classList.toggle("hidden", !user);
-    const isAdmin = Boolean(user?.emailVerified && user.email?.trim().toLowerCase() === ADMIN_EMAIL);
+    const isAdmin = isAdminUser(user);
     $("adminDashboardButton").classList.toggle("hidden", !isAdmin);
     if (user) {
         const profile = getCachedUserProfile(user);
@@ -1117,6 +1287,17 @@ function updateAuthUI(user) {
         $("userAvatar").classList.add("hidden");
         $("userLevel").textContent = "";
         $("userUCBalance").classList.add("hidden");
+    }
+    if (isAdmin && remoteProductCodes) {
+        void loadAdminProductCodes(user);
+    } else if (!LOCAL_TEST_MODE && adminProductCodesLoaded) {
+        adminProductCodes = {};
+        adminProductCodesLoaded = false;
+        accounts = accounts.map(publicAccount);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(publicAccounts(accounts)));
+        $("accountAccessCode").value = "";
+        $("accountAccessCodeEnabled").checked = false;
+        renderAccounts();
     }
 }
 
@@ -2514,6 +2695,8 @@ async function openAdmin() {
         return;
     }
 
+    if (!await loadAdminProductCodes(user)) return;
+
     renderAdmin();
     openModal("adminModal");
 
@@ -2605,6 +2788,9 @@ $("accountForm")
 
             const editId =
                 $("editId").value;
+            const oldAccount = editId
+                ? accounts.find(account => String(account.id) === String(editId))
+                : null;
 
             const translations = Object.fromEntries(
                 Object.entries(savedProductTranslations)
@@ -2612,7 +2798,6 @@ $("accountForm")
             );
             const arabicProduct = {
                 name: $("accountName").value.trim(),
-                quantity: $("accountQuantity").value.trim(),
                 description: $("accountDescription").value.trim()
             };
 
@@ -2652,8 +2837,13 @@ $("accountForm")
                 submitButton.textContent = t("saveProduct");
             }
 
-            translations.ar = arabicProduct;
+            translations.ar = { ...(translations.ar || {}), ...arabicProduct };
             const englishProduct = translations.en || {};
+            const productType = $("accountType").value;
+            const productName = arabicProduct.name;
+            const inferredUCQuantity = productName.match(/\d[\d,]*/)?.[0];
+            const productQuantity = oldAccount?.quantity
+                || (productType === "UC" && inferredUCQuantity ? `${inferredUCQuantity} UC` : "");
 
 
             const account = {
@@ -2664,9 +2854,7 @@ $("accountForm")
                     createID(),
 
 
-                type:
-                    $("accountType")
-                        .value,
+                type: productType,
 
 
                 name: arabicProduct.name || "",
@@ -2689,9 +2877,9 @@ $("accountForm")
                     $("accountCurrency").dataset.selectedCurrency || $("accountCurrency").value,
 
 
-                quantity: arabicProduct.quantity || "",
+                quantity: productQuantity,
 
-                quantityEn: englishProduct.quantity || "",
+                quantityEn: oldAccount?.quantityEn || englishProduct.quantity || "",
 
 
                 description: arabicProduct.description || "",
@@ -2699,10 +2887,9 @@ $("accountForm")
                 descriptionEn: englishProduct.description || "",
 
                 accessCode: $("accountAccessCode").value.trim(),
+                accessCodeEnabled: Boolean($("accountAccessCode").value.trim()) && $("accountAccessCodeEnabled").checked,
 
-                stock: ["UC", "Royale Pass"].includes($("accountType").value)
-                    ? normalizeStock($("accountStock").value)
-                    : null,
+                stock: normalizeStock($("accountStock").value),
 
                 translations,
 
@@ -2751,7 +2938,7 @@ $("accountForm")
             }
 
 
-            saveAccounts();
+            if (!await saveAccounts()) return;
 
             renderAccounts();
 
@@ -2839,17 +3026,6 @@ function renderAdmin() {
                                 account.currency
                             )}
 
-                            ${
-                                account.quantity
-                                ?
-                                " • " +
-                                escapeHTML(
-                                    localizedProductQuantity(account)
-                                )
-                                :
-                                ""
-                            }
-
                             ${stockSummary(account) ? " • " + escapeHTML(stockSummary(account)) : ""}
 
                             ${account.accessCode ? " • كود: " + escapeHTML(account.accessCode) : ""}
@@ -2862,6 +3038,10 @@ function renderAdmin() {
 
                     </div>
 
+                    <span class="admin-code-status ${account.accessCodeEnabled ? "is-enabled" : "is-disabled"}" role="status">
+                        <span class="admin-code-status-label">${escapeHTML(t("accessCodeStatus"))}</span>
+                        <strong>${escapeHTML(account.accessCodeEnabled ? t("accessCodeEnabled") : t("accessCodeOff"))}</strong>
+                    </span>
 
                     <div class="admin-actions">
 
@@ -2959,9 +3139,6 @@ function editAccount(id) {
     $("accountName").value =
         account.name || "";
 
-    $("accountQuantity").value =
-        account.quantity || "";
-
     $("accountStock").value = hasLimitedStock(account) ? account.stock : "";
 
     $("accountDescription").value =
@@ -2980,6 +3157,7 @@ function editAccount(id) {
         account.price;
 
     $("accountAccessCode").value = account.accessCode || "";
+    $("accountAccessCodeEnabled").checked = account.accessCodeEnabled === true;
 
     updateProductTypeVisibility();
 
@@ -3029,9 +3207,7 @@ async function deleteAccount(id) {
     );
 
     try {
-        if (remoteAccounts) {
-            await remoteAccounts.set(remainingAccounts);
-        }
+        if (remoteAccounts) await saveRemoteAccounts(remainingAccounts);
     } catch (error) {
         console.error("Product deletion failed", error);
         alert(t("saveFirebaseError"));
@@ -3039,7 +3215,10 @@ async function deleteAccount(id) {
     }
 
     accounts = remainingAccounts;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(LOCAL_TEST_MODE ? accounts : publicAccounts(accounts))
+    );
 
     renderAccounts();
 
@@ -3053,7 +3232,7 @@ function removePurchasedAccount(account) {
     }
 
     accounts = accounts.filter(item => item.id !== account.id);
-    saveAccounts();
+    void saveAccounts();
     renderAccounts();
     renderAdmin();
 }
@@ -3133,7 +3312,11 @@ $("buyForm")
                 return;
             }
 
-            const purchasedAccount = currentAccount;
+            const purchasedAccount = accounts.find(account => String(account.id) === String(currentAccount.id));
+            if (!purchasedAccount) {
+                $("checkoutStatus").textContent = t("accessCodeDisabled");
+                return;
+            }
             const buyerEmail = $("buyerEmail").value.trim();
             const productCode = $("productAccessCode").value.trim();
             const playerId = $("pubgPlayerId").value.trim();
@@ -3149,18 +3332,40 @@ $("buyForm")
                 return;
             }
 
-            const savedCode = String(purchasedAccount.accessCode || "").trim();
-            if (!savedCode) {
-                $("checkoutStatus").textContent = "هذا المنتج لا يحتوي على كود مخصص بعد. تواصل عبر واتساب للحصول على الكود.";
-                return;
+            if (LOCAL_TEST_MODE) {
+                const savedCode = String(purchasedAccount.accessCode || "").trim();
+                if (!purchasedAccount.accessCodeEnabled) {
+                    $("checkoutStatus").textContent = t("accessCodeDisabled");
+                    return;
+                }
+                if (!savedCode || productCode !== savedCode) {
+                    $("checkoutStatus").textContent = t("accessCodeInvalid");
+                    return;
+                }
+            } else {
+                if (!firebaseReady) {
+                    $("checkoutStatus").textContent = t("accessCodeVerificationUnavailable");
+                    return;
+                }
+                try {
+                    const verifyProductCode = firebase.app().functions("us-central1").httpsCallable("verifyProductCode");
+                    const result = await verifyProductCode({ productId: purchasedAccount.id, code: productCode });
+                    if (!result.data?.valid) {
+                        $("checkoutStatus").textContent = result.data?.disabled
+                            ? t("accessCodeDisabled")
+                            : t("accessCodeInvalid");
+                        return;
+                    }
+                } catch (error) {
+                    console.error("Product code verification failed", error);
+                    $("checkoutStatus").textContent = error.code === "functions/resource-exhausted"
+                        ? t("accessCodeRateLimited")
+                        : t("accessCodeVerificationUnavailable");
+                    return;
+                }
             }
 
-            if (productCode !== savedCode) {
-                $("checkoutStatus").textContent = "الكود غير صحيح. تأكد من الكود الذي أعطاك إياه البائع.";
-                return;
-            }
-
-            if (isOutOfStock(currentAccount)) {
+            if (isOutOfStock(purchasedAccount)) {
                 alert(t("outOfStock"));
                 closeModal("buyModal");
                 renderAccounts();
@@ -3171,7 +3376,7 @@ $("buyForm")
             const gameAccountEmail = settings.gameAccountEmail || (LOCAL_TEST_MODE ? "demo@gamevault.invalid" : "");
             const gameAccountPassword = settings.gameAccountPassword || (LOCAL_TEST_MODE ? "demo-only-password" : "");
 
-            if (currentAccount.type === "حساب" && (!gameAccountEmail || !gameAccountPassword)) {
+            if (purchasedAccount.type === "حساب" && (!gameAccountEmail || !gameAccountPassword)) {
                 alert(t("missingAccountCredentials"));
                 closeModal("buyModal");
                 return;
@@ -3189,7 +3394,6 @@ $("buyForm")
                 playerId: needsPlayerId ? playerId : "",
                 productId: purchasedAccount.id,
                 productName: localizedProductText(purchasedAccount.name, purchasedAccount.nameEn, purchasedAccount.translations, "name"),
-                productCode,
                 price: purchasedAccount.price,
                 currency: purchasedAccount.currency,
                 status: "تم إظهار الحساب عبر الكود",
@@ -3199,7 +3403,7 @@ $("buyForm")
             const product = accounts.find(account => String(account.id) === String(purchasedAccount.id));
             if (product && hasLimitedStock(product)) {
                 product.stock -= 1;
-                saveAccounts();
+                void saveAccounts();
                 renderAccounts();
                 if (!$("adminModal").classList.contains("hidden")) renderAdmin();
             }

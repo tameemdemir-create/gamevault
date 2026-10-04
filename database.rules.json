@@ -4,6 +4,10 @@
       ".read": true,
       ".write": "auth != null && auth.token.email_verified == true && auth.token.email == 'tameemdemir@gmail.com'"
     },
+    "productCodes": {
+      ".read": "auth != null && auth.token.email_verified == true && auth.token.email == 'tameemdemir@gmail.com'",
+      ".write": "auth != null && auth.token.email_verified == true && auth.token.email == 'tameemdemir@gmail.com'"
+    },
     "profiles": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",

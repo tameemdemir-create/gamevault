@@ -1020,6 +1020,20 @@ button {
     grid-column: auto;
 }
 
+.modal-content.admin .admin-code-toggle {
+    flex-direction: row;
+    align-items: center;
+    width: fit-content;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.modal-content.admin .admin-code-toggle input {
+    width: auto;
+    margin: 0;
+    accent-color: #53df91;
+}
+
 .modal-content.admin .admin-control-group {
     display: flex;
     flex-direction: column;
@@ -1365,6 +1379,34 @@ hr {
     color: #8493a8;
     font-size: 12px;
     margin-top: 5px;
+}
+
+.admin-code-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+    padding: 7px 11px;
+    border: 1px solid;
+    border-radius: 999px;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.admin-code-status-label {
+    opacity: 0.8;
+}
+
+.admin-code-status.is-enabled {
+    color: #53df91;
+    border-color: rgba(83, 223, 145, 0.42);
+    background: rgba(83, 223, 145, 0.1);
+}
+
+.admin-code-status.is-disabled {
+    color: #ff9b91;
+    border-color: rgba(255, 100, 120, 0.42);
+    background: rgba(255, 100, 120, 0.1);
 }
 
 .admin-actions {
