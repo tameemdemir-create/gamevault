@@ -8,6 +8,10 @@ const ORDERS_STORAGE_KEY = "GAMEVAULT_LOCAL_ORDERS";
 const LOCAL_TEST_MODE = location.protocol === "file:" || ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
 const ADMIN_EMAIL = "tameemdemir@gmail.com";
 const CODE_VERIFICATION_URL = "https://gamevault-code-verifier.tameemdemir.workers.dev";
+const AUTH_ACTION_SETTINGS = {
+    url: "https://tameemdemir-create.github.io/gamevault/",
+    handleCodeInApp: false
+};
 const PAYPAL_CURRENCIES = new Set([
     "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "ILS", "JPY",
     "MYR", "MXN", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF",
@@ -1408,7 +1412,7 @@ $("forgotPassword").addEventListener("click", async () => {
     }
 
     try {
-        await auth.sendPasswordResetEmail(email);
+        await auth.sendPasswordResetEmail(email, AUTH_ACTION_SETTINGS);
         $("authMessage").textContent = t("resetSent");
     } catch (error) {
         $("authMessage").textContent = authErrorMessage(error);
@@ -1433,7 +1437,7 @@ $("resendVerification").addEventListener("click", async () => {
         registrationInProgress = true;
         const result = await auth.signInWithEmailAndPassword(email, password);
         try {
-            await result.user.sendEmailVerification();
+            await result.user.sendEmailVerification(AUTH_ACTION_SETTINGS);
         } finally {
             await auth.signOut();
         }
@@ -1495,7 +1499,7 @@ $("authForm").addEventListener("submit", async event => {
                 photoURL: selectedAuthImage
             });
             await result.user.reload();
-            await result.user.sendEmailVerification();
+            await result.user.sendEmailVerification(AUTH_ACTION_SETTINGS);
             startVerificationCooldown(email);
             await auth.signOut();
             event.target.reset();
