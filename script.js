@@ -6,7 +6,8 @@ const STORAGE_KEY = "PUBG_MARKET_ACCOUNTS";
 const SETTINGS_KEY = "PUBG_MARKET_SETTINGS";
 const ORDERS_STORAGE_KEY = "GAMEVAULT_LOCAL_ORDERS";
 const LOCAL_TEST_MODE = location.protocol === "file:" || ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
-const ADMIN_EMAIL = "tameemdemir@gmail.com"; const CODE_VERIFICATION_URL = "https://gamevault-code-verifier.tameemdemir.workers.dev";
+const ADMIN_EMAIL = "tameemdemir@gmail.com";
+const CODE_VERIFICATION_URL = "https://gamevault-code-verifier.tameemdemir.workers.dev";
 const PAYPAL_CURRENCIES = new Set([
     "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "ILS", "JPY",
     "MYR", "MXN", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF",
@@ -3348,11 +3349,22 @@ $("buyForm")
                     return;
                 }
                 try {
-                    const verifyProductCode = async data => ({ data: await fetch(CODE_VERIFICATION_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }).then(async response => { if (!response.ok && response.status !== 429) throw new Error(`Code verification service returned ${response.status}.`); return response.status === 429 ? { rateLimited: true } : response.json(); }) });
-                    const result = await verifyProductCode({ productId: purchasedAccount.id, code: productCode });
-                    if (!result.data?.valid) {
-                        $("checkoutStatus").textContent = result.data?.disabled
-                            ? t("accessCodeDisabled") : result.data?.rateLimited ? t("accessCodeRateLimited")
+                    const response = await fetch(CODE_VERIFICATION_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ productId: purchasedAccount.id, code: productCode })
+                    });
+                    if (response.status === 429) {
+                        $("checkoutStatus").textContent = t("accessCodeRateLimited");
+                        return;
+                    }
+                    if (!response.ok) {
+                        throw new Error(`Code verification service returned ${response.status}.`);
+                    }
+                    const result = await response.json();
+                    if (!result.valid) {
+                        $("checkoutStatus").textContent = result.disabled
+                            ? t("accessCodeDisabled")
                             : t("accessCodeInvalid");
                         return;
                     }
