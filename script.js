@@ -99,7 +99,7 @@ const I18N = {
         ,ucBalance: "رصيد UC: {count}", userLevel: "مستوى {level}"
         ,deliveryBadge: "تم التسليم", deliveryTitle: "بيانات حسابك", accountReady: "تم تجهيز حساب PUBG الخاص بك.",
         accountLogin: "إيميل الحساب", accountPassword: "كلمة السر", closeDelivery: "إغلاق", ucAdded: "تمت إضافة {count} UC إلى رصيدك."
-        ,enableProductCode: "تفعيل الكود للزبون", accessCodeStatus: "حالة الكود", accessCodeEnabled: "مفعّل", accessCodeOff: "معطّل", accessCodeDisabled: "الكود معطّل حالياً. تواصل مع البائع بعد إتمام الدفع.", accessCodeInvalid: "الكود غير صحيح.", accessCodesLoadError: "تعذر تحميل أكواد المنتجات الخاصة. انشر قواعد Firebase المحدّثة ثم حاول مجدداً.", accessCodeVerificationUnavailable: "تعذر التحقق من الكود الآن. حاول لاحقاً.", accessCodeRateLimited: "محاولات كثيرة. انتظر قليلاً ثم أعد المحاولة."
+        ,enableProductCode: "تفعيل الكود للزبون", accessCodeStatus: "حالة الكود", accessCodeEnabled: "مفعّل", accessCodeOff: "معطّل", verifyingCode: "جارٍ التحقق من الكود...", accessCodeDisabled: "الكود معطّل حالياً. تواصل مع البائع بعد إتمام الدفع.", accessCodeInvalid: "الكود غير صحيح.", accessCodesLoadError: "تعذر تحميل أكواد المنتجات الخاصة. انشر قواعد Firebase المحدّثة ثم حاول مجدداً.", accessCodeVerificationUnavailable: "تعذر التحقق من الكود الآن. حاول لاحقاً.", accessCodeRateLimited: "محاولات كثيرة. انتظر قليلاً ثم أعد المحاولة."
     },
     en: {
         pageTitle: "Game Vault", languageLabel: "Language", badge: "PUBG MARKET", storeSubtitle: "PUBG store", heroTitle: "Everything you need", heroTitleAccent: "for PUBG",
@@ -174,7 +174,7 @@ const I18N = {
         ,ucBalance: "UC balance: {count}", userLevel: "Lv. {level}"
         ,deliveryBadge: "Delivered", deliveryTitle: "Your account details", accountReady: "Your PUBG account is ready.",
         accountLogin: "Account email", accountPassword: "Password", closeDelivery: "Close", ucAdded: "{count} UC was added to your balance."
-        ,enableProductCode: "Enable code for customer", accessCodeStatus: "Code status", accessCodeEnabled: "Enabled", accessCodeOff: "Disabled", accessCodeDisabled: "This code is currently disabled. Contact the seller after completing payment.", accessCodeInvalid: "The code is incorrect.", accessCodesLoadError: "Could not load private product codes. Publish the updated Firebase rules and try again.", accessCodeVerificationUnavailable: "Could not verify the code right now. Please try again later.", accessCodeRateLimited: "Too many attempts. Wait a while and try again."
+        ,enableProductCode: "Enable code for customer", accessCodeStatus: "Code status", accessCodeEnabled: "Enabled", accessCodeOff: "Disabled", verifyingCode: "Verifying code...", accessCodeDisabled: "This code is currently disabled. Contact the seller after completing payment.", accessCodeInvalid: "The code is incorrect.", accessCodesLoadError: "Could not load private product codes. Publish the updated Firebase rules and try again.", accessCodeVerificationUnavailable: "Could not verify the code right now. Please try again later.", accessCodeRateLimited: "Too many attempts. Wait a while and try again."
     }
 };
 
@@ -3348,6 +3348,11 @@ $("buyForm")
                     $("checkoutStatus").textContent = t("accessCodeVerificationUnavailable");
                     return;
                 }
+                const submitButton = $("submitBuyButton");
+                const submitButtonLabel = submitButton.querySelector("span");
+                submitButton.disabled = true;
+                submitButtonLabel.textContent = t("verifyingCode");
+                $("checkoutStatus").textContent = t("verifyingCode");
                 try {
                     const response = await fetch(CODE_VERIFICATION_URL, {
                         method: "POST",
@@ -3374,6 +3379,9 @@ $("buyForm")
                         ? t("accessCodeRateLimited")
                         : t("accessCodeVerificationUnavailable");
                     return;
+                } finally {
+                    submitButton.disabled = false;
+                    submitButtonLabel.textContent = "إظهار الحساب";
                 }
             }
 
